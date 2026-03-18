@@ -4,9 +4,699 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CMRPstudy — Flashcards & Practice Exam</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>CMRPstudy — CMRP Study & Reliability Engineering Tools</title>
+<meta name="description" content="Free CMRP study guide, reliability calculators, and maintenance engineering tools for professionals pursuing world-class reliability certification."
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* ═══════════════════════════════════════════════
+   TOKENS & RESET
+═══════════════════════════════════════════════ */
+:root {
+  --ink:        #f0ece3;
+  --ink2:       #a89f8c;
+  --ink3:       #6b6356;
+  --bg:         #0e0d0b;
+  --bg2:        #151310;
+  --bg3:        #1c1a16;
+  --bg4:        #242018;
+  --bg5:        #2c2820;
+  --panel:      #1a1714;
+
+  --amber:      #d4820a;
+  --amber2:     #f5a623;
+  --amber3:     #ffc85a;
+  --amber-bg:   rgba(212,130,10,0.08);
+  --amber-bdr:  rgba(212,130,10,0.25);
+
+  --rust:       #b84a1c;
+  --rust2:      #e05c25;
+  --rust-bg:    rgba(184,74,28,0.10);
+  --rust-bdr:   rgba(184,74,28,0.28);
+
+  --steel:      #4a7fa5;
+  --steel2:     #6ba3c9;
+  --steel-bg:   rgba(74,127,165,0.08);
+  --steel-bdr:  rgba(74,127,165,0.25);
+
+  --green:      #3d7a4f;
+  --green2:     #5aaa70;
+  --green-bg:   rgba(61,122,79,0.10);
+  --green-bdr:  rgba(61,122,79,0.28);
+
+  --border:     rgba(240,236,227,0.07);
+  --border2:    rgba(240,236,227,0.14);
+  --border3:    rgba(240,236,227,0.22);
+
+  --ff-display: 'Playfair Display', Georgia, serif;
+  --ff-body:    'Outfit', system-ui, sans-serif;
+  --ff-mono:    'DM Mono', 'Fira Mono', monospace;
+
+  --radius:     6px;
+  --radius-lg:  12px;
+  --max-w:      1320px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: var(--ff-body);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* grain overlay */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px;
+}
+
+
+/* ─── NAV BEARING ANIMATION ─────────────────────── */
+@keyframes nav-spin-cage  { to { transform: rotate(360deg);  } }
+@keyframes nav-spin-inner { to { transform: rotate(-360deg); } }
+@keyframes nav-pulse-ring { 0%,100%{stroke-opacity:1} 50%{stroke-opacity:0.45} }
+@keyframes nav-dash-pf    { 0%{stroke-dashoffset:200} 100%{stroke-dashoffset:0} }
+.nav-cage  { transform-origin:50px 50px; animation: nav-spin-cage  6s linear infinite; }
+.nav-inner { transform-origin:50px 50px; animation: nav-spin-inner 9s linear infinite; }
+.nav-outer-ring { animation: nav-pulse-ring 3s ease-in-out infinite; }
+.nav-pf { stroke-dasharray:200; stroke-dashoffset:200; animation: nav-dash-pf 2s cubic-bezier(.4,0,.2,1) 0.4s forwards; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg5); border-radius: 2px; }
+
+/* ═══════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════ */
+#nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  height: 60px;
+  background: rgba(14,13,11,0.92);
+  backdrop-filter: blur(16px) saturate(1.4);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 2rem;
+  gap: 2.5rem;
+}
+
+.nav-logo {
+  font-family: var(--ff-mono);
+  font-size: 0.78rem; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex; align-items: center; gap: 0.6rem;
+  flex-shrink: 0;
+}
+.nav-logo-mark {
+  width: 28px; height: 28px;
+  background: var(--amber);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.68rem; font-weight: 500; color: var(--bg);
+}
+
+.nav-links {
+  display: flex; align-items: center; gap: 0.25rem;
+  flex: 1;
+}
+.nav-link {
+  font-size: 0.82rem; font-weight: 500;
+  color: var(--ink3);
+  padding: 0.35rem 0.85rem; border-radius: 5px;
+  cursor: pointer; transition: all 0.15s;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.nav-link:hover { color: var(--ink); background: rgba(255,255,255,0.04); }
+.nav-link.active { color: var(--amber2); border-color: var(--amber-bdr); background: var(--amber-bg); }
+
+.nav-cta {
+  margin-left: auto; flex-shrink: 0;
+  font-family: var(--ff-mono); font-size: 0.72rem;
+  padding: 0.42rem 1.1rem; border-radius: 5px;
+  background: var(--amber); color: var(--bg);
+  font-weight: 500; cursor: pointer; border: none;
+  transition: all 0.15s; letter-spacing: 0.04em;
+}
+.nav-cta:hover { background: var(--amber2); }
+
+/* ═══════════════════════════════════════════════
+   PAGE SYSTEM
+═══════════════════════════════════════════════ */
+.page { display: none; min-height: 100vh; padding-top: 60px; }
+.page.active { display: block; }
+
+/* ═══════════════════════════════════════════════
+   SHARED COMPONENTS
+═══════════════════════════════════════════════ */
+.container { max-width: var(--max-w); margin: 0 auto; padding: 0 2rem; }
+
+.section-eyebrow {
+  font-family: var(--ff-mono); font-size: 0.62rem;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--amber2); margin-bottom: 0.6rem;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.section-eyebrow::after {
+  content: ''; flex: 1; max-width: 60px; height: 1px;
+  background: var(--amber-bdr);
+}
+
+.section-title {
+  font-family: var(--ff-display);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700; line-height: 1.15;
+  color: var(--ink); margin-bottom: 0.75rem;
+}
+
+.section-sub {
+  font-size: 0.95rem; color: var(--ink2);
+  line-height: 1.75; max-width: 600px;
+}
+
+.badge {
+  display: inline-flex; align-items: center;
+  font-family: var(--ff-mono); font-size: 0.62rem;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 0.22rem 0.6rem; border-radius: 3px;
+  border: 1px solid var(--border2); color: var(--ink3);
+}
+.badge-amber { border-color: var(--amber-bdr); color: var(--amber2); background: var(--amber-bg); }
+.badge-steel { border-color: var(--steel-bdr); color: var(--steel2); background: var(--steel-bg); }
+.badge-green { border-color: var(--green-bdr); color: var(--green2); background: var(--green-bg); }
+
+.divider { height: 1px; background: var(--border); margin: 4rem 0; }
+
+/* prose */
+.prose p { font-size: 0.9rem; color: rgba(240,236,227,0.72); line-height: 1.8; margin-bottom: 0.9rem; }
+.prose p strong { color: var(--ink); }
+.prose ul, .prose ol { margin: 0.5rem 0 0.9rem 1.3rem; }
+.prose li { font-size: 0.88rem; color: rgba(240,236,227,0.68); line-height: 1.7; margin-bottom: 0.3rem; }
+.prose li strong { color: var(--ink2); }
+.prose h4 {
+  font-family: var(--ff-mono); font-size: 0.62rem;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--amber2); margin: 1.2rem 0 0.5rem;
+}
+
+/* callout */
+.callout {
+  display: flex; gap: 0.85rem;
+  padding: 1rem 1.2rem; border-radius: var(--radius);
+  margin: 0.85rem 0; font-size: 0.85rem; line-height: 1.7;
+  color: rgba(240,236,227,0.78);
+}
+.callout-amber { background: var(--amber-bg); border: 1px solid var(--amber-bdr); }
+.callout-steel { background: var(--steel-bg); border: 1px solid var(--steel-bdr); }
+.callout-rust  { background: var(--rust-bg);  border: 1px solid var(--rust-bdr);  }
+.callout i { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.callout strong { color: var(--ink); }
+
+/* formula box */
+.fbox {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--steel-bdr);
+  border-left: 3px solid var(--steel);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 0.9rem 1.1rem; margin: 0.75rem 0;
+  font-family: var(--ff-mono);
+}
+.fbox-lbl { font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--steel2); margin-bottom: 0.3rem; }
+.fbox-eq  { font-size: 0.9rem; color: var(--ink); }
+.fbox-note{ font-family: var(--ff-body); font-size: 0.76rem; color: var(--ink3); margin-top: 0.3rem; font-style: italic; }
+
+/* data table */
+.dtbl { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin: 0.75rem 0; }
+.dtbl th {
+  text-align: left; padding: 0.55rem 0.85rem;
+  font-family: var(--ff-mono); font-size: 0.6rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--amber2); border-bottom: 1px solid var(--amber-bdr);
+  background: rgba(0,0,0,0.2);
+}
+.dtbl td { padding: 0.55rem 0.85rem; border-bottom: 1px solid var(--border); color: rgba(240,236,227,0.65); vertical-align: top; line-height: 1.5; }
+.dtbl tbody tr:hover { background: rgba(255,255,255,0.02); }
+.dtbl td strong { color: var(--ink); }
+
+/* accordion */
+.acc {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 0.85rem;
+  overflow: hidden;
+  background: rgba(255,255,255,0.01);
+}
+.acc-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 1.25rem; cursor: pointer; user-select: none;
+  transition: background 0.14s;
+}
+.acc-head:hover { background: rgba(255,255,255,0.03); }
+.acc-title { font-size: 0.9rem; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 0.65rem; }
+.acc-sub { font-family: var(--ff-mono); font-size: 0.62rem; color: var(--ink3); font-weight: 400; }
+.acc-chev { color: var(--ink3); transition: transform 0.22s; font-size: 0.85rem; }
+.acc-chev.open { transform: rotate(180deg); }
+.acc-body { display: none; padding: 0 1.25rem 1.25rem; }
+.acc-body.open { display: block; }
+
+/* ═══════════════════════════════════════════════
+   HOME PAGE
+═══════════════════════════════════════════════ */
+
+/* Hero */
+.hero {
+  min-height: calc(100vh - 60px);
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative; overflow: hidden;
+  padding: 5rem 2rem 4rem;
+}
+
+.hero-grid {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(212,130,10,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212,130,10,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 0%, transparent 100%);
+}
+
+.hero-glow {
+  position: absolute; top: -20%; right: -10%; z-index: 0; pointer-events: none;
+  width: 700px; height: 700px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,130,10,0.07) 0%, transparent 70%);
+}
+
+.hero-content { position: relative; z-index: 1; max-width: var(--max-w); margin: 0 auto; width: 100%; }
+
+.hero-kicker {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  font-family: var(--ff-mono); font-size: 0.68rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--amber2); margin-bottom: 1.75rem;
+}
+.hero-kicker-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--amber); animation: pulse-dot 2s ease-in-out infinite; }
+@keyframes pulse-dot { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(0.7); } }
+
+.hero-headline {
+  font-family: var(--ff-display);
+  font-size: clamp(2.8rem, 7vw, 6rem);
+  font-weight: 900; line-height: 1.05;
+  color: var(--ink); margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+.hero-headline em { color: var(--amber2); font-style: italic; }
+
+.hero-sub {
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  color: var(--ink2); line-height: 1.8;
+  max-width: 520px; margin-bottom: 2.5rem;
+}
+
+.hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 4rem; }
+.btn-primary {
+  font-family: var(--ff-mono); font-size: 0.78rem;
+  padding: 0.75rem 1.75rem; border-radius: 6px;
+  background: var(--amber); color: var(--bg);
+  border: none; cursor: pointer; font-weight: 500;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  transition: all 0.18s;
+}
+.btn-primary:hover { background: var(--amber2); transform: translateY(-1px); }
+.btn-ghost {
+  font-family: var(--ff-mono); font-size: 0.78rem;
+  padding: 0.75rem 1.75rem; border-radius: 6px;
+  background: transparent; color: var(--ink2);
+  border: 1px solid var(--border2); cursor: pointer;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  transition: all 0.18s;
+}
+.btn-ghost:hover { border-color: var(--border3); color: var(--ink); }
+
+.hero-stats {
+  display: flex; gap: 3rem; flex-wrap: wrap;
+}
+.hero-stat-val {
+  font-family: var(--ff-display); font-size: 2.2rem; font-weight: 700;
+  color: var(--amber2); line-height: 1;
+}
+.hero-stat-lbl {
+  font-family: var(--ff-mono); font-size: 0.62rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink3); margin-top: 0.3rem;
+}
+
+/* Feature Cards */
+.features-section { padding: 6rem 0; background: var(--bg2); position: relative; }
+.features-section::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 1px; background: linear-gradient(90deg, transparent, var(--amber-bdr), transparent);
+}
+
+.features-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem;
+  margin-top: 3rem;
+}
+
+.feature-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.75rem;
+  cursor: pointer; transition: all 0.22s;
+  position: relative; overflow: hidden;
+}
+.feature-card::before {
+  content: ''; position: absolute; inset: 0; opacity: 0;
+  background: radial-gradient(circle at top left, var(--fc-glow) 0%, transparent 60%);
+  transition: opacity 0.3s;
+}
+.feature-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+.feature-card:hover::before { opacity: 1; }
+
+.fc-icon {
+  width: 44px; height: 44px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; margin-bottom: 1.1rem;
+  border: 1px solid var(--fc-bdr);
+  background: var(--fc-bg);
+}
+.fc-title { font-size: 1rem; font-weight: 700; color: var(--ink); margin-bottom: 0.4rem; }
+.fc-desc { font-size: 0.83rem; color: var(--ink2); line-height: 1.65; margin-bottom: 1rem; }
+.fc-arrow {
+  font-family: var(--ff-mono); font-size: 0.7rem;
+  color: var(--ink3); display: flex; align-items: center; gap: 0.4rem;
+  transition: gap 0.15s, color 0.15s;
+}
+.feature-card:hover .fc-arrow { gap: 0.7rem; color: var(--amber2); }
+
+/* Benchmark section */
+.bench-section { padding: 6rem 0; }
+
+.bench-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1px;
+  border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+  background: var(--border); margin-top: 3rem;
+}
+.bench-cell {
+  background: var(--bg3); padding: 1.5rem 1.25rem;
+  transition: background 0.15s;
+}
+.bench-cell:hover { background: var(--bg4); }
+.bench-kpi {
+  font-family: var(--ff-mono); font-size: 0.6rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink3); margin-bottom: 0.5rem;
+}
+.bench-val {
+  font-family: var(--ff-display); font-size: 1.7rem; font-weight: 700;
+  color: var(--amber2); line-height: 1; margin-bottom: 0.3rem;
+}
+.bench-label { font-size: 0.76rem; color: var(--ink2); line-height: 1.4; }
+
+/* About strip */
+.about-strip {
+  padding: 6rem 0; background: var(--bg2); position: relative; overflow: hidden;
+}
+.about-strip::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(212,130,10,0.04) 0%, transparent 100%);
+}
+.about-inner {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;
+}
+.about-num {
+  font-family: var(--ff-display); font-size: 14rem; font-weight: 900;
+  line-height: 1; color: rgba(212,130,10,0.06); pointer-events: none;
+  position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+  user-select: none;
+}
+.about-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1.5rem; }
+
+/* ═══════════════════════════════════════════════
+   STUDY GUIDE PAGE
+═══════════════════════════════════════════════ */
+.sg-layout {
+  display: flex; min-height: calc(100vh - 60px);
+}
+
+.sg-sidebar {
+  width: 256px; flex-shrink: 0;
+  position: sticky; top: 60px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  border-right: 1px solid var(--border);
+  padding: 1.5rem 0 3rem;
+  background: var(--bg);
+}
+
+.sg-sb-section {
+  font-family: var(--ff-mono); font-size: 0.58rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink3); padding: 1.1rem 1.25rem 0.4rem;
+}
+.sg-sb-item {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.45rem 1.25rem; font-size: 0.82rem;
+  color: rgba(240,236,227,0.45); cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all 0.14s; line-height: 1.4;
+}
+.sg-sb-item:hover { color: var(--ink); background: rgba(255,255,255,0.025); }
+.sg-sb-item.active { color: var(--amber2); border-left-color: var(--amber); background: var(--amber-bg); font-weight: 600; }
+.sg-sb-pct {
+  margin-left: auto; font-family: var(--ff-mono); font-size: 0.6rem;
+  padding: 0.1rem 0.4rem; border-radius: 3px;
+  background: var(--amber-bg); color: var(--amber2); border: 1px solid var(--amber-bdr);
+}
+
+.sg-main {
+  flex: 1; min-width: 0;
+  padding: 3rem 3.5rem 6rem;
+}
+
+.sg-page { display: none; animation: fadeUp 0.25s ease; }
+.sg-page.active { display: block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+.domain-header {
+  display: flex; align-items: flex-start; gap: 2rem;
+  padding: 2rem 2.25rem; border-radius: var(--radius-lg);
+  margin-bottom: 2.25rem; border: 1px solid var(--border);
+  position: relative; overflow: hidden;
+  background: var(--dh-bg);
+}
+.domain-header::before {
+  content: attr(data-num);
+  position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
+  font-family: var(--ff-display); font-size: 8rem; font-weight: 900;
+  color: rgba(255,255,255,0.03); line-height: 1; user-select: none;
+}
+.dh-body { flex: 1; z-index: 1; }
+.dh-label {
+  font-family: var(--ff-mono); font-size: 0.6rem;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--dh-accent); margin-bottom: 0.4rem;
+}
+.dh-title {
+  font-family: var(--ff-display); font-size: 1.85rem; font-weight: 700;
+  color: var(--ink); line-height: 1.2; margin-bottom: 0.5rem;
+}
+.dh-desc { font-size: 0.87rem; color: var(--ink2); line-height: 1.72; }
+.dh-pills { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem; }
+.dh-pill {
+  font-family: var(--ff-mono); font-size: 0.62rem;
+  padding: 0.2rem 0.6rem; border-radius: 3px;
+  border: 1px solid var(--dh-bdr); color: var(--dh-accent);
+  background: var(--dh-bg2);
+}
+
+/* ═══════════════════════════════════════════════
+   TOOLS PAGE
+═══════════════════════════════════════════════ */
+.tools-hero {
+  padding: 5rem 0 3rem;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
+}
+
+.tools-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(340px,1fr)); gap: 1.5rem;
+  padding: 3rem 0;
+}
+
+.tool-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+}
+.tool-card-head {
+  padding: 1.5rem 1.75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.15);
+}
+.tool-icon { font-size: 1.6rem; margin-bottom: 0.65rem; }
+.tool-name { font-size: 1rem; font-weight: 700; color: var(--ink); margin-bottom: 0.3rem; }
+.tool-desc { font-size: 0.8rem; color: var(--ink2); line-height: 1.55; }
+.tool-body { padding: 1.5rem 1.75rem; }
+
+/* inputs */
+.input-row { margin-bottom: 1rem; }
+.input-lbl {
+  display: block; font-family: var(--ff-mono); font-size: 0.62rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink3); margin-bottom: 0.4rem;
+}
+.input-field {
+  width: 100%; padding: 0.6rem 0.9rem;
+  background: rgba(0,0,0,0.3); border: 1px solid var(--border2);
+  border-radius: var(--radius); color: var(--ink);
+  font-family: var(--ff-mono); font-size: 0.88rem;
+  outline: none; transition: border-color 0.15s;
+  -moz-appearance: textfield;
+}
+.input-field:focus { border-color: var(--amber-bdr); }
+.input-field::-webkit-outer-spin-button,
+.input-field::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+.input-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; }
+
+.calc-btn {
+  width: 100%; padding: 0.7rem;
+  background: var(--amber); color: var(--bg);
+  border: none; border-radius: var(--radius);
+  font-family: var(--ff-mono); font-size: 0.75rem;
+  font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+  cursor: pointer; transition: all 0.16s; margin-top: 0.25rem;
+}
+.calc-btn:hover { background: var(--amber2); }
+
+.result-area {
+  margin-top: 1.25rem; padding: 1.1rem;
+  background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+  border-radius: var(--radius); display: none;
+}
+.result-area.show { display: block; }
+.result-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(120px,1fr)); gap: 0.75rem; }
+.result-item { text-align: center; }
+.result-val {
+  font-family: var(--ff-display); font-size: 1.6rem; font-weight: 700;
+  color: var(--amber2); line-height: 1;
+}
+.result-lbl {
+  font-family: var(--ff-mono); font-size: 0.58rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink3); margin-top: 0.3rem;
+}
+.result-interpret {
+  margin-top: 1rem; padding-top: 0.85rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.82rem; color: var(--ink2); line-height: 1.65;
+}
+.result-interpret strong { color: var(--ink); }
+.result-badge {
+  display: inline-block; font-family: var(--ff-mono); font-size: 0.65rem;
+  padding: 0.2rem 0.55rem; border-radius: 3px; margin: 0 0.2rem;
+}
+.rb-good { background: var(--green-bg); border: 1px solid var(--green-bdr); color: var(--green2); }
+.rb-warn { background: var(--amber-bg); border: 1px solid var(--amber-bdr); color: var(--amber2); }
+.rb-bad  { background: var(--rust-bg);  border: 1px solid var(--rust-bdr);  color: var(--rust2); }
+
+/* select */
+.select-field {
+  width: 100%; padding: 0.6rem 0.9rem;
+  background: rgba(0,0,0,0.3); border: 1px solid var(--border2);
+  border-radius: var(--radius); color: var(--ink);
+  font-family: var(--ff-body); font-size: 0.88rem;
+  outline: none; transition: border-color 0.15s; cursor: pointer;
+}
+.select-field:focus { border-color: var(--amber-bdr); }
+
+/* Weibull visual */
+.weibull-cards {
+  display: grid; grid-template-columns: repeat(auto-fill,minmax(160px,1fr)); gap: 0.6rem;
+  margin-top: 1rem;
+}
+.wb-result-card {
+  background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 0.85rem; text-align: center;
+}
+.wb-result-card.highlighted {
+  border-color: var(--amber-bdr); background: var(--amber-bg);
+}
+.wrc-beta { font-family: var(--ff-mono); font-size: 1.1rem; color: var(--amber2); font-weight: 500; }
+.wrc-pattern { font-weight: 700; font-size: 0.85rem; color: var(--ink); margin: 0.25rem 0; }
+.wrc-task { font-size: 0.72rem; color: var(--ink2); line-height: 1.45; }
+
+/* ═══════════════════════════════════════════════
+   GLOSSARY PAGE
+═══════════════════════════════════════════════ */
+.gloss-hero { padding: 4rem 0 2.5rem; border-bottom: 1px solid var(--border); }
+.gloss-search-wrap {
+  position: relative; max-width: 520px; margin-top: 2rem;
+}
+.gloss-search {
+  width: 100%; padding: 0.8rem 1rem 0.8rem 3rem;
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: var(--radius); color: var(--ink);
+  font-family: var(--ff-body); font-size: 0.9rem;
+  outline: none; transition: border-color 0.15s;
+}
+.gloss-search:focus { border-color: var(--amber-bdr); }
+.gloss-search-icon {
+  position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+  color: var(--ink3); font-size: 0.9rem;
+}
+.gloss-count {
+  font-family: var(--ff-mono); font-size: 0.68rem;
+  color: var(--ink3); margin-top: 0.6rem;
+}
+
+.gloss-body { padding: 2.5rem 0; }
+.gloss-alpha-group { margin-bottom: 2.5rem; }
+.gloss-alpha-hdr {
+  font-family: var(--ff-display); font-size: 3rem; font-weight: 900;
+  color: rgba(212,130,10,0.15); line-height: 1;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem; margin-bottom: 1.25rem;
+}
+.gloss-entry { padding: 0.9rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.gloss-term { font-weight: 700; color: var(--ink); font-size: 0.9rem; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.6rem; }
+.gloss-def { font-size: 0.85rem; color: var(--ink2); line-height: 1.68; }
+.gloss-entry.hidden { display: none; }
+
+/* footer */
+footer {
+  padding: 3rem 2rem; border-top: 1px solid var(--border);
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 1rem;
+}
+.footer-note { font-family: var(--ff-mono); font-size: 0.65rem; color: var(--ink3); }
+.footer-links { display: flex; gap: 1.5rem; }
+.footer-link { font-family: var(--ff-mono); font-size: 0.65rem; color: var(--ink3); cursor: pointer; transition: color 0.14s; }
+.footer-link:hover { color: var(--amber2); }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .sg-sidebar { display: none; }
+  .sg-main { padding: 2rem 1.5rem 4rem; }
+  .about-inner { grid-template-columns: 1fr; gap: 2rem; }
+  .hero-headline { font-size: 2.6rem; }
+  #nav { gap: 1rem; padding: 0 1.25rem; }
+  .nav-link { display: none; }
+  .nav-link.core { display: block; }
+}
+@media (max-width: 600px) {
+  .tools-grid { grid-template-columns: 1fr; }
+  .container { padding: 0 1.25rem; }
+}
+
 :root {
   --bg:#0e0d0b; --bg2:#151310; --bg3:#1c1a16; --bg4:#242018; --bg5:#2c2820;
   --ink:#f0ece3; --ink2:#a89f8c; --ink3:#6b6356;
@@ -201,191 +891,1450 @@ footer{padding:2.5rem;border-top:1px solid var(--bdr);display:flex;align-items:c
 </head>
 <body>
 
-<!-- NAV -->
+<!-- ══════════════════ NAV ══════════════════════ -->
 <nav id="nav">
-  <a class="nav-logo" href="index.html">
-    <svg width="28" height="28" viewBox="0 0 100 100">
-      <circle cx="50" cy="50" r="46" fill="none" stroke="#d4820a" stroke-width="3" style="animation:pulse-ring 3s ease-in-out infinite;"/>
-      <g style="transform-origin:50px 50px;animation:spin-cage 6s linear infinite;">
-        <circle cx="50" cy="8" r="6" fill="#d4820a" opacity=".95"/>
-        <circle cx="84" cy="26" r="6" fill="#d4820a" opacity=".88"/>
-        <circle cx="84" cy="74" r="6" fill="#d4820a" opacity=".88"/>
-        <circle cx="50" cy="92" r="6" fill="#d4820a" opacity=".95"/>
-        <circle cx="16" cy="74" r="6" fill="#d4820a" opacity=".88"/>
-        <circle cx="16" cy="26" r="6" fill="#d4820a" opacity=".88"/>
+  <div class="nav-logo" onclick="showPage('home')" style="gap:0.55rem;">
+    <svg class="nav-bearing" width="32" height="32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;overflow:visible;">
+      <circle cx="50" cy="50" r="46" fill="none" stroke="#d4820a" stroke-width="3" class="nav-outer-ring"/>
+      <g class="nav-cage">
+        <circle cx="50" cy="8"  r="6" fill="#d4820a" opacity="0.95"/>
+        <circle cx="84" cy="26" r="6" fill="#d4820a" opacity="0.88"/>
+        <circle cx="84" cy="74" r="6" fill="#d4820a" opacity="0.88"/>
+        <circle cx="50" cy="92" r="6" fill="#d4820a" opacity="0.95"/>
+        <circle cx="16" cy="74" r="6" fill="#d4820a" opacity="0.88"/>
+        <circle cx="16" cy="26" r="6" fill="#d4820a" opacity="0.88"/>
       </g>
-      <circle cx="50" cy="50" r="28" fill="none" stroke="#d4820a" stroke-width="1.5" opacity=".3"/>
-      <g style="transform-origin:50px 50px;animation:spin-inner 9s linear infinite;">
-        <circle cx="50" cy="26" r="4" fill="#f5a623" opacity=".7"/>
-        <circle cx="70" cy="66" r="4" fill="#f5a623" opacity=".7"/>
-        <circle cx="30" cy="66" r="4" fill="#f5a623" opacity=".7"/>
+      <circle cx="50" cy="50" r="28" fill="none" stroke="#d4820a" stroke-width="1.5" opacity="0.3"/>
+      <g class="nav-inner">
+        <circle cx="50" cy="26" r="4" fill="#f5a623" opacity="0.7"/>
+        <circle cx="70" cy="66" r="4" fill="#f5a623" opacity="0.7"/>
+        <circle cx="30" cy="66" r="4" fill="#f5a623" opacity="0.7"/>
       </g>
       <circle cx="50" cy="50" r="7" fill="#d4820a"/>
       <circle cx="50" cy="50" r="3.5" fill="#0e0d0b"/>
-      <path d="M10 80 Q22 79 30 76 Q44 71 52 50 Q57 34 62 14" fill="none" stroke="#f5a623" stroke-width="2.8" stroke-linecap="round"/>
+      <path d="M10 80 Q22 79 30 76 Q44 71 52 50 Q57 34 62 14" fill="none" stroke="#f5a623" stroke-width="2.8" stroke-linecap="round" class="nav-pf"/>
       <circle cx="52" cy="50" r="4" fill="#f5a623"/>
       <circle cx="62" cy="14" r="4" fill="#e05c25"/>
     </svg>
-    <span>CMRP<span style="color:var(--amber2);">study</span></span>
-  </a>
-  <div class="nav-tabs">
-    <div class="nav-tab active" onclick="showPage('home')" id="nt-home">Home</div>
-    <div class="nav-tab" onclick="showPage('flashcards')" id="nt-flashcards">Flashcards</div>
-    <div class="nav-tab" onclick="showPage('quiz')" id="nt-quiz">Practice Exam</div>
+    <span style="font-family:'DM Mono',monospace;font-size:0.82rem;font-weight:500;letter-spacing:0.06em;">CMRP<span style="color:var(--amber2);">study</span></span>
   </div>
-  <div class="nav-right">
-    <div class="nav-score">Cards reviewed: <span id="nav-fc-count">0</span> &nbsp;|&nbsp; Quiz: <span id="nav-quiz-score">—</span></div>
+  <div class="nav-links">
+    <div class="nav-link core active" onclick="showPage('home')" id="nl-home">Home</div>
+    <div class="nav-link core" onclick="showPage('study')" id="nl-study">Study Guide</div>
+    <div class="nav-link core" onclick="showPage('tools')" id="nl-tools">Calculators</div>
+    <div class="nav-link" onclick="showPage('glossary')" id="nl-glossary">Glossary</div>
+    <div class="nav-link" onclick="showPage('practice')" id="nl-practice">Flashcards &amp; Exam</div>
   </div>
+  <button class="nav-cta" onclick="showPage('study')">Study Now →</button>
 </nav>
 
-<!-- HOME PAGE -->
+<!-- ══════════════════ HOME PAGE ════════════════ -->
 <div class="page active" id="page-home">
-  <div class="hero">
-    <div class="container">
-      <div class="eyebrow">CMRPstudy · Practice Tools</div>
-      <h1 class="page-title">Flashcards &amp;<br>Practice Exam</h1>
-      <p class="page-sub">200 flashcards and 100 exam-style questions covering all 5 SMRP domains and 5 Pillars of Reliability. Track your score, identify weak domains, and study to world-class benchmarks.</p>
-      <div class="stats-row">
-        <div><div class="stat-val">200</div><div class="stat-lbl">Flashcards</div></div>
-        <div><div class="stat-val">100</div><div class="stat-lbl">Practice Questions</div></div>
-        <div><div class="stat-val">5</div><div class="stat-lbl">SMRP Domains</div></div>
-        <div><div class="stat-val">~520</div><div class="stat-lbl">Passing Score Target</div></div>
-      </div>
-    </div>
-  </div>
-  <div class="container">
-    <div class="home-grid">
-      <div class="home-card" onclick="showPage('flashcards')" style="--hc-glow:rgba(212,130,10,0.08);">
-        <div class="hc-icon">📇</div>
-        <div class="hc-title">Flashcard Deck</div>
-        <div class="hc-desc">200 cards spanning all 5 domains, 5 Pillars, Weibull analysis, NDT, motor failure modes, lubrication, alignment, and work management. Filter by category, mark known/unknown, track your progress.</div>
-        <div class="hc-meta">
-          <span class="badge badge-amb">200 cards</span>
-          <span class="badge badge-stl">8 categories</span>
-          <span class="badge badge-grn">Spaced repetition</span>
-        </div>
-        <div class="hc-arr">Open Flashcards →</div>
-      </div>
-      <div class="home-card" onclick="showPage('quiz')" style="--hc-glow:rgba(61,122,79,0.08);">
-        <div class="hc-icon">📝</div>
-        <div class="hc-title">Practice Exam</div>
-        <div class="hc-desc">100 multiple-choice questions with full explanations. Choose all domains or focus on one. Each answer reveals a detailed rationale explaining why it's correct and why the wrong answers are wrong.</div>
-        <div class="hc-meta">
-          <span class="badge badge-grn">100 questions</span>
-          <span class="badge badge-amb">Full explanations</span>
-          <span class="badge badge-stl">Domain breakdown</span>
-        </div>
-        <div class="hc-arr">Start Practice Exam →</div>
-      </div>
-    </div>
-    <div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rl);padding:1.5rem;margin-bottom:3rem;">
-      <div style="font-family:var(--ff-m);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber2);margin-bottom:1rem;">Domain Weight Guide — Study Priority</div>
-      <div id="domain-weight-bars"></div>
-    </div>
-  </div>
-</div>
 
-<!-- FLASHCARD PAGE -->
-<div class="page" id="page-flashcards">
-  <div class="fc-hero">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-content container">
+      <div class="hero-kicker"><div class="hero-kicker-dot"></div>Free · Open · Practitioner-Built</div>
+      <h1 class="hero-headline">
+        Free CMRP<br>
+        Certification<br>
+        <em>Prep.</em>
+      </h1>
+      <p class="hero-sub">CMRPstudy is a complete CMRP exam prep resource — study guide, working calculators, and glossary. Built for practitioners. Free, always.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="showPage('study')">Open Study Guide</button>
+        <button class="btn-ghost" onclick="showPage('tools')">Use Calculators</button>
+      </div>
+      <div class="hero-stats">
+        <div><div class="hero-stat-val">5</div><div class="hero-stat-lbl">SMRP Domains</div></div>
+        <div><div class="hero-stat-val">5</div><div class="hero-stat-lbl">Reliability Pillars</div></div>
+        <div><div class="hero-stat-val">6</div><div class="hero-stat-lbl">Working Calculators</div></div>
+        <div><div class="hero-stat-val">100+</div><div class="hero-stat-lbl">Glossary Terms</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Cards -->
+  <section class="features-section">
     <div class="container">
-      <div class="eyebrow">200 Cards · All Domains</div>
-      <h1 class="page-title">Flashcard Deck</h1>
-      <p class="page-sub">Click any card to flip. Mark Known or Unknown to track mastery. Filter by category to focus your study session.</p>
+      <div class="section-eyebrow">What's Inside</div>
+      <h2 class="section-title">Everything you need<br>to pass the CMRP exam.</h2>
+      <p class="section-sub">No fluff. Built from the SMRP Body of Knowledge and real field experience, covering what actually appears on the exam.</p>
+
+      <div class="features-grid">
+        <div class="feature-card" onclick="showPage('study')" style="--fc-glow:rgba(212,130,10,0.08);--fc-bg:rgba(212,130,10,0.08);--fc-bdr:rgba(212,130,10,0.25);">
+          <div class="fc-icon">📚</div>
+          <div class="fc-title">Complete Study Guide</div>
+          <div class="fc-desc">All 5 SMRP domains plus the 5 Pillars of Reliability. Deep coverage of Domain 3 (45% of exam) — vibration, lubrication, alignment, NDT, Weibull, RCA, and motor failure modes.</div>
+          <div class="fc-arrow">Open Guide →</div>
+        </div>
+        <div class="feature-card" onclick="showPage('tools')" style="--fc-glow:rgba(74,127,165,0.08);--fc-bg:rgba(74,127,165,0.08);--fc-bdr:rgba(74,127,165,0.25);">
+          <div class="fc-icon">🧮</div>
+          <div class="fc-title">Reliability Calculators</div>
+          <div class="fc-desc">MTBF/MTTR/Availability, OEE breakdown, Weibull β interpreter, Series/Parallel reliability, COUR estimator, and Storeroom EOQ — all with instant interpretation against world-class benchmarks.</div>
+          <div class="fc-arrow">Open Calculators →</div>
+        </div>
+        <div class="feature-card" onclick="showPage('glossary')" style="--fc-glow:rgba(61,122,79,0.08);--fc-bg:rgba(61,122,79,0.08);--fc-bdr:rgba(61,122,79,0.25);">
+          <div class="fc-icon">📖</div>
+          <div class="fc-title">Searchable Glossary</div>
+          <div class="fc-desc">100+ reliability and maintenance terms defined clearly — P-F interval, FMEA RPN, Weibull eta, ISO 4406, NLGI grades, and more. Instant search. No clicking through pages.</div>
+          <div class="fc-arrow">Search Terms →</div>
+        </div>
+        <div class="feature-card" onclick="showPage('study'); setTimeout(()=>sgNav('pillars'),100)" style="--fc-glow:rgba(184,74,28,0.08);--fc-bg:rgba(184,74,28,0.08);--fc-bdr:rgba(184,74,28,0.25);">
+          <div class="fc-icon">🏛️</div>
+          <div class="fc-title">5 Pillars Framework</div>
+          <div class="fc-desc">Leadership & Culture, Work Management, Proactive Maintenance, Skills & Training, Reliability Engineering — fully explained with Kotter's 8 steps, Palmer's 6 principles, and TPM's 8 pillars.</div>
+          <div class="fc-arrow">Explore Pillars →</div>
+        </div>
+        <div class="feature-card" onclick="showPage('study'); setTimeout(()=>sgNav('d3-vibration'),100)" style="--fc-glow:rgba(212,130,10,0.06);--fc-bg:rgba(212,130,10,0.06);--fc-bdr:rgba(212,130,10,0.18);">
+          <div class="fc-icon">📳</div>
+          <div class="fc-title">Domain 3 Deep Dive</div>
+          <div class="fc-desc">45% of the exam. Vibration fault frequencies, bearing damage detection, thermography physics, oil analysis categories, ultrasound steam trap testing, alignment tolerances, balancing G-grades.</div>
+          <div class="fc-arrow">Go to Domain 3 →</div>
+        </div>
+        <div class="feature-card" onclick="showPage('study'); setTimeout(()=>sgNav('weibull'),100)" style="--fc-glow:rgba(74,127,165,0.06);--fc-bg:rgba(74,127,165,0.06);--fc-bdr:rgba(74,127,165,0.18);">
+          <div class="fc-icon">📊</div>
+          <div class="fc-title">Weibull & Statistics</div>
+          <div class="fc-desc">β shape parameter interpretation, η characteristic life, the 6 failure patterns, R(MTBF) = 36.8% trap, series/parallel reliability math, and FTA gate logic — all exam-tested content.</div>
+          <div class="fc-arrow">Study Weibull →</div>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="container">
-    <div class="fc-controls">
-      <div id="fc-cat-btns"></div>
-      <input class="fc-search" type="text" id="fc-search" placeholder="Search cards..." oninput="filterFC()">
-      <div class="fc-count" id="fc-count-display">200 cards</div>
+  </section>
+
+  <!-- Benchmarks -->
+  <section class="bench-section">
+    <div class="container">
+      <div class="section-eyebrow">SMRP Benchmarks</div>
+      <h2 class="section-title">World-class targets<br>you need to memorize.</h2>
+      <div class="bench-grid">
+        <div class="bench-cell"><div class="bench-kpi">OEE</div><div class="bench-val">≥85%</div><div class="bench-label">Overall Equipment Effectiveness</div></div>
+        <div class="bench-cell"><div class="bench-kpi">Wrench Time</div><div class="bench-val">55–65%</div><div class="bench-label">Hands-on productive time</div></div>
+        <div class="bench-cell"><div class="bench-kpi">Schedule Compliance</div><div class="bench-val">≥90%</div><div class="bench-label">Scheduled hours completed</div></div>
+        <div class="bench-cell"><div class="bench-kpi">PM Compliance</div><div class="bench-val">≥90%</div><div class="bench-label">PMs completed on time</div></div>
+        <div class="bench-cell"><div class="bench-kpi">MC / RAV</div><div class="bench-val">2–3%</div><div class="bench-label">Maintenance cost vs. asset value</div></div>
+        <div class="bench-cell"><div class="bench-kpi">Planned Work</div><div class="bench-val">&gt;85%</div><div class="bench-label">Planned vs. total work hours</div></div>
+        <div class="bench-cell"><div class="bench-kpi">Emergency Work</div><div class="bench-val">&lt;10%</div><div class="bench-label">Emergency vs. total hours</div></div>
+        <div class="bench-cell"><div class="bench-kpi">Ready Backlog</div><div class="bench-val">2–4 wks</div><div class="bench-label">Craft hours ready to schedule</div></div>
+        <div class="bench-cell"><div class="bench-kpi">Storeroom Fill Rate</div><div class="bench-val">≥95%</div><div class="bench-label">Parts filled on first request</div></div>
+        <div class="bench-cell"><div class="bench-kpi">Inventory Accuracy</div><div class="bench-val">≥98%</div><div class="bench-label">Physical count vs. system</div></div>
+        <div class="bench-cell"><div class="bench-kpi">Availability</div><div class="bench-val">≥95%</div><div class="bench-label">Asset uptime fraction</div></div>
+        <div class="bench-cell"><div class="bench-kpi">R(MTBF)</div><div class="bench-val">36.8%</div><div class="bench-label">Survival at MTBF — e⁻¹, NOT 50%</div></div>
+      </div>
     </div>
-    <div class="fc-stage">
-      <div class="fc-progress-bar"><div class="fc-progress-fill" id="fc-prog-fill" style="width:0%"></div></div>
-      <div class="fc-card-wrap">
-        <div class="fc-card" id="fc-card" onclick="flipFC()">
-          <div class="fc-face fc-front">
-            <div class="fc-domain-tag" id="fc-domain-tag"></div>
-            <div class="fc-hint">Tap to reveal definition</div>
-            <div class="fc-term" id="fc-term"></div>
+  </section>
+
+  <!-- About -->
+  <section class="about-strip">
+    <div class="container">
+      <div class="about-inner">
+        <div style="position:relative;">
+          <div class="section-eyebrow">About This Resource</div>
+          <h2 class="section-title">Built by someone<br>who does this work.</h2>
+          <div class="prose">
+            <p>CMRPstudy was built by a practicing Maintenance Planner & Scheduler actively pursuing CMRP certification. The content reflects real-world application in a manufacturing environment — not just what textbooks say.</p>
+            <p>Everything here is grounded in the SMRP Body of Knowledge, Nowlan & Heap's failure pattern research, Doc Palmer's planning principles, and years of hands-on reliability improvement work. No advertising. No paid placements. No course upsells.</p>
+            <p>The goal: give every maintenance professional access to the same quality of study material regardless of whether they can afford a prep course.</p>
           </div>
-          <div class="fc-face fc-back">
-            <div class="fc-ans-lbl">Definition</div>
-            <div class="fc-def" id="fc-def"></div>
+          <div class="about-tags">
+            
+            <span class="badge badge-amber">CMRP Candidate</span>
+            <span class="badge">SMRP Member</span>
+            <span class="badge">Manufacturing Industry</span>
+            <span class="badge">Practitioner-Written</span>
+          </div>
+        </div>
+        <div style="position:relative;">
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;">
+            <div style="font-family:var(--ff-mono);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber2);margin-bottom:1rem;">Exam Fast Facts</div>
+            <table class="dtbl">
+              <tr><td><strong>Questions</strong></td><td>110 (≈10 unscored)</td></tr>
+              <tr><td><strong>Time Limit</strong></td><td>2.5 hours</td></tr>
+              <tr><td><strong>Format</strong></td><td>Computer-based, Prometric</td></tr>
+              <tr><td><strong>Scoring</strong></td><td>200–800 scaled score</td></tr>
+              <tr><td><strong>Passing Score</strong></td><td>≈520 (not a raw %)</td></tr>
+              <tr><td><strong>Recertification</strong></td><td>Every 3 years</td></tr>
+              <tr><td><strong>Largest Domain</strong></td><td>D3 Equipment (45%)</td></tr>
+            </table>
+            <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border);">
+              <div style="font-family:var(--ff-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:0.75rem;">Domain Weights</div>
+              <div id="domainBar"></div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="fc-flip-hint">Click card to flip · Use arrow keys to navigate</div>
-      <div class="fc-verdict" id="fc-verdict" style="display:none;">
-        <button class="fc-verdict-btn fc-known" onclick="markFC(true)">✓ Got it</button>
-        <button class="fc-verdict-btn fc-unknown" onclick="markFC(false)">✗ Study more</button>
-      </div>
-      <div class="fc-nav">
-        <button class="fc-nav-btn" onclick="fcMove(-1)" id="fc-prev">← Prev</button>
-        <div class="fc-ctr" id="fc-ctr">1 / 200</div>
-        <button class="fc-nav-btn" onclick="fcMove(1)" id="fc-next">Next →</button>
-      </div>
-      <div class="fc-session-stats">
-        <div class="fcs-item"><div class="fcs-val" id="fcs-known" style="color:var(--green2)">0</div><div class="fcs-lbl">Known</div></div>
-        <div class="fcs-item"><div class="fcs-val" id="fcs-unknown" style="color:var(--rust2)">0</div><div class="fcs-lbl">Study More</div></div>
-        <div class="fcs-item"><div class="fcs-val" id="fcs-remaining" style="color:var(--amber2)">200</div><div class="fcs-lbl">Remaining</div></div>
-        <div class="fcs-item"><div class="fcs-val" id="fcs-pct" style="color:var(--steel2)">0%</div><div class="fcs-lbl">Mastery</div></div>
-        <button class="fc-nav-btn" onclick="resetFC()" style="font-size:.65rem;padding:.3rem .7rem;">Reset</button>
-      </div>
     </div>
-  </div>
+  </section>
+
+  <footer>
+    <div class="footer-note">© 2026 CMRPstudy · Free resource for maintenance professionals · Not affiliated with SMRP</div>
+    <div class="footer-links">
+      <span class="footer-link" onclick="showPage('study')">Study Guide</span>
+      <span class="footer-link" onclick="showPage('tools')">Calculators</span>
+      <span class="footer-link" onclick="showPage('glossary')">Glossary</span>
+    </div>
+  </footer>
 </div>
 
-<!-- QUIZ PAGE -->
-<div class="page" id="page-quiz">
-  <div class="quiz-hero">
+<!-- ══════════════════ STUDY GUIDE PAGE ═════════ -->
+<div class="page" id="page-study">
+<div class="sg-layout">
+
+<!-- Sidebar -->
+<nav class="sg-sidebar">
+  <div class="sg-sb-section">5 Pillars</div>
+  <div class="sg-sb-item active" onclick="sgNav('pillars')" id="sgn-pillars">🏛️ Framework Overview</div>
+  <div class="sg-sb-item" onclick="sgNav('p1')" id="sgn-p1">P1 · Leadership & Culture</div>
+  <div class="sg-sb-item" onclick="sgNav('p2')" id="sgn-p2">P2 · Work Management</div>
+  <div class="sg-sb-item" onclick="sgNav('p3')" id="sgn-p3">P3 · Proactive Maintenance</div>
+  <div class="sg-sb-item" onclick="sgNav('p4')" id="sgn-p4">P4 · Skills & Training</div>
+  <div class="sg-sb-item" onclick="sgNav('p5')" id="sgn-p5">P5 · Reliability Engineering</div>
+
+  <div class="sg-sb-section">SMRP Domains</div>
+  <div class="sg-sb-item" onclick="sgNav('d1')" id="sgn-d1">D1 · Business & Mgmt <span class="sg-sb-pct">15%</span></div>
+  <div class="sg-sb-item" onclick="sgNav('d2')" id="sgn-d2">D2 · Process Reliability <span class="sg-sb-pct">15%</span></div>
+  <div class="sg-sb-item" onclick="sgNav('d3-vibration')" id="sgn-d3-vibration">D3a · Vibration Analysis <span class="sg-sb-pct">45%</span></div>
+  <div class="sg-sb-item" onclick="sgNav('d3-thermo')" id="sgn-d3-thermo">D3b · Thermography</div>
+  <div class="sg-sb-item" onclick="sgNav('d3-oil')" id="sgn-d3-oil">D3c · Oil Analysis</div>
+  <div class="sg-sb-item" onclick="sgNav('d3-lube')" id="sgn-d3-lube">D3d · Lubrication</div>
+  <div class="sg-sb-item" onclick="sgNav('d3-align')" id="sgn-d3-align">D3e · Alignment & Balance</div>
+  <div class="sg-sb-item" onclick="sgNav('d3-rca')" id="sgn-d3-rca">D3f · RCA & Failure Analysis</div>
+  <div class="sg-sb-item" onclick="sgNav('d4')" id="sgn-d4">D4 · Organization <span class="sg-sb-pct">10%</span></div>
+  <div class="sg-sb-item" onclick="sgNav('d5')" id="sgn-d5">D5 · Work Management <span class="sg-sb-pct">15%</span></div>
+
+  <div class="sg-sb-section">Advanced</div>
+  <div class="sg-sb-item" onclick="sgNav('weibull')" id="sgn-weibull">📊 Weibull Analysis</div>
+  <div class="sg-sb-item" onclick="sgNav('ndt')" id="sgn-ndt">🔬 NDT Methods</div>
+  <div class="sg-sb-item" onclick="sgNav('motors')" id="sgn-motors">⚡ Motor Failure Modes</div>
+  <div class="sg-sb-item" onclick="sgNav('shutdown')" id="sgn-shutdown">🏭 Shutdown Planning</div>
+</nav>
+
+<!-- Main content -->
+<div class="sg-main">
+
+<!-- ── PILLARS OVERVIEW ── -->
+<div class="sg-page active" id="sgp-pillars">
+  <div class="domain-header" data-num="5P" style="--dh-bg:rgba(212,130,10,0.05);--dh-accent:#f5a623;--dh-bdr:rgba(212,130,10,0.25);--dh-bg2:rgba(212,130,10,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Foundation Framework · SMRP Body of Knowledge</div>
+      <div class="dh-title">The 5 Pillars of Reliability</div>
+      <div class="dh-desc">The 5 Pillars describe the organizational capabilities that enable world-class reliability. They underpin all five exam domains. Understanding the framework — and the interdependencies between pillars — is essential for answering situational questions correctly.</div>
+      <div class="dh-pills"><span class="dh-pill">Leadership</span><span class="dh-pill">Work Management</span><span class="dh-pill">Proactive Maint</span><span class="dh-pill">Skills & Training</span><span class="dh-pill">Reliability Engineering</span></div>
+    </div>
+  </div>
+
+  <div class="callout callout-amber"><i>🔑</i><div><strong>Why this matters for the exam:</strong> SMRP exam questions frequently describe an organizational scenario and ask you to identify the best approach. Understanding which pillar is being tested — and knowing how pillars interact — lets you eliminate wrong answers quickly. A question about "why the PM program isn't reducing failures" is often a Pillar 2 (Work Management) or Pillar 4 (Skills) question, not a Pillar 3 question.</div></div>
+
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">🔗 How the 5 Pillars Interconnect <span class="acc-sub">The interdependency logic</span></div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open"><div class="prose">
+    <p><strong>Pillar 1 (Leadership) enables all others.</strong> Without leadership commitment and cultural alignment, no reliability initiative survives the first production crisis. Leaders who revert to measuring only output — not reliability performance — create the pressure that collapses every other pillar.</p>
+    <p><strong>Pillar 2 (Work Management) is the delivery mechanism.</strong> The best maintenance strategies (Pillar 3) and most rigorous failure analysis (Pillar 5) produce zero value if the work management system can't deliver them to the field efficiently. An organization with great RCM output and poor scheduling has done expensive analysis for nothing.</p>
+    <p><strong>Pillar 3 (Proactive Maintenance) generates the operating data.</strong> Condition monitoring findings feed Pillar 5 analysis. PM compliance rates feed Pillar 1 KPI dashboards. Without Pillar 3 execution, the other pillars have no field data to act on.</p>
+    <p><strong>Pillar 4 (Skills) is the human enabler.</strong> Technically sophisticated PdM programs fail when the workforce lacks the skills to execute correctly. Misapplied vibration analysis — or an operator who can't recognize abnormal equipment sounds — is worse than no program at all.</p>
+    <p><strong>Pillar 5 (Reliability Engineering) drives continuous improvement.</strong> Engineering analysis converts field experience into strategic decisions: which assets to prioritize, which failure modes to target, how to optimize maintenance strategy over time.</p>
+    <h4>The Most Common Failure Pattern</h4>
+    <p>Organizations implement technical tools (Pillars 3 and 5) without the organizational foundation (Pillar 1) or work management infrastructure (Pillar 2) to sustain them. The tools sit unused because there's no cultural mandate to use them and no scheduling system to deliver the resulting work. This is the single most tested scenario on the CMRP exam.</p>
+  </div></div></div>
+
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">📊 Reliability Culture Maturity Model</div><div class="acc-chev">▾</div></div>
+  <div class="acc-body"><div class="prose">
+    <table class="dtbl"><thead><tr><th>Stage</th><th>Characteristics</th><th>Typical MC/RAV</th></tr></thead><tbody>
+      <tr><td><strong>1 — Reactive</strong></td><td>Run-to-failure dominant. Fire-fighting culture. No PM program. Emergency work &gt;50%.</td><td>8–15%+</td></tr>
+      <tr><td><strong>2 — Preventive</strong></td><td>PM program exists but mostly time-based. Low schedule compliance. Planning inconsistent.</td><td>6–9%</td></tr>
+      <tr><td><strong>3 — Proactive</strong></td><td>PdM program active. Planning & scheduling mature. RCA practiced. Leading indicators tracked.</td><td>3–6%</td></tr>
+      <tr><td><strong>4 — Predictive/CBM</strong></td><td>Condition-based decisions dominant. FMEA-driven strategy. Failure modes well understood.</td><td>2–4%</td></tr>
+      <tr><td><strong>5 — Optimized</strong></td><td>AI-assisted. Real-time condition integration. Continuous improvement loops embedded.</td><td>&lt;2%</td></tr>
+    </tbody></table>
+    <div class="callout callout-amber"><i>✎</i><div>When a question describes an organization's current state, identify the maturity stage. The best answer typically describes the next logical step up — not a leap from Stage 1 to Stage 5.</div></div>
+  </div></div></div>
+</div>
+
+<!-- ── P1: LEADERSHIP ── -->
+<div class="sg-page" id="sgp-p1">
+  <div class="domain-header" data-num="P1" style="--dh-bg:rgba(13,148,136,0.05);--dh-accent:#2dd4bf;--dh-bdr:rgba(13,148,136,0.28);--dh-bg2:rgba(13,148,136,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Pillar 1 of 5 · Foundation</div>
+      <div class="dh-title">Leadership & Culture</div>
+      <div class="dh-desc">The most critical and most neglected pillar. Technical tools fail when leadership culture doesn't support them. Covers reliability vision, accountability systems, change management, and organizational maturity.</div>
+    </div>
+  </div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">🔄 Kotter's 8-Step Change Model <span class="acc-sub">Most referenced change framework on the exam</span></div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open"><div class="prose">
+    <ol>
+      <li><strong>Create Urgency</strong> — Show why change is necessary NOW. Use data: downtime losses, MC/RAV vs. competitors, COUR. The "burning platform." Without urgency, change initiatives stall immediately.</li>
+      <li><strong>Build a Guiding Coalition</strong> — Form a team of influential leaders combining formal authority AND credibility. A coalition of only managers without craft respect will fail. One with only craft without management authority will be ignored.</li>
+      <li><strong>Form a Strategic Vision</strong> — Clear, compelling, simple. People need to see where they're going. "Reduce unplanned downtime 40% in 18 months" is a vision. "Be excellent" is not.</li>
+      <li><strong>Communicate the Vision</strong> — Relentlessly. Every meeting, every shift change, every KPI review. Leaders must model the behaviors they're asking for — walking the floor, asking about reliability metrics, attending P&S meetings.</li>
+      <li><strong>Remove Obstacles</strong> — Identify and eliminate organizational barriers: systems, structures, and people who actively block the change. A supervisor who constantly pulls planned work for reactive emergencies is an obstacle.</li>
+      <li><strong>Generate Short-Term Wins</strong> — Plan and create visible wins early. Quick wins (first 90 days) build credibility, silence skeptics, and maintain momentum. Pick a bad actor asset with a known solution and fix it visibly.</li>
+      <li><strong>Sustain Acceleration</strong> — Use early wins to drive deeper change. Don't declare victory prematurely. Organizations that declare victory after 6 months almost always regress.</li>
+      <li><strong>Anchor in Culture</strong> — Embed new behaviors in hiring criteria, training programs, performance reviews, and recognition systems. Culture is the LAST thing to change, not the first.</li>
+    </ol>
+  </div></div></div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">📋 Reliability Accountability Systems</div><div class="acc-chev">▾</div></div>
+  <div class="acc-body"><div class="prose">
+    <p>Accountability requires: <strong>visible KPIs</strong> (posted, reviewed weekly), <strong>individual ownership</strong> (each metric has a named owner), <strong>consequence</strong> (performance affects something — recognition, discussion, planning resources), and <strong>root cause response</strong> (when KPIs miss target, the response is to analyze why, not blame).</p>
+    <h4>Common Leadership Failures in Reliability</h4>
+    <ul>
+      <li>Measuring only production output — reliability metrics are absent or ignored</li>
+      <li>Verbal commitment to proactive maintenance while resource decisions consistently favor production over PM windows</li>
+      <li>Celebrating "heroes" who fix breakdowns overnight — creating perverse incentive for reactive culture</li>
+      <li>Launching reliability initiatives without addressing the supervisory behaviors that drive reactive work</li>
+    </ul>
+  </div></div></div>
+</div>
+
+<!-- ── P2: WORK MANAGEMENT ── -->
+<div class="sg-page" id="sgp-p2">
+  <div class="domain-header" data-num="P2" style="--dh-bg:rgba(74,127,165,0.05);--dh-accent:#6ba3c9;--dh-bdr:rgba(74,127,165,0.25);--dh-bg2:rgba(74,127,165,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Pillar 2 of 5 · Process</div>
+      <div class="dh-title">Work Management</div>
+      <div class="dh-desc">The operational engine of the maintenance organization. Work management converts reliability strategy into executed, documented field work. Palmer's 6 Principles are the most heavily tested work management content on the exam.</div>
+    </div>
+  </div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">📋 Palmer's 6 Planning Principles <span class="acc-sub">All 6, fully explained</span></div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open"><div class="prose">
+    <h4>Principle 1 — Planners Form a Separate Department</h4>
+    <p>Planners must be organizationally separate from craft supervision. A planner who also supervises technicians will always prioritize the urgent (today's work) over the important (next week's preparation). The planner works FOR the supervisors by preparing work packages — not alongside them in the field.</p>
+    <h4>Principle 2 — Focus on Future Work</h4>
+    <p>The planner's time horizon is work not yet started. Once a job enters execution, it belongs to the supervisor. Planners diverted to manage active jobs degrade planning quality for future work — the cost compounds every week.</p>
+    <h4>Principle 3 — Component-Level Files (Technical Library)</h4>
+    <p>For each significant asset, maintain a file containing: historical job plans, parts lists with vendor info, OEM manuals, special tools required, isolation/clearance procedures, and lessons learned from past repairs. This file transforms individual technician experience into organizational knowledge available to everyone.</p>
+    <h4>Principle 4 — Estimates Based on Craft Expertise</h4>
+    <p>Estimates should reflect what a skilled craftsperson can accomplish — not the average performer, not padded for worst-case. Accurate estimates enable accurate schedule loading and meaningful schedule compliance measurement.</p>
+    <h4>Principle 5 — Recognize the Craft (Feedback Loop)</h4>
+    <p>Craft technicians are the source of field knowledge that improves job plans. A feedback loop must exist: technicians complete job feedback noting actual time, parts deviations, problems, and improvements. The planner incorporates this into the job plan file — individual experience becomes organizational memory.</p>
+    <h4>Principle 6 — Measure Performance with Wrench Time</h4>
+    <p>Wrench time (hands-on productive time as % of available work time) is the fundamental measure of planning and scheduling effectiveness. Improving from the industry average of 25–35% to world-class 55–65% roughly doubles craft productivity without adding headcount.</p>
+    <div class="callout callout-steel"><i>💡</i><div><strong>What destroys wrench time:</strong> Traveling to get unstaged parts, waiting for equipment clearance, missing job information, hunting for tools, rework from wrong parts, waiting for permits. Planning and scheduling eliminate every one of these delays.</div></div>
+  </div></div></div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">📅 The Weekly Work Cycle & Schedule Loading</div><div class="acc-chev">▾</div></div>
+  <div class="acc-body"><div class="prose">
+    <table class="dtbl"><thead><tr><th>Timing</th><th>Activity</th><th>Owner</th></tr></thead><tbody>
+      <tr><td>Mon–Thu</td><td>Planner prepares next week's work packages; acquires parts; confirms equipment availability with operations</td><td>Planner</td></tr>
+      <tr><td>Thursday</td><td>Weekly coordination meeting: planner, scheduler, supervisor, operations representative review following week's plan</td><td>All stakeholders</td></tr>
+      <tr><td>Friday by noon</td><td>Schedule published; work packages distributed to supervisors</td><td>Scheduler/Planner</td></tr>
+      <tr><td>Daily</td><td>Supervisor assigns work, manages execution, updates system with completions and deviations</td><td>Supervisor</td></tr>
+      <tr><td>End of week</td><td>Schedule compliance calculated, posted, and debriefed</td><td>All</td></tr>
+    </tbody></table>
+    <h4>Why 100% Schedule Loading?</h4>
+    <p>Palmer's principle is to load the schedule to 100% of available craft hours. The intuitive approach — loading 85% to "leave room for emergencies" — is wrong. The scheduler's job is to plan the best use of available time. Emergency work is the supervisor's problem to manage in real time. Pre-compensating at 85% trains the organization to expect 85% execution and guarantees the remaining 15% is wasted.</p>
+  </div></div></div>
+</div>
+
+<!-- ── P3: PROACTIVE MAINTENANCE ── -->
+<div class="sg-page" id="sgp-p3">
+  <div class="domain-header" data-num="P3" style="--dh-bg:rgba(212,130,10,0.05);--dh-accent:#f5a623;--dh-bdr:rgba(212,130,10,0.25);--dh-bg2:rgba(212,130,10,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Pillar 3 of 5 · Technical</div>
+      <div class="dh-title">Proactive Maintenance</div>
+      <div class="dh-desc">Covers all forms of proactive maintenance — time-based PM, condition-based PdM, TPM, and operator-driven reliability. The goal: address potential failures before they become functional failures.</div>
+    </div>
+  </div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">⚙️ PM Task Types & Selection Logic <span class="acc-sub">Which task for which failure mode</span></div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open"><div class="prose">
+    <table class="dtbl"><thead><tr><th>Task Type</th><th>Use When</th><th>Examples</th></tr></thead><tbody>
+      <tr><td><strong>Time-based (scheduled)</strong></td><td>Known age-related deterioration; component reliability decreases predictably with time/use (Weibull β &gt; 3)</td><td>Oil changes, filter replacements, belt changes, seal replacements</td></tr>
+      <tr><td><strong>On-condition (CBM/PdM)</strong></td><td>Detectable P-F interval exists; condition monitoring can find the failure before it occurs</td><td>Vibration routes, thermography surveys, oil sampling, ultrasound routes</td></tr>
+      <tr><td><strong>Failure-finding</strong></td><td>Hidden function — failure is not self-announcing and only matters when the protected function is demanded</td><td>Testing relief valve setpoints, exercising emergency shutdown valves, testing standby pump auto-starts</td></tr>
+      <tr><td><strong>Run-to-failure (RTF)</strong></td><td>Failure consequence is acceptable AND no cost-effective proactive task exists</td><td>Light bulbs, fuses, low-value redundant non-critical components</td></tr>
+    </tbody></table>
+    <h4>The P-F Interval — Governing Concept for All PdM</h4>
+    <p>The P-F interval is the time between when a potential failure (P) can first be detected and when functional failure (F) occurs. It governs how PdM programs are designed:</p>
+    <ul>
+      <li>Monitoring frequency must be less than half the P-F interval</li>
+      <li>Response time after detection must also fit within the remaining P-F interval</li>
+      <li>Technologies with longer P-F intervals allow less frequent monitoring</li>
+    </ul>
+  </div></div></div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">🏭 TPM — All 8 Pillars</div><div class="acc-chev">▾</div></div>
+  <div class="acc-body"><div class="prose">
+    <ol>
+      <li><strong>Autonomous Maintenance</strong> — Operators perform basic care (clean, inspect, lubricate, tighten). 7-step progression from initial clean/inspect to full autonomous management.</li>
+      <li><strong>Focused Improvement (Kobetsu Kaizen)</strong> — Cross-functional teams eliminate losses using structured problem-solving. Targets the 16 major losses.</li>
+      <li><strong>Planned Maintenance</strong> — Maintenance department's shift from reactive to planned, condition-based. Supports Autonomous Maintenance by handling complex tasks.</li>
+      <li><strong>Quality Maintenance</strong> — Zero defects through perfect equipment condition. Identifies equipment conditions that cause quality defects; sets and maintains zero-defect conditions.</li>
+      <li><strong>Early Equipment Management</strong> — Apply reliability knowledge during design and commissioning. Most cost-effective time to address reliability is before equipment is purchased.</li>
+      <li><strong>Training & Education</strong> — Multi-skilling for operators; maintenance skills upgrade; leadership development.</li>
+      <li><strong>Safety, Health & Environment</strong> — Zero accidents, zero health issues, zero environmental incidents. Integrated into every TPM activity.</li>
+      <li><strong>Office TPM</strong> — Applying TPM principles to administrative functions: eliminate waste in ordering, scheduling, and information flow.</li>
+    </ol>
+    <h4>OEE & The 6 Big Losses</h4>
+    <table class="dtbl"><thead><tr><th>OEE Component</th><th>Loss</th><th>Definition</th></tr></thead><tbody>
+      <tr><td rowspan="2"><strong>Availability</strong></td><td>Breakdowns</td><td>Unplanned equipment failures causing production stoppage</td></tr>
+      <tr><td>Setup & Adjustment</td><td>Time lost during changeovers, startups, adjustments</td></tr>
+      <tr><td rowspan="2"><strong>Performance</strong></td><td>Minor Stoppages / Idling</td><td>Brief stops not recorded as breakdowns</td></tr>
+      <tr><td>Reduced Speed</td><td>Equipment running below designed capacity</td></tr>
+      <tr><td rowspan="2"><strong>Quality</strong></td><td>Process Defects / Scrap</td><td>Products not meeting specification during steady-state</td></tr>
+      <tr><td>Startup / Yield Losses</td><td>Defects produced during startup before stable conditions</td></tr>
+    </tbody></table>
+  </div></div></div>
+</div>
+
+<!-- ── P4 SKILLS ── -->
+<div class="sg-page" id="sgp-p4">
+  <div class="domain-header" data-num="P4" style="--dh-bg:rgba(124,58,237,0.05);--dh-accent:#a78bfa;--dh-bdr:rgba(124,58,237,0.25);--dh-bg2:rgba(124,58,237,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Pillar 4 of 5 · People</div>
+      <div class="dh-title">Skills & Training</div>
+      <div class="dh-desc">Technical programs fail when the workforce lacks the skills to execute correctly. Covers competency frameworks, PdM certification levels, training delivery, and knowledge management.</div>
+    </div>
+  </div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">🎓 Competency-Based Training & PdM Certification Levels</div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open"><div class="prose">
+    <p>Competency-based training focuses on demonstrated ability — not attendance. The test is not "did they take the class?" but "can they perform the task correctly in the field?"</p>
+    <h4>PdM Technology Certification Levels</h4>
+    <table class="dtbl"><thead><tr><th>Level</th><th>Capabilities</th></tr></thead><tbody>
+      <tr><td><strong>Category I</strong></td><td>Data collection, route-based monitoring, basic anomaly identification, escalation to higher level</td></tr>
+      <tr><td><strong>Category II</strong></td><td>Analysis and diagnosis, report generation, maintenance task recommendations</td></tr>
+      <tr><td><strong>Category III</strong></td><td>Advanced analysis, program design, calibration, training of lower levels</td></tr>
+      <tr><td><strong>Category IV</strong></td><td>Expert-level, method development, technical authority, standards development</td></tr>
+    </tbody></table>
+    <h4>Knowledge Management</h4>
+    <p>When experienced technicians retire, they take institutional knowledge with them unless it's systematically captured. Strategies: document job plans with lessons learned (Palmer Principle 5), require CMMS failure code notes, formal mentoring programs, accessible technical libraries with OEM manuals and RCA reports.</p>
+  </div></div></div>
+</div>
+
+<!-- ── P5 RELIABILITY ENGINEERING ── -->
+<div class="sg-page" id="sgp-p5">
+  <div class="domain-header" data-num="P5" style="--dh-bg:rgba(61,122,79,0.05);--dh-accent:#5aaa70;--dh-bdr:rgba(61,122,79,0.28);--dh-bg2:rgba(61,122,79,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Pillar 5 of 5 · Engineering</div>
+      <div class="dh-title">Reliability Engineering</div>
+      <div class="dh-desc">The analytical engine of the reliability program. Converts failure data into optimized maintenance strategies and failure prevention. Covers RCM, FMEA, FRACAS, and failure statistics.</div>
+    </div>
+  </div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">📐 RCM — The 7 Questions (SAE JA1011)</div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open"><div class="prose">
+    <ol>
+      <li><strong>Functions & Performance Standards</strong> — What is the asset supposed to do, and how well? A pump circulating 300 GPM when 500 GPM is required is in functional failure even if it's running.</li>
+      <li><strong>Functional Failures</strong> — In what ways can it fail to fulfill its functions? Not failure modes yet — the inability to meet the performance standard.</li>
+      <li><strong>Failure Modes</strong> — What causes each functional failure? The specific physical event. "Impeller erosion reduces flow below 500 GPM" is a failure mode.</li>
+      <li><strong>Failure Effects</strong> — What happens when each failure mode occurs? Factual description only — evidence the failure is occurring, physical damage, safety/environmental/production impact.</li>
+      <li><strong>Failure Consequences</strong> — Why does each failure matter? RCM hierarchy: Safety/Environmental → Hidden → Operational → Non-operational. Consequence classification drives task selection.</li>
+      <li><strong>Proactive Tasks</strong> — What should be done to predict or prevent each failure? Task selection hierarchy: On-condition → Scheduled restoration → Scheduled discard → Failure-finding. Task must be technically feasible AND worth doing.</li>
+      <li><strong>Default Actions</strong> — What if no suitable proactive task exists? Options: RTF (if consequences acceptable), redesign, accept and document the risk.</li>
+    </ol>
+    <div class="callout callout-amber"><i>✎</i><div><strong>RCM vs. FMEA distinction:</strong> FMEA is a bottom-up analysis identifying failure modes and effects. RCM is a top-down decision process that uses FMEA as input to select maintenance strategies. RCM answers "what should we do?" — FMEA answers "what can fail and what happens?"</div></div>
+  </div></div></div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">🔄 FRACAS — Closed-Loop Failure System</div><div class="acc-chev">▾</div></div>
+  <div class="acc-body"><div class="prose">
+    <p><strong>Failure Reporting, Analysis & Corrective Action System.</strong> Without FRACAS, failures are repaired but not learned from. The cycle:</p>
+    <ol>
+      <li><strong>Report</strong> — Every failure documented in CMMS with failure code, downtime, and technician observations</li>
+      <li><strong>Analyze</strong> — Bad actors escalated for formal RCA; all failures coded for trending</li>
+      <li><strong>Corrective Action</strong> — Root causes addressed with specific tracked actions (not just repairs)</li>
+      <li><strong>Verify</strong> — Corrective actions confirmed effective; recurrence rate tracked</li>
+      <li><strong>Feed Back</strong> — Lessons update job plans, PM program, spare parts strategy, and engineering standards</li>
+    </ol>
+  </div></div></div>
+</div>
+
+<!-- ── D1 ── -->
+<div class="sg-page" id="sgp-d1">
+  <div class="domain-header" data-num="D1" style="--dh-bg:rgba(74,127,165,0.05);--dh-accent:#6ba3c9;--dh-bdr:rgba(74,127,165,0.25);--dh-bg2:rgba(74,127,165,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Domain 1 · 15% of Exam · ~16–17 Questions</div>
+      <div class="dh-title">Business & Management</div>
+      <div class="dh-desc">Financial justification, KPIs, benchmarking, ISO 55000, and strategic alignment of the maintenance program to organizational objectives.</div>
+      <div class="dh-pills"><span class="dh-pill">OEE · MTBF · MTTR</span><span class="dh-pill">MC/RAV · COUR</span><span class="dh-pill">NPV · LCC · ROI</span><span class="dh-pill">ISO 55000</span></div>
+    </div>
+  </div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">💰 Financial Justification Tools</div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open"><div class="prose">
+    <div class="fbox"><div class="fbox-lbl">OEE</div><div class="fbox-eq">OEE = Availability × Performance × Quality</div><div class="fbox-note">World-class ≥ 85% · Typical industry average 50–65%</div></div>
+    <div class="fbox"><div class="fbox-lbl">Availability (Asset)</div><div class="fbox-eq">A = MTBF / (MTBF + MTTR)</div></div>
+    <div class="fbox"><div class="fbox-lbl">MC/RAV</div><div class="fbox-eq">MC/RAV (%) = (Annual Maint Cost / Replacement Asset Value) × 100</div><div class="fbox-note">World-class 2–3% · Reactive 8–15%+</div></div>
+    <div class="fbox"><div class="fbox-lbl">Life Cycle Cost</div><div class="fbox-eq">LCC = Acquisition + Installation + Training + Operating + Maint + Downtime + Disposal</div></div>
+    <h4>Cost of Unreliability (COUR) — 6 Categories</h4>
+    <table class="dtbl"><thead><tr><th>Category</th><th>Components</th></tr></thead><tbody>
+      <tr><td><strong>Production losses</strong></td><td>Lost throughput × margin per unit; missed customer orders, late fees</td></tr>
+      <tr><td><strong>Emergency maint premium</strong></td><td>Overtime labor, expedited freight, emergency contractor rates (3–10× planned cost)</td></tr>
+      <tr><td><strong>Quality defects</strong></td><td>Scrap, rework, customer returns — equipment in degraded condition causes quality problems before outright failure</td></tr>
+      <tr><td><strong>Safety incidents</strong></td><td>Medical costs, investigation, regulatory fines, legal liability</td></tr>
+      <tr><td><strong>Environmental incidents</strong></td><td>Remediation, fines, permit violations</td></tr>
+      <tr><td><strong>Customer/market impact</strong></td><td>Lost contracts, relationship damage — often the largest long-term cost</td></tr>
+    </tbody></table>
+  </div></div></div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">📈 KPIs — Leading vs. Lagging</div><div class="acc-chev">▾</div></div>
+  <div class="acc-body"><div class="prose">
+    <div class="callout callout-steel"><i>💡</i><div><strong>Leading</strong> indicators predict future performance (PM compliance predicts future MTBF). <strong>Lagging</strong> indicators report past performance (MTBF reports historical reliability). A balanced scorecard uses both — lagging to confirm outcomes, leading to intervene before outcomes deteriorate.</div></div>
+    <table class="dtbl"><thead><tr><th>KPI</th><th>Formula</th><th>Target</th><th>Type</th></tr></thead><tbody>
+      <tr><td>PM Compliance</td><td>(PMs done on time / PMs scheduled) × 100</td><td>≥90%</td><td>Leading</td></tr>
+      <tr><td>Schedule Compliance</td><td>(Sched hrs completed / Sched hrs) × 100</td><td>≥90%</td><td>Leading</td></tr>
+      <tr><td>Wrench Time</td><td>Hands-on time / Total available time</td><td>55–65%</td><td>Leading</td></tr>
+      <tr><td>Planned Work %</td><td>Planned hrs / Total work hrs</td><td>&gt;85%</td><td>Leading</td></tr>
+      <tr><td>Emergency Work %</td><td>Emergency hrs / Total hrs</td><td>&lt;10%</td><td>Lagging</td></tr>
+      <tr><td>MTBF</td><td>Total uptime / # failures</td><td>Trending up</td><td>Lagging</td></tr>
+      <tr><td>MTTR</td><td>Total repair time / # repairs</td><td>Trending down</td><td>Lagging</td></tr>
+      <tr><td>MC/RAV</td><td>(Annual maint cost / RAV) × 100</td><td>2–3%</td><td>Lagging</td></tr>
+    </tbody></table>
+  </div></div></div>
+</div>
+
+<!-- ── D2 ── -->
+<div class="sg-page" id="sgp-d2">
+  <div class="domain-header" data-num="D2" style="--dh-bg:rgba(61,122,79,0.05);--dh-accent:#5aaa70;--dh-bdr:rgba(61,122,79,0.28);--dh-bg2:rgba(61,122,79,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Domain 2 · 15% of Exam · ~16–17 Questions</div>
+      <div class="dh-title">Manufacturing Process Reliability</div>
+      <div class="dh-desc">System reliability, failure theory, reliability statistics, FMEA, RCM, fault trees, and the 6 failure patterns from Nowlan & Heap.</div>
+    </div>
+  </div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">📉 The 6 Failure Patterns (Nowlan & Heap 1978)</div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open"><div class="prose">
+    <div class="callout callout-rust"><i>⚠️</i><div><strong>Critical insight:</strong> 68% of industrial equipment follows Pattern F — infant mortality dominant. This means most failures are caused by installation errors and quality defects, NOT age-related wear. Time-based PM is therefore ineffective for the majority of equipment.</div></div>
+    <table class="dtbl"><thead><tr><th>Pattern</th><th>Failure Rate</th><th>% of Equipment</th><th>Best Strategy</th></tr></thead><tbody>
+      <tr><td><strong>A — Bathtub</strong></td><td>High → constant → increasing</td><td>4%</td><td>CBM for useful life; time-based for wear-out</td></tr>
+      <tr><td><strong>B — Wear-out</strong></td><td>Steadily increasing</td><td>2%</td><td>Time-based scheduled replacement</td></tr>
+      <tr><td><strong>C — Gradual degradation</strong></td><td>Slowly increasing</td><td>5%</td><td>CBM or wide-interval time-based</td></tr>
+      <tr><td><strong>D — Late increase</strong></td><td>Low then increasing</td><td>7%</td><td>Condition-based monitoring</td></tr>
+      <tr><td><strong>E — Random</strong></td><td>Constant throughout life</td><td>14%</td><td>CBM; RTF if consequence allows</td></tr>
+      <tr><td><strong>F — Infant mortality</strong></td><td>High decreasing → low constant</td><td>68%</td><td>Improve installation quality; CBM</td></tr>
+    </tbody></table>
+  </div></div></div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">🔗 Reliability Mathematics</div><div class="acc-chev">▾</div></div>
+  <div class="acc-body"><div class="prose">
+    <div class="fbox"><div class="fbox-lbl">Failure Rate</div><div class="fbox-eq">λ = Number of Failures / Total Operating Time = 1 / MTBF</div></div>
+    <div class="fbox"><div class="fbox-lbl">Reliability Function (Exponential / Constant Failure Rate)</div><div class="fbox-eq">R(t) = e^(−λt) = e^(−t/MTBF)</div><div class="fbox-note">⚠️ At t=MTBF: R = e^(−1) = 0.368 (36.8% survive — NOT 50%)</div></div>
+    <div class="fbox"><div class="fbox-lbl">Series System</div><div class="fbox-eq">R_s = R₁ × R₂ × R₃ × … × Rₙ</div><div class="fbox-note">Any component failure = system failure. Always less than lowest individual reliability.</div></div>
+    <div class="fbox"><div class="fbox-lbl">Parallel System (2 components)</div><div class="fbox-eq">R_p = 1 − (1 − R₁)(1 − R₂)</div><div class="fbox-note">All components must fail for system failure. Always greater than highest individual reliability.</div></div>
+    <div class="fbox"><div class="fbox-lbl">FMEA Risk Priority Number</div><div class="fbox-eq">RPN = Severity × Occurrence × Detectability (each 1–10, max = 1,000)</div><div class="fbox-note">Always address Severity = 9–10 regardless of RPN. High severity + low probability = low RPN but catastrophic if it occurs.</div></div>
+  </div></div></div>
+</div>
+
+<!-- ── D3a VIBRATION ── -->
+<div class="sg-page" id="sgp-d3-vibration">
+  <div class="domain-header" data-num="D3" style="--dh-bg:rgba(212,130,10,0.05);--dh-accent:#f5a623;--dh-bdr:rgba(212,130,10,0.25);--dh-bg2:rgba(212,130,10,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Domain 3 · 45% of Exam · Part A</div>
+      <div class="dh-title">Vibration Analysis</div>
+      <div class="dh-desc">The most tested PdM technology on the exam. Know fault frequencies, measurement parameter selection, bearing fault signatures, ISO severity zones, and the distinction between spectrum analysis and high-frequency techniques.</div>
+    </div>
+  </div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">📳 FFT Fault Frequency Reference</div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open"><div class="prose">
+    <table class="dtbl"><thead><tr><th>Frequency</th><th>Primary Cause</th><th>Direction</th></tr></thead><tbody>
+      <tr><td><strong>1× RPM</strong></td><td>Rotor unbalance (dominant radial); bent shaft; also misalignment</td><td>Radial (H & V)</td></tr>
+      <tr><td><strong>2× RPM</strong></td><td>Angular misalignment (especially axial); mechanical looseness; cracked shaft</td><td>Radial + Axial</td></tr>
+      <tr><td><strong>Sub-harmonic (0.5×, 0.33×)</strong></td><td>Fluid instability — oil whirl/whip; internal rub</td><td>Radial</td></tr>
+      <tr><td><strong>BPFO</strong></td><td>Outer race bearing defect; non-synchronous</td><td>Radial (load zone)</td></tr>
+      <tr><td><strong>BPFI</strong></td><td>Inner race defect; ±1× sidebands (inner race rotates)</td><td>Radial</td></tr>
+      <tr><td><strong>BSF</strong></td><td>Ball/roller defect; sub-harmonic</td><td>Radial</td></tr>
+      <tr><td><strong>FTF</strong></td><td>Cage defect; very low freq (0.35–0.48 × RPM)</td><td>Radial</td></tr>
+      <tr><td><strong>Gear Mesh Freq (GMF)</strong></td><td># teeth × RPM; sidebands = wear/eccentricity</td><td>Radial</td></tr>
+      <tr><td><strong>2× Line Freq (120 Hz)</strong></td><td>Electrical fault in motor (USA); stator eccentricity</td><td>Radial</td></tr>
+    </tbody></table>
+    <h4>Measurement Parameter Selection</h4>
+    <ul>
+      <li><strong>Displacement</strong> (mils p-p): Low frequency (&lt;10 Hz) — measures how far the shaft moves</li>
+      <li><strong>Velocity</strong> (in/sec or mm/sec RMS): Mid frequency (10–1000 Hz) — ISO 10816 uses velocity for machine severity</li>
+      <li><strong>Acceleration</strong> (g): High frequency (&gt;1000 Hz) — bearing damage detection via Spike Energy, kurtosis</li>
+    </ul>
+    <div class="callout callout-amber"><i>✎</i><div><strong>ISO 10816 zones:</strong> A (new acceptable) → B (long-term acceptable) → C (plan maintenance) → D (immediate action). Boundaries depend on machine class. The exam tests understanding of the zone system, not specific numbers.</div></div>
+  </div></div></div>
+</div>
+
+<!-- ── D3b THERMO ── -->
+<div class="sg-page" id="sgp-d3-thermo">
+  <div class="domain-header" data-num="D3" style="--dh-bg:rgba(212,130,10,0.05);--dh-accent:#f5a623;--dh-bdr:rgba(212,130,10,0.25);--dh-bg2:rgba(212,130,10,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Domain 3 · 45% of Exam · Part B</div>
+      <div class="dh-title">Infrared Thermography</div>
+      <div class="dh-desc">Thermography measures surface temperature via infrared radiation. Critical concept: emissivity. Applications span electrical, mechanical, process, and refractory systems.</div>
+    </div>
+  </div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">🌡️ Physics, Emissivity & Applications</div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open"><div class="prose">
+    <p><strong>Emissivity</strong> is the ratio of radiation emitted by a surface vs. a perfect blackbody (ε = 1.0). Shiny metals have very low emissivity (0.03–0.15) — they primarily reflect surrounding temperatures rather than emitting their own. This causes false readings unless corrected. Apply matte paint or tape, or use emissivity-corrected settings.</p>
+    <h4>Applications by Category</h4>
+    <table class="dtbl"><thead><tr><th>Category</th><th>What Thermography Finds</th></tr></thead><tbody>
+      <tr><td><strong>Electrical</strong></td><td>Loose connections (resistance heating: P = I²R), overloaded circuits, phase imbalance, failing switches/breakers, transformer problems</td></tr>
+      <tr><td><strong>Mechanical</strong></td><td>Bearing overheating, motor winding hotspots through vent slots, misaligned couplings, seized conveyor rollers</td></tr>
+      <tr><td><strong>Process / Refractory</strong></td><td>Furnace refractory degradation (hot spots on shell), heat exchanger fouling (cold spots), failed-open steam traps (hotter than cycling traps)</td></tr>
+      <tr><td><strong>Building / Insulation</strong></td><td>Moisture infiltration, insulation gaps, roof anomalies</td></tr>
+    </tbody></table>
+  </div></div></div>
+</div>
+
+<!-- ── D3c OIL ── -->
+<div class="sg-page" id="sgp-d3-oil">
+  <div class="domain-header" data-num="D3" style="--dh-bg:rgba(212,130,10,0.05);--dh-accent:#f5a623;--dh-bdr:rgba(212,130,10,0.25);--dh-bg2:rgba(212,130,10,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Domain 3 · 45% of Exam · Part C</div>
+      <div class="dh-title">Oil Analysis</div>
+      <div class="dh-desc">Three test categories: wear debris analysis, oil condition testing, and contamination analysis. Understand what each detects and when each is used.</div>
+    </div>
+  </div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">🛢️ Three Test Categories — Complete Coverage</div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open"><div class="prose">
+    <h4>1. Wear Debris Analysis</h4>
+    <ul>
+      <li><strong>ICP Spectrometry</strong>: Measures dissolved metals ≤8–10 µm. Key metals: Fe (steel wear), Cu (bearings/bushings), Pb (babbitt), Cr (ring/liner), Al (piston), Si (dirt contamination)</li>
+      <li><strong>Particle Count (ISO 4406)</strong>: Counts particles by size; measures total contamination load</li>
+      <li><strong>Analytical Ferrography</strong>: Most detailed method. Magnetically deposits particles on slide for microscopic examination — identifies particle type, shape, size, and failure mode</li>
+    </ul>
+    <h4>2. Oil Condition Testing</h4>
+    <ul>
+      <li><strong>Viscosity</strong>: Most critical property. ±15% of new oil = warning; ±25% = change required</li>
+      <li><strong>TAN (Total Acid Number)</strong>: Rising TAN = oil oxidation/degradation</li>
+      <li><strong>TBN (Total Base Number)</strong>: Alkaline reserve in engine oils. When TBN drops to 50% of new value, change required</li>
+      <li><strong>RPVOT</strong>: Measures remaining antioxidant life in turbine/hydraulic oils</li>
+    </ul>
+    <h4>3. Contamination Analysis</h4>
+    <ul>
+      <li><strong>Water (Karl Fischer)</strong>: Even 100 ppm can reduce bearing life 50%. Alert: &gt;500 ppm for most hydraulics</li>
+      <li><strong>Fuel dilution (FTIR)</strong>: Thins viscosity in engine oils</li>
+      <li><strong>Glycol/coolant</strong>: Causes sludge and severe oxidation; detected by glycol test or elevated potassium</li>
+      <li><strong>High Si without elevated Al</strong>: Soil/dirt ingestion (breather failure, seal failure)</li>
+    </ul>
+  </div></div></div>
+</div>
+
+<!-- ── D3d LUBE ── -->
+<div class="sg-page" id="sgp-d3-lube">
+  <div class="domain-header" data-num="D3" style="--dh-bg:rgba(212,130,10,0.05);--dh-accent:#f5a623;--dh-bdr:rgba(212,130,10,0.25);--dh-bg2:rgba(212,130,10,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Domain 3 · 45% of Exam · Part D</div>
+      <div class="dh-title">Lubrication Management</div>
+      <div class="dh-desc">40–50% of bearing failures trace to lubrication problems. Viscosity, NLGI grades, ISO 4406 cleanliness codes, contamination control, and filtration beta ratios.</div>
+    </div>
+  </div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">🔬 Viscosity, NLGI Grades & ISO 4406</div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open"><div class="prose">
+    <p><strong>Viscosity</strong> is the single most important lubricant property. The lubricant must maintain a hydrodynamic film separating metal surfaces under all operating conditions. Too low → film collapse, metal contact. Too high → excessive heat from shear and churning.</p>
+    <h4>ISO VG Grades</h4>
+    <p>The ISO VG number = nominal kinematic viscosity in cSt at 40°C, ±10%. Common grades: 32, 46, 68, 100, 150, 220, 320, 460, 680. Each grade is approximately double the previous in viscosity.</p>
+    <h4>NLGI Grease Grades</h4>
+    <table class="dtbl"><thead><tr><th>NLGI</th><th>Consistency</th><th>Applications</th></tr></thead><tbody>
+      <tr><td>000–00</td><td>Semi-fluid</td><td>Enclosed gearboxes, centralized systems</td></tr>
+      <tr><td>0–1</td><td>Very soft</td><td>Centralized systems, cold climate</td></tr>
+      <tr><td><strong>2</strong></td><td>Medium (peanut butter)</td><td><strong>~80% of bearing applications — most common</strong></td></tr>
+      <tr><td>3</td><td>Firm</td><td>High-speed bearings, vertical orientation</td></tr>
+      <tr><td>4–6</td><td>Hard to block</td><td>Open gears, wire ropes, extreme pressure</td></tr>
+    </tbody></table>
+    <h4>ISO 4406 Cleanliness Code</h4>
+    <p>Format: X/Y/Z — particle count range codes at ≥4µm, ≥6µm, ≥14µm per mL. Each number increment doubles the particle count. Typical targets: servo hydraulics 15/13/10; gearboxes 17/15/12.</p>
+    <p><strong>Filtration Beta Ratio (βₓ)</strong>: Upstream count ÷ downstream count at particle size x. β₁₀ = 200 means 99.5% efficiency at 10µm.</p>
+  </div></div></div>
+</div>
+
+<!-- ── D3e ALIGNMENT ── -->
+<div class="sg-page" id="sgp-d3-align">
+  <div class="domain-header" data-num="D3" style="--dh-bg:rgba(212,130,10,0.05);--dh-accent:#f5a623;--dh-bdr:rgba(212,130,10,0.25);--dh-bg2:rgba(212,130,10,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Domain 3 · 45% of Exam · Part E</div>
+      <div class="dh-title">Precision Alignment & Balancing</div>
+    </div>
+  </div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">🎯 Shaft Alignment — Types, Methods, Soft Foot</div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open"><div class="prose">
+    <p>Misalignment is the leading cause of premature bearing and seal failure in rotating equipment.</p>
+    <h4>Types</h4>
+    <ul>
+      <li><strong>Parallel (offset)</strong>: Shaft centerlines parallel but offset. Dominant 2× RPM radial vibration.</li>
+      <li><strong>Angular</strong>: Centerlines meet at an angle. Strong 1× and 2× RPM axial vibration.</li>
+      <li><strong>Combined</strong>: Both — most real-world cases.</li>
+    </ul>
+    <h4>Soft Foot — Correct BEFORE Alignment Begins</h4>
+    <ul>
+      <li><strong>Parallel</strong>: One foot shorter → solid shims</li>
+      <li><strong>Angular</strong>: Canted foot → tapered shims</li>
+      <li><strong>Induced</strong>: Pipe/conduit strain on frame → fix the piping, not the shimming</li>
+      <li><strong>Squishy</strong>: Corrosion or debris under foot → clean and reshim</li>
+    </ul>
+    <h4>Alignment Tolerances</h4>
+    <table class="dtbl"><thead><tr><th>Speed (RPM)</th><th>Offset (mils)</th><th>Angularity (mils/inch)</th></tr></thead><tbody>
+      <tr><td>&lt;1,800</td><td>±3.0</td><td>±0.7</td></tr>
+      <tr><td>1,800–3,600</td><td>±2.0</td><td>±0.5</td></tr>
+      <tr><td>&gt;3,600</td><td>±1.0</td><td>±0.3</td></tr>
+    </tbody></table>
+    <h4>ISO 1940 Balance Grades</h4>
+    <table class="dtbl"><thead><tr><th>G Grade</th><th>Application</th></tr></thead><tbody>
+      <tr><td>G 0.4</td><td>Gyroscopes, precision spindles</td></tr>
+      <tr><td>G 2.5</td><td>Gas/steam turbines, centrifuges</td></tr>
+      <tr><td><strong>G 6.3</strong></td><td><strong>Industrial fans, pumps, motors — most common</strong></td></tr>
+      <tr><td>G 16</td><td>Agricultural machinery, large crankshafts</td></tr>
+      <tr><td>G 40</td><td>Car/truck wheels</td></tr>
+    </tbody></table>
+  </div></div></div>
+</div>
+
+<!-- ── D3f RCA ── -->
+<div class="sg-page" id="sgp-d3-rca">
+  <div class="domain-header" data-num="D3" style="--dh-bg:rgba(212,130,10,0.05);--dh-accent:#f5a623;--dh-bdr:rgba(212,130,10,0.25);--dh-bg2:rgba(212,130,10,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Domain 3 · 45% of Exam · Part F</div>
+      <div class="dh-title">Root Cause Analysis</div>
+    </div>
+  </div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">🔍 Three Root Cause Levels</div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open"><div class="prose">
+    <table class="dtbl"><thead><tr><th>Level</th><th>Definition</th><th>Example</th></tr></thead><tbody>
+      <tr><td><strong>Physical</strong></td><td>The material or mechanical event that caused the failure</td><td>Rolling element bearing failed from subsurface fatigue spalling</td></tr>
+      <tr><td><strong>Human</strong></td><td>The human decision or omission that enabled the physical cause</td><td>Bearing over-greased — excess pressure forced grease past seals</td></tr>
+      <tr><td><strong>Latent/Systemic</strong></td><td>The organizational weakness that enabled the human cause</td><td>No written greasing procedure exists; no quantity/interval specification; no competency verification for lubrication tasks</td></tr>
+    </tbody></table>
+    <h4>RCA Methods — Selection Guide</h4>
+    <ul>
+      <li><strong>5-Why</strong>: Simple linear failure chains; quick team facilitation. Limitation: can reach different root causes depending on which "why" path is followed.</li>
+      <li><strong>Fishbone/Ishikawa</strong>: Brainstorming with the 6Ms (Man, Machine, Method, Material, Measurement, Mother Nature). Good for ensuring no cause category is overlooked.</li>
+      <li><strong>Fault Tree Analysis (FTA)</strong>: Top-down, AND/OR gate logic. Best for complex multi-cause failures, safety events, and when probability quantification is needed.</li>
+      <li><strong>Apollo RCA</strong>: Cause-and-effect charting with evidence requirements at each causal link. Defensible and auditable.</li>
+      <li><strong>TapRooT®</strong>: Structured investigation with specific root cause categories. Most rigorous — used for serious safety incidents.</li>
+    </ul>
+  </div></div></div>
+</div>
+
+<!-- ── D4 ── -->
+<div class="sg-page" id="sgp-d4">
+  <div class="domain-header" data-num="D4" style="--dh-bg:rgba(124,58,237,0.05);--dh-accent:#a78bfa;--dh-bdr:rgba(124,58,237,0.25);--dh-bg2:rgba(124,58,237,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Domain 4 · 10% of Exam · ~11 Questions</div>
+      <div class="dh-title">Organization & Leadership</div>
+      <div class="dh-desc">Culture, TPM, team development, change management. Questions are typically situational — choose the approach that builds commitment, not compliance.</div>
+    </div>
+  </div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">👥 TPM, OEE & Organizational Design</div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open"><div class="prose">
+    <p>See Pillar 3 for full TPM 8-pillar detail. Domain 4 exam focus areas:</p>
+    <ul>
+      <li>TPM requires <strong>operator ownership</strong> — not just maintenance executing more PMs. The transfer of basic care is essential.</li>
+      <li>Autonomous Maintenance 7-step progression must be understood sequentially</li>
+      <li>OEE is the scorecard for TPM effectiveness: ≥85% world-class</li>
+      <li>The Maintenance-Operations interface is the most critical organizational relationship for reliability</li>
+      <li>Kotter's 8 steps (see Pillar 1) are the primary change management framework tested</li>
+    </ul>
+  </div></div></div>
+</div>
+
+<!-- ── D5 ── -->
+<div class="sg-page" id="sgp-d5">
+  <div class="domain-header" data-num="D5" style="--dh-bg:rgba(61,122,79,0.05);--dh-accent:#5aaa70;--dh-bdr:rgba(61,122,79,0.28);--dh-bg2:rgba(61,122,79,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Domain 5 · 15% of Exam · ~16–17 Questions</div>
+      <div class="dh-title">Work Management</div>
+      <div class="dh-desc">Planning, scheduling, CMMS, MRO/stores, contractor management, shutdown planning. See Pillar 2 for full Palmer's Principles coverage.</div>
+    </div>
+  </div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">📦 MRO Storeroom — Key Formulas & KPIs</div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open"><div class="prose">
+    <div class="fbox"><div class="fbox-lbl">Reorder Point</div><div class="fbox-eq">ROP = (Average Daily Usage × Lead Time in Days) + Safety Stock</div></div>
+    <div class="fbox"><div class="fbox-lbl">Economic Order Quantity (EOQ)</div><div class="fbox-eq">EOQ = √(2DS / H)</div><div class="fbox-note">D = annual demand · S = ordering cost per order · H = annual holding cost per unit</div></div>
+    <div class="fbox"><div class="fbox-lbl">Inventory Turns</div><div class="fbox-eq">Turns = Annual Issues ($ value) / Average Inventory Value ($)</div></div>
+    <h4>World-Class Storeroom KPIs</h4>
+    <ul>
+      <li><strong>Fill rate</strong>: ≥95% requests filled from stock on first request</li>
+      <li><strong>Inventory accuracy</strong>: ≥98% physical count matches system at line-item level</li>
+      <li><strong>Stockout rate</strong>: &lt;5% of requests result in emergency procurement</li>
+      <li><strong>ABC classification</strong>: A items (top 10–20% of SKUs, 70–80% of value) get tight controls; C items use simple min/max</li>
+    </ul>
+  </div></div></div>
+</div>
+
+<!-- ── WEIBULL ── -->
+<div class="sg-page" id="sgp-weibull">
+  <div class="domain-header" data-num="W" style="--dh-bg:rgba(124,58,237,0.05);--dh-accent:#a78bfa;--dh-bdr:rgba(124,58,237,0.25);--dh-bg2:rgba(124,58,237,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Advanced Topic · Domains 2 & 5 · Pillar 5</div>
+      <div class="dh-title">Weibull Analysis</div>
+      <div class="dh-desc">The primary statistical tool for analyzing failure time data. The exam tests understanding of β (shape parameter) and η (characteristic life) — and what each tells you about maintenance strategy.</div>
+    </div>
+  </div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">📊 β Shape Parameter — Maintenance Strategy Implications</div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open"><div class="prose">
+    <div class="fbox"><div class="fbox-lbl">Weibull Reliability Function</div><div class="fbox-eq">R(t) = e^[−(t/η)^β]</div><div class="fbox-note">β = shape parameter · η = characteristic life (time at which 63.2% have failed) · t = time</div></div>
+    <table class="dtbl"><thead><tr><th>β Value</th><th>Failure Pattern</th><th>Failure Rate</th><th>Maintenance Strategy</th></tr></thead><tbody>
+      <tr><td><strong>β &lt; 1</strong></td><td>Infant mortality</td><td>Decreasing</td><td>Improve installation quality & commissioning. Time-based PM makes it WORSE.</td></tr>
+      <tr><td><strong>β = 1</strong></td><td>Random (exponential)</td><td>Constant</td><td>CBM or RTF. Time-based replacement does NOT reduce failure frequency.</td></tr>
+      <tr><td><strong>1 &lt; β &lt; 3</strong></td><td>Early wear-out onset</td><td>Slowly increasing</td><td>CBM preferred; time-based at wide interval acceptable</td></tr>
+      <tr><td><strong>β ≈ 3.44</strong></td><td>Normal distribution approx</td><td>Symmetric around mean</td><td>Time-based PM; set at 70–80% of η</td></tr>
+      <tr><td><strong>β &gt; 3</strong></td><td>Wear-out</td><td>Rapidly increasing</td><td>Time-based PM IS effective. Set interval at 70–80% of η (characteristic life).</td></tr>
+    </tbody></table>
+    <div class="callout callout-amber"><i>⚠️</i><div><strong>η (eta) trap:</strong> η is NOT the MTBF. η is the time at which exactly 63.2% of the population has failed — regardless of β. MTBF can be calculated from β and η but they are not the same value.</div></div>
+  </div></div></div>
+</div>
+
+<!-- ── NDT ── -->
+<div class="sg-page" id="sgp-ndt">
+  <div class="domain-header" data-num="N" style="--dh-bg:rgba(74,127,165,0.05);--dh-accent:#6ba3c9;--dh-bdr:rgba(74,127,165,0.25);--dh-bg2:rgba(74,127,165,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Advanced Topic · Domain 3 · Equipment Reliability</div>
+      <div class="dh-title">Non-Destructive Testing (NDT)</div>
+      <div class="dh-desc">Know which NDT method is appropriate for which application. Key decision variables: surface vs. subsurface, ferromagnetic vs. non-ferromagnetic, radiation constraints, speed requirements.</div>
+    </div>
+  </div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">🔬 All NDT Methods — Comparison Table</div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open">
+    <table class="dtbl"><thead><tr><th>Method</th><th>How It Works</th><th>Best For</th><th>Key Limitation</th></tr></thead><tbody>
+      <tr><td><strong>VT (Visual)</strong></td><td>Direct or aided visual examination</td><td>Surface defects; first step in any inspection</td><td>Surface only; requires access</td></tr>
+      <tr><td><strong>PT (Liquid Penetrant)</strong></td><td>Dye drawn into surface-breaking cracks by capillary action</td><td>Surface-breaking defects in any non-porous material</td><td><strong>Surface-breaking only</strong>; rough surfaces reduce sensitivity</td></tr>
+      <tr><td><strong>MT (Magnetic Particle)</strong></td><td>Magnetic flux leakage at defects attracts particles</td><td>Surface & near-surface defects</td><td><strong>Ferromagnetic materials only</strong> (carbon/alloy steel)</td></tr>
+      <tr><td><strong>UT (Ultrasonic)</strong></td><td>Sound waves reflect from internal defects</td><td>Internal defects, <strong>wall thickness measurement</strong></td><td>Requires couplant; operator skill critical</td></tr>
+      <tr><td><strong>PAUT</strong></td><td>Multi-element UT with electronic steering; produces cross-section image</td><td>Complex geometry welds, code-compliant inspection</td><td>Higher cost; specialized operator</td></tr>
+      <tr><td><strong>RT (Radiography)</strong></td><td>X-ray/gamma ray differential absorption</td><td>Internal defects; permanent record; complex geometry</td><td><strong>Radiation safety required</strong>; two-sided access needed</td></tr>
+      <tr><td><strong>ET (Eddy Current)</strong></td><td>Induced currents; defects disturb current flow</td><td><strong>Heat exchanger tube inspection (fast, no contact)</strong>; surface cracks</td><td>Conductive materials only; limited depth</td></tr>
+      <tr><td><strong>AE (Acoustic Emission)</strong></td><td>Passive — detects stress waves emitted by active defect growth</td><td>Monitoring pressure vessels during pressurization; active cracking</td><td>Noise discrimination; multi-sensor required for location</td></tr>
+    </tbody></table>
+    <div class="callout callout-steel"><i>✎</i><div><strong>NDT selection logic:</strong> (1) Surface or subsurface? → PT/MT for surface; UT/RT for subsurface. (2) Ferromagnetic? → If no (stainless, aluminum), eliminate MT. (3) Thickness measurement? → UT. (4) Radiation constraint? → UT instead of RT. (5) Fast heat exchanger tube inspection? → Eddy Current.</div></div>
+  </div></div></div>
+</div>
+
+<!-- ── MOTORS ── -->
+<div class="sg-page" id="sgp-motors">
+  <div class="domain-header" data-num="M" style="--dh-bg:rgba(212,130,10,0.05);--dh-accent:#ffc85a;--dh-bdr:rgba(212,130,10,0.25);--dh-bg2:rgba(212,130,10,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Advanced Topic · Domain 3 · Equipment Reliability</div>
+      <div class="dh-title">Motor Failure Modes</div>
+    </div>
+  </div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">⚡ AC Motor Failure Modes — Complete Table</div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open">
+    <table class="dtbl"><thead><tr><th>Failure Mode</th><th>Root Cause</th><th>Detection</th><th>Prevention</th></tr></thead><tbody>
+      <tr><td><strong>Bearing failure</strong></td><td>Over/under lubrication, contamination, VFD fluting, misalignment</td><td>Vibration, ultrasound, temperature</td><td>Lube program, ultrasound-guided greasing, shaft grounding rings</td></tr>
+      <tr><td><strong>Stator winding failure</strong></td><td>Thermal cycling, voltage spikes, partial discharge, over-temperature</td><td>Surge test, partial discharge, Megger/PI trending</td><td>Thermal monitoring, VFD voltage spike filters</td></tr>
+      <tr><td><strong>Rotor bar failure</strong></td><td>Thermal cycling fatigue, casting defects, overloading</td><td>MCSA (sidebands at 1 ± 2s × line frequency)</td><td>Avoid frequent starts; VFD soft-starting</td></tr>
+      <tr><td><strong>VFD bearing fluting</strong></td><td>High-freq common-mode voltage → capacitive coupling → discharge current → raceway craters</td><td>Visual (washboard pattern), vibration, MCSA</td><td><strong>Shaft grounding rings</strong>; insulated bearings on NDE</td></tr>
+      <tr><td><strong>Overheating</strong></td><td>Overloading, blocked ventilation, high ambient, frequent starts, voltage unbalance</td><td>Thermal monitoring, current monitoring, thermography</td><td>Proper motor sizing, clear ventilation, voltage balancing</td></tr>
+    </tbody></table>
+    <h4>Motor Insulation Testing</h4>
+    <table class="dtbl"><thead><tr><th>Test</th><th>What It Measures</th><th>Pass Criteria</th></tr></thead><tbody>
+      <tr><td><strong>Megger (IR Test)</strong></td><td>Winding-to-ground insulation resistance</td><td>Varies by voltage class; trending over time is more valuable than a single reading</td></tr>
+      <tr><td><strong>Polarization Index (PI)</strong></td><td>IR(10 min) / IR(1 min)</td><td>&gt;2.0 = good; &lt;1.0 = contaminated/damaged</td></tr>
+      <tr><td><strong>Surge/Impulse Test</strong></td><td>Turn-to-turn insulation</td><td>Detects inter-turn shorts other tests miss</td></tr>
+      <tr><td><strong>Hi-Pot</strong></td><td>Dielectric withstand (proof test)</td><td>Used for acceptance testing; destructive if overused</td></tr>
+    </tbody></table>
+  </div></div></div>
+</div>
+
+<!-- ── SHUTDOWN ── -->
+<div class="sg-page" id="sgp-shutdown">
+  <div class="domain-header" data-num="S" style="--dh-bg:rgba(184,74,28,0.05);--dh-accent:#e05c25;--dh-bdr:rgba(184,74,28,0.28);--dh-bg2:rgba(184,74,28,0.08);">
+    <div class="dh-body">
+      <div class="dh-label">Advanced Topic · Domain 5 · Work Management</div>
+      <div class="dh-title">Shutdown & Turnaround Management</div>
+    </div>
+  </div>
+  <div class="acc"><div class="acc-head" onclick="togAcc(this)"><div class="acc-title">🏭 Turnaround Planning, CPM & Scope Control</div><div class="acc-chev open">▾</div></div>
+  <div class="acc-body open"><div class="prose">
+    <h4>Planning Timeline</h4>
+    <table class="dtbl"><thead><tr><th>Phase</th><th>Timeline</th><th>Key Activities</th></tr></thead><tbody>
+      <tr><td>Scope Development</td><td>12–18 months prior</td><td>Inspection list, regulatory requirements, deferred maintenance, process improvements. Freeze scope 3 months before execution.</td></tr>
+      <tr><td>Engineering & Procurement</td><td>6–12 months</td><td>Detailed work packages, long-lead materials, contractor bids</td></tr>
+      <tr><td>Detailed Planning</td><td>3–6 months</td><td>Job plans, resource leveling, critical path, permit coordination</td></tr>
+      <tr><td>Execution</td><td>Shutdown period</td><td>Daily progress meetings, critical path monitoring, MOC for scope additions</td></tr>
+      <tr><td>Closeout</td><td>Post-shutdown</td><td>Cost vs. budget, schedule vs. plan, lessons learned</td></tr>
+    </tbody></table>
+    <h4>Critical Path Method (CPM)</h4>
+    <ul>
+      <li><strong>Critical path</strong>: Longest chain of dependent activities — determines minimum turnaround duration</li>
+      <li><strong>Float</strong>: Time an activity can be delayed without affecting the end date. Critical path activities have zero float.</li>
+      <li><strong>Total Float</strong> = Late Finish − Early Start − Duration</li>
+    </ul>
+    <div class="callout callout-rust"><i>⚠️</i><div><strong>Scope creep flag:</strong> &gt;10% scope addition after freeze = poor initial scope development or ineffective freeze enforcement. Leading cause of turnaround overruns. All post-freeze additions require formal MOC with documented cost and schedule impact.</div></div>
+  </div></div></div>
+</div>
+
+</div><!-- end sg-main -->
+</div><!-- end sg-layout -->
+</div><!-- end page-study -->
+
+<!-- ══════════════════ TOOLS PAGE ════════════════ -->
+<div class="page" id="page-tools">
+  <div class="tools-hero">
     <div class="container">
-      <div class="eyebrow">100 Questions · Full Explanations</div>
-      <h1 class="page-title">Practice Exam</h1>
-      <p class="page-sub">Exam-style questions with detailed rationale. Select domains to focus or run all 100 for a full mock exam. Aim for 85%+ before sitting the real exam.</p>
+      <div class="section-eyebrow">Working Calculators</div>
+      <h1 class="section-title">Reliability Engineering<br>Calculators</h1>
+      <p class="section-sub">Six calculators covering the most commonly used reliability and maintenance formulas. Every result is benchmarked against SMRP world-class targets.</p>
     </div>
   </div>
   <div class="container">
-    <!-- SETUP STATE -->
-    <div id="quiz-setup" class="quiz-setup">
-      <div style="font-weight:600;font-size:.92rem;color:var(--ink);margin-bottom:1rem;">Select domains to include:</div>
-      <div class="qs-grid" id="qs-domain-grid"></div>
-      <div style="display:flex;align-items:center;gap:1.5rem;margin-top:1.25rem;flex-wrap:wrap;">
-        <button class="quiz-start-btn" onclick="startQuiz()">Start Exam →</button>
-        <div style="font-family:var(--ff-m);font-size:.7rem;color:var(--ink3);" id="qs-selected-count">100 questions selected</div>
+  <div class="tools-grid">
+
+    <!-- ── CALCULATOR 1: MTBF/MTTR/AVAILABILITY ── -->
+    <div class="tool-card">
+      <div class="tool-card-head">
+        <div class="tool-icon">⏱️</div>
+        <div class="tool-name">MTBF / MTTR / Availability</div>
+        <div class="tool-desc">Calculate Mean Time Between Failures, Mean Time to Repair, and asset availability from raw operating data.</div>
       </div>
-    </div>
-    <!-- ACTIVE QUIZ -->
-    <div id="quiz-active" class="quiz-active" style="display:none;">
-      <div class="qa-topbar">
-        <div><div class="qa-score" id="qa-score">0 / 0</div><div class="qa-score-lbl">Correct</div></div>
-        <div class="qa-prog-wrap">
-          <div class="qa-prog-lbl" id="qa-prog-lbl">Question 1 of 100</div>
-          <div class="qa-prog-track"><div class="qa-prog-fill" id="qa-prog-fill" style="width:0%"></div></div>
+      <div class="tool-body">
+        <div class="input-row-2">
+          <div><label class="input-lbl">Total Uptime (hrs)</label><input class="input-field" type="number" id="t1-uptime" placeholder="e.g. 4320" min="0"></div>
+          <div><label class="input-lbl">Total Downtime (hrs)</label><input class="input-field" type="number" id="t1-downtime" placeholder="e.g. 180" min="0"></div>
         </div>
-        <button class="qa-reset" onclick="resetQuiz()">↺ Reset</button>
-      </div>
-      <div id="qa-questions"></div>
-      <div id="qa-results-btn" style="display:none;text-align:center;padding:1.5rem 0;">
-        <button class="quiz-start-btn" onclick="showResults()">View Results →</button>
+        <div class="input-row">
+          <label class="input-lbl">Number of Failures</label>
+          <input class="input-field" type="number" id="t1-failures" placeholder="e.g. 12" min="1">
+        </div>
+        <button class="calc-btn" onclick="calcT1()">Calculate</button>
+        <div class="result-area" id="t1-result">
+          <div class="result-grid">
+            <div class="result-item"><div class="result-val" id="t1-mtbf">—</div><div class="result-lbl">MTBF (hrs)</div></div>
+            <div class="result-item"><div class="result-val" id="t1-mttr">—</div><div class="result-lbl">MTTR (hrs)</div></div>
+            <div class="result-item"><div class="result-val" id="t1-avail">—</div><div class="result-lbl">Availability</div></div>
+          </div>
+          <div class="result-interpret" id="t1-interpret"></div>
+        </div>
       </div>
     </div>
-    <!-- RESULTS -->
-    <div id="quiz-results" class="quiz-results" style="display:none;"></div>
+
+    <!-- ── CALCULATOR 2: OEE ── -->
+    <div class="tool-card">
+      <div class="tool-card-head">
+        <div class="tool-icon">🏭</div>
+        <div class="tool-name">OEE Breakdown</div>
+        <div class="tool-desc">Calculate Overall Equipment Effectiveness and identify which of the 6 Big Losses is your primary constraint.</div>
+      </div>
+      <div class="tool-body">
+        <div class="input-row">
+          <label class="input-lbl">Planned Production Time (hrs)</label>
+          <input class="input-field" type="number" id="t2-planned" placeholder="e.g. 8" min="0.1" step="0.1">
+        </div>
+        <div class="input-row-2">
+          <div><label class="input-lbl">Downtime Losses (hrs)</label><input class="input-field" type="number" id="t2-downtime" placeholder="e.g. 1.2" min="0" step="0.1"></div>
+          <div><label class="input-lbl">Ideal Cycle Time (sec/unit)</label><input class="input-field" type="number" id="t2-cycletime" placeholder="e.g. 30" min="0.1" step="0.1"></div>
+        </div>
+        <div class="input-row-2">
+          <div><label class="input-lbl">Total Units Produced</label><input class="input-field" type="number" id="t2-total" placeholder="e.g. 800" min="0"></div>
+          <div><label class="input-lbl">Reject Units</label><input class="input-field" type="number" id="t2-rejects" placeholder="e.g. 24" min="0"></div>
+        </div>
+        <button class="calc-btn" onclick="calcT2()">Calculate OEE</button>
+        <div class="result-area" id="t2-result">
+          <div class="result-grid">
+            <div class="result-item"><div class="result-val" id="t2-avail">—</div><div class="result-lbl">Availability</div></div>
+            <div class="result-item"><div class="result-val" id="t2-perf">—</div><div class="result-lbl">Performance</div></div>
+            <div class="result-item"><div class="result-val" id="t2-qual">—</div><div class="result-lbl">Quality</div></div>
+            <div class="result-item"><div class="result-val" id="t2-oee">—</div><div class="result-lbl">OEE</div></div>
+          </div>
+          <div class="result-interpret" id="t2-interpret"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CALCULATOR 3: RELIABILITY R(t) ── -->
+    <div class="tool-card">
+      <div class="tool-card-head">
+        <div class="tool-icon">📈</div>
+        <div class="tool-name">Reliability R(t) Calculator</div>
+        <div class="tool-desc">Calculate the probability of survival to time t for an asset with a known MTBF (constant failure rate / exponential distribution).</div>
+      </div>
+      <div class="tool-body">
+        <div class="input-row">
+          <label class="input-lbl">MTBF (hours)</label>
+          <input class="input-field" type="number" id="t3-mtbf" placeholder="e.g. 2000" min="1">
+        </div>
+        <div class="input-row">
+          <label class="input-lbl">Mission Time t (hours)</label>
+          <input class="input-field" type="number" id="t3-t" placeholder="e.g. 500" min="0">
+        </div>
+        <button class="calc-btn" onclick="calcT3()">Calculate R(t)</button>
+        <div class="result-area" id="t3-result">
+          <div class="result-grid">
+            <div class="result-item"><div class="result-val" id="t3-rt">—</div><div class="result-lbl">R(t) — Survival Prob</div></div>
+            <div class="result-item"><div class="result-val" id="t3-ft">—</div><div class="result-lbl">F(t) — Failure Prob</div></div>
+            <div class="result-item"><div class="result-val" id="t3-lambda">—</div><div class="result-lbl">λ (failures/1000hr)</div></div>
+          </div>
+          <div class="result-interpret" id="t3-interpret"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CALCULATOR 4: SERIES/PARALLEL ── -->
+    <div class="tool-card">
+      <div class="tool-card-head">
+        <div class="tool-icon">🔗</div>
+        <div class="tool-name">Series & Parallel Reliability</div>
+        <div class="tool-desc">Calculate system reliability for components configured in series or parallel. Enter up to 5 component reliabilities.</div>
+      </div>
+      <div class="tool-body">
+        <div class="input-row">
+          <label class="input-lbl">Configuration</label>
+          <select class="select-field" id="t4-config">
+            <option value="series">Series (any failure = system failure)</option>
+            <option value="parallel">Parallel (all must fail = system failure)</option>
+          </select>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1rem;">
+          <div><label class="input-lbl">R₁ (0–1)</label><input class="input-field" type="number" id="t4-r1" placeholder="0.95" min="0" max="1" step="0.001"></div>
+          <div><label class="input-lbl">R₂ (0–1)</label><input class="input-field" type="number" id="t4-r2" placeholder="0.92" min="0" max="1" step="0.001"></div>
+          <div><label class="input-lbl">R₃ (0–1 or blank)</label><input class="input-field" type="number" id="t4-r3" placeholder="optional" min="0" max="1" step="0.001"></div>
+          <div><label class="input-lbl">R₄ (0–1 or blank)</label><input class="input-field" type="number" id="t4-r4" placeholder="optional" min="0" max="1" step="0.001"></div>
+          <div><label class="input-lbl">R₅ (0–1 or blank)</label><input class="input-field" type="number" id="t4-r5" placeholder="optional" min="0" max="1" step="0.001"></div>
+        </div>
+        <button class="calc-btn" onclick="calcT4()">Calculate System Reliability</button>
+        <div class="result-area" id="t4-result">
+          <div class="result-grid">
+            <div class="result-item"><div class="result-val" id="t4-sys">—</div><div class="result-lbl">System Reliability</div></div>
+            <div class="result-item"><div class="result-val" id="t4-improvement">—</div><div class="result-lbl">vs. Lowest Component</div></div>
+          </div>
+          <div class="result-interpret" id="t4-interpret"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CALCULATOR 5: WEIBULL INTERPRETER ── -->
+    <div class="tool-card">
+      <div class="tool-card-head">
+        <div class="tool-icon">📊</div>
+        <div class="tool-name">Weibull β Interpreter</div>
+        <div class="tool-desc">Enter your Weibull β (shape) and η (characteristic life) parameters — get the failure pattern, recommended maintenance strategy, and PM interval if applicable.</div>
+      </div>
+      <div class="tool-body">
+        <div class="input-row-2">
+          <div><label class="input-lbl">β (Shape Parameter)</label><input class="input-field" type="number" id="t5-beta" placeholder="e.g. 2.4" min="0.01" step="0.01"></div>
+          <div><label class="input-lbl">η (Characteristic Life, hrs)</label><input class="input-field" type="number" id="t5-eta" placeholder="e.g. 8000" min="1"></div>
+        </div>
+        <button class="calc-btn" onclick="calcT5()">Interpret Weibull</button>
+        <div class="result-area" id="t5-result">
+          <div style="margin-bottom:1rem;">
+            <div class="result-val" id="t5-pattern" style="font-size:1.1rem;text-align:left;margin-bottom:0.3rem;">—</div>
+            <div style="font-family:var(--ff-mono);font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink3);">Failure Pattern</div>
+          </div>
+          <div class="result-grid" id="t5-grid" style="display:none;">
+            <div class="result-item"><div class="result-val" id="t5-pm">—</div><div class="result-lbl">Recommended PM Interval</div></div>
+            <div class="result-item"><div class="result-val" id="t5-r63">—</div><div class="result-lbl">R at t=η (should be 36.8%)</div></div>
+          </div>
+          <div class="result-interpret" id="t5-interpret"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CALCULATOR 6: STOREROOM EOQ + ROP ── -->
+    <div class="tool-card">
+      <div class="tool-card-head">
+        <div class="tool-icon">📦</div>
+        <div class="tool-name">Storeroom: EOQ & Reorder Point</div>
+        <div class="tool-desc">Calculate the Economic Order Quantity and Reorder Point for a spare part. Optimize between ordering frequency and carrying costs.</div>
+      </div>
+      <div class="tool-body">
+        <div class="input-row-2">
+          <div><label class="input-lbl">Annual Demand (units/yr)</label><input class="input-field" type="number" id="t6-demand" placeholder="e.g. 48" min="1"></div>
+          <div><label class="input-lbl">Order Cost ($ per order)</label><input class="input-field" type="number" id="t6-order-cost" placeholder="e.g. 35" min="1"></div>
+        </div>
+        <div class="input-row-2">
+          <div><label class="input-lbl">Unit Cost ($)</label><input class="input-field" type="number" id="t6-unit-cost" placeholder="e.g. 85" min="0.01" step="0.01"></div>
+          <div><label class="input-lbl">Holding Cost (% of value/yr)</label><input class="input-field" type="number" id="t6-holding" placeholder="e.g. 25" min="1" max="100"></div>
+        </div>
+        <div class="input-row-2">
+          <div><label class="input-lbl">Lead Time (days)</label><input class="input-field" type="number" id="t6-lead" placeholder="e.g. 14" min="1"></div>
+          <div><label class="input-lbl">Safety Stock (units)</label><input class="input-field" type="number" id="t6-safety" placeholder="e.g. 2" min="0"></div>
+        </div>
+        <button class="calc-btn" onclick="calcT6()">Calculate EOQ & ROP</button>
+        <div class="result-area" id="t6-result">
+          <div class="result-grid">
+            <div class="result-item"><div class="result-val" id="t6-eoq">—</div><div class="result-lbl">EOQ (units/order)</div></div>
+            <div class="result-item"><div class="result-val" id="t6-rop">—</div><div class="result-lbl">Reorder Point (units)</div></div>
+            <div class="result-item"><div class="result-val" id="t6-orders">—</div><div class="result-lbl">Orders per Year</div></div>
+            <div class="result-item"><div class="result-val" id="t6-total-cost">—</div><div class="result-lbl">Total Annual Cost</div></div>
+          </div>
+          <div class="result-interpret" id="t6-interpret"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end tools-grid -->
+  </div><!-- end container -->
+
+  <div style="height:1px;background:var(--border);margin:0 2rem;"></div>
+  <footer>
+    <div class="footer-note">© 2026 CMRPstudy · Formulas based on SMRP Body of Knowledge · Not affiliated with SMRP</div>
+    <div class="footer-links">
+      <span class="footer-link" onclick="showPage('home')">Home</span>
+      <span class="footer-link" onclick="showPage('study')">Study Guide</span>
+      <span class="footer-link" onclick="showPage('glossary')">Glossary</span>
+    </div>
+  </footer>
+</div><!-- end page-tools -->
+
+<!-- ══════════════════ GLOSSARY PAGE ════════════ -->
+<div class="page" id="page-glossary">
+  <div class="gloss-hero">
+    <div class="container">
+      <div class="section-eyebrow">Reference</div>
+      <h1 class="section-title">Reliability Glossary</h1>
+      <div class="gloss-search-wrap">
+        <span class="gloss-search-icon">🔍</span>
+        <input class="gloss-search" type="text" id="glossSearch" placeholder="Search terms, acronyms, definitions..." oninput="filterGloss()">
+      </div>
+      <div class="gloss-count" id="glossCount">Loading...</div>
+    </div>
   </div>
+  <div class="gloss-body">
+    <div class="container" id="glossContainer"></div>
+  </div>
+  <footer>
+    <div class="footer-note">© 2026 CMRPstudy · 100+ terms · Based on SMRP BoK and industry standards</div>
+    <div class="footer-links">
+      <span class="footer-link" onclick="showPage('home')">Home</span>
+      <span class="footer-link" onclick="showPage('study')">Study Guide</span>
+      <span class="footer-link" onclick="showPage('tools')">Calculators</span>
+    </div>
+  </footer>
 </div>
 
-<footer>
-  <div class="footer-note">© 2026 CMRPstudy · Free resource · Not affiliated with SMRP</div>
-  <a href="index.html" class="nav-back">← Back to Study Guide</a>
-</footer>
-
-<style>
-@keyframes spin-cage{to{transform:rotate(360deg);}}
-@keyframes spin-inner{to{transform:rotate(-360deg);}}
-@keyframes pulse-ring{0%,100%{stroke-opacity:1}50%{stroke-opacity:.45}}
-</style>
+<!-- ══════════════════ JAVASCRIPT ════════════════ -->
 <script>
+// ─── PAGE NAV ─────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.getElementById('nl-' + id)?.classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// ─── STUDY GUIDE NAV ──────────────────────────────────────
+function sgNav(id) {
+  document.querySelectorAll('.sg-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sg-sb-item').forEach(s => s.classList.remove('active'));
+  document.getElementById('sgp-' + id)?.classList.add('active');
+  document.getElementById('sgn-' + id)?.classList.add('active');
+  document.querySelector('.sg-main')?.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// ─── ACCORDION ────────────────────────────────────────────
+function togAcc(head) {
+  const body = head.nextElementSibling;
+  const chev = head.querySelector('.acc-chev');
+  body.classList.toggle('open');
+  chev.classList.toggle('open');
+}
+
+// ─── DOMAIN BAR CHART ─────────────────────────────────────
+function buildDomainBar() {
+  const el = document.getElementById('domainBar');
+  if (!el) return;
+  const domains = [
+    {name:'D1 Business',pct:15,color:'var(--steel)'},
+    {name:'D2 Process',pct:15,color:'var(--green)'},
+    {name:'D3 Equipment',pct:45,color:'var(--amber)'},
+    {name:'D4 Org',pct:10,color:'#7c3aed'},
+    {name:'D5 Work Mgmt',pct:15,color:'var(--rust)'},
+  ];
+  el.innerHTML = domains.map(d => `
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;">
+      <div style="font-family:var(--ff-mono);font-size:0.62rem;color:var(--ink3);width:80px;flex-shrink:0;">${d.name}</div>
+      <div style="flex:1;height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;">
+        <div style="height:100%;width:${d.pct}%;background:${d.color};border-radius:4px;"></div>
+      </div>
+      <div style="font-family:var(--ff-mono);font-size:0.68rem;color:var(--ink2);width:28px;text-align:right;">${d.pct}%</div>
+    </div>`).join('');
+}
+buildDomainBar();
+
+// ─── CALCULATOR 1: MTBF / MTTR / AVAILABILITY ─────────────
+function calcT1() {
+  const up = parseFloat(document.getElementById('t1-uptime').value);
+  const dn = parseFloat(document.getElementById('t1-downtime').value);
+  const f  = parseFloat(document.getElementById('t1-failures').value);
+  if (isNaN(up) || isNaN(dn) || isNaN(f) || f < 1) { alert('Enter valid values (failures ≥ 1)'); return; }
+  const mtbf = up / f;
+  const mttr = dn / f;
+  const avail = up / (up + dn);
+  document.getElementById('t1-mtbf').textContent = mtbf.toFixed(1);
+  document.getElementById('t1-mttr').textContent = mttr.toFixed(2);
+  document.getElementById('t1-avail').textContent = (avail * 100).toFixed(1) + '%';
+  const availClass = avail >= 0.95 ? 'rb-good' : avail >= 0.85 ? 'rb-warn' : 'rb-bad';
+  const availLabel = avail >= 0.95 ? '✓ World-class (≥95%)' : avail >= 0.85 ? '⚠ Below target' : '✗ Reactive profile';
+  document.getElementById('t1-interpret').innerHTML = `
+    <strong>Availability: </strong><span class="result-badge ${availClass}">${availLabel}</span><br><br>
+    R(MTBF) = e<sup>−1</sup> = <strong>36.8%</strong> — only 36.8% of units survive to their MTBF under constant failure rate. 
+    MTTR of <strong>${mttr.toFixed(1)} hrs</strong> ${mttr > 4 ? '— explore parts staging and job planning to reduce' : '— solid restoration time'}.
+  `;
+  document.getElementById('t1-result').classList.add('show');
+}
+
+// ─── CALCULATOR 2: OEE ────────────────────────────────────
+function calcT2() {
+  const planned = parseFloat(document.getElementById('t2-planned').value);
+  const down    = parseFloat(document.getElementById('t2-downtime').value);
+  const cycle   = parseFloat(document.getElementById('t2-cycletime').value);
+  const total   = parseFloat(document.getElementById('t2-total').value);
+  const rejects = parseFloat(document.getElementById('t2-rejects').value) || 0;
+  if ([planned,down,cycle,total].some(isNaN) || planned <= 0) { alert('Fill all required fields'); return; }
+  const runTime = planned - down;
+  const avail = runTime / planned;
+  const idealUnits = (runTime * 3600) / cycle;
+  const perf = Math.min(total / idealUnits, 1);
+  const qual = total > 0 ? (total - rejects) / total : 1;
+  const oee = avail * perf * qual;
+  const fmt = v => (v * 100).toFixed(1) + '%';
+  document.getElementById('t2-avail').textContent = fmt(avail);
+  document.getElementById('t2-perf').textContent  = fmt(perf);
+  document.getElementById('t2-qual').textContent  = fmt(qual);
+  document.getElementById('t2-oee').textContent   = fmt(oee);
+  const oeeClass = oee >= 0.85 ? 'rb-good' : oee >= 0.65 ? 'rb-warn' : 'rb-bad';
+  const worst = avail <= perf && avail <= qual ? 'Availability (Breakdowns/Changeovers)' 
+    : perf <= qual ? 'Performance (Speed losses/Minor stoppages)'
+    : 'Quality (Defects/Startup losses)';
+  document.getElementById('t2-interpret').innerHTML = `
+    OEE: <span class="result-badge ${oeeClass}">${fmt(oee)} ${oee >= 0.85 ? '— World-class ✓' : oee >= 0.65 ? '— Typical industry' : '— Significant losses'}</span><br><br>
+    <strong>Biggest loss:</strong> ${worst}. OEE world-class target is ≥85%. Each 1% OEE improvement on a 100-unit/hr line running 24 hrs = 24 additional good units/day.
+  `;
+  document.getElementById('t2-result').classList.add('show');
+}
+
+// ─── CALCULATOR 3: RELIABILITY R(t) ──────────────────────
+function calcT3() {
+  const mtbf = parseFloat(document.getElementById('t3-mtbf').value);
+  const t    = parseFloat(document.getElementById('t3-t').value);
+  if (isNaN(mtbf) || isNaN(t) || mtbf <= 0 || t < 0) { alert('Enter valid positive values'); return; }
+  const lambda = 1 / mtbf;
+  const rt = Math.exp(-lambda * t);
+  const ft = 1 - rt;
+  document.getElementById('t3-rt').textContent = (rt * 100).toFixed(1) + '%';
+  document.getElementById('t3-ft').textContent = (ft * 100).toFixed(1) + '%';
+  document.getElementById('t3-lambda').textContent = (lambda * 1000).toFixed(4);
+  const tRatio = t / mtbf;
+  let interp = '';
+  if (tRatio === 1) interp = `At t = MTBF, R = <strong>36.8%</strong> (e<sup>−1</sup>). This is the most common exam trap — the answer is never 50%.`;
+  else if (tRatio < 0.5) interp = `Mission time is ${(tRatio*100).toFixed(0)}% of MTBF. Reliability is relatively high — ${(rt*100).toFixed(1)}% survival probability for this mission.`;
+  else if (tRatio < 1) interp = `Mission time is ${(tRatio*100).toFixed(0)}% of MTBF. For PM scheduling, consider setting task interval at 70–80% of MTBF (when β &gt; 3).`;
+  else interp = `Mission time exceeds MTBF (${tRatio.toFixed(1)}× MTBF). Only ${(rt*100).toFixed(1)}% expected to survive — high failure probability. Review maintenance strategy.`;
+  document.getElementById('t3-interpret').innerHTML = interp;
+  document.getElementById('t3-result').classList.add('show');
+}
+
+// ─── CALCULATOR 4: SERIES/PARALLEL ──────────────────────
+function calcT4() {
+  const config = document.getElementById('t4-config').value;
+  const vals = ['t4-r1','t4-r2','t4-r3','t4-r4','t4-r5']
+    .map(id => document.getElementById(id).value)
+    .filter(v => v !== '')
+    .map(Number)
+    .filter(v => !isNaN(v) && v > 0 && v <= 1);
+  if (vals.length < 2) { alert('Enter at least 2 component reliabilities (0–1)'); return; }
+  let sys;
+  if (config === 'series') {
+    sys = vals.reduce((a, b) => a * b, 1);
+  } else {
+    sys = 1 - vals.reduce((a, b) => a * (1 - b), 1);
+  }
+  const lowest = Math.min(...vals);
+  const highest = Math.max(...vals);
+  const diff = config === 'series' ? sys - lowest : sys - highest;
+  document.getElementById('t4-sys').textContent = (sys * 100).toFixed(2) + '%';
+  document.getElementById('t4-improvement').textContent = (diff >= 0 ? '+' : '') + (diff * 100).toFixed(2) + '%';
+  const sysClass = sys >= 0.95 ? 'rb-good' : sys >= 0.80 ? 'rb-warn' : 'rb-bad';
+  const configNote = config === 'series'
+    ? `Series: system reliability <strong>always less than the least reliable component</strong> (${(lowest*100).toFixed(1)}%). Adding components in series always degrades system reliability.`
+    : `Parallel: system reliability <strong>always greater than the most reliable component</strong> (${(highest*100).toFixed(1)}%). Redundancy always improves reliability.`;
+  document.getElementById('t4-interpret').innerHTML = `
+    System: <span class="result-badge ${sysClass}">${(sys*100).toFixed(2)}%</span><br><br>${configNote}
+    <br><br>Components: ${vals.map((v,i) => `R${i+1}=${(v*100).toFixed(1)}%`).join(' · ')}
+  `;
+  document.getElementById('t4-result').classList.add('show');
+}
+
+// ─── CALCULATOR 5: WEIBULL ────────────────────────────────
+function calcT5() {
+  const beta = parseFloat(document.getElementById('t5-beta').value);
+  const eta  = parseFloat(document.getElementById('t5-eta').value);
+  if (isNaN(beta) || beta <= 0) { alert('Enter a valid β value (must be > 0)'); return; }
+  let pattern, strategy, pmInterval = null;
+  if (beta < 1) {
+    pattern = 'Infant Mortality';
+    strategy = '<strong>Do NOT use time-based PM</strong> — it increases exposure to infant mortality failures by creating more installation events. Improve installation quality, precision maintenance procedures, and commissioning verification. Consider condition monitoring to detect any surviving early-life defects.';
+  } else if (beta === 1) {
+    pattern = 'Random (Constant Failure Rate)';
+    strategy = 'Time-based replacement does NOT reduce failure frequency. The age of the component has no bearing on its probability of failure. Use <strong>condition-based monitoring (CBM)</strong> if the P-F interval allows detection. Consider run-to-failure if consequences are acceptable.';
+  } else if (beta < 3) {
+    pattern = 'Early Wear-out Onset (Gradual)';
+    strategy = 'Increasing failure rate — some benefit from time-based PM at a wide interval. <strong>Condition-based monitoring preferred</strong> to detect degradation before failure. A time-based interval could be set at 80–90% of η as a backstop if CBM is not feasible.';
+    if (!isNaN(eta)) pmInterval = Math.round(eta * 0.85);
+  } else {
+    pattern = 'Wear-out (Strong Age Correlation)';
+    strategy = '<strong>Time-based PM IS effective</strong> — there is a strong age-reliability relationship. Set the PM interval at 70–80% of the characteristic life (η) to replace/restore before the majority of failures occur.';
+    if (!isNaN(eta)) pmInterval = Math.round(eta * 0.75);
+  }
+  const r63 = !isNaN(eta) && eta > 0 ? (Math.exp(-Math.pow(eta/eta, beta)) * 100).toFixed(1) + '%' : '36.8%';
+  document.getElementById('t5-pattern').textContent = pattern;
+  document.getElementById('t5-interpret').innerHTML = strategy;
+  if (!isNaN(eta) && pmInterval !== null) {
+    document.getElementById('t5-grid').style.display = 'grid';
+    document.getElementById('t5-pm').textContent = pmInterval.toLocaleString() + ' hrs';
+    document.getElementById('t5-r63').textContent = '36.8%';
+  } else {
+    document.getElementById('t5-grid').style.display = 'none';
+  }
+  document.getElementById('t5-result').classList.add('show');
+}
+
+// ─── CALCULATOR 6: EOQ / ROP ─────────────────────────────
+function calcT6() {
+  const D = parseFloat(document.getElementById('t6-demand').value);
+  const S = parseFloat(document.getElementById('t6-order-cost').value);
+  const C = parseFloat(document.getElementById('t6-unit-cost').value);
+  const H_pct = parseFloat(document.getElementById('t6-holding').value) / 100;
+  const lead = parseFloat(document.getElementById('t6-lead').value);
+  const safety = parseFloat(document.getElementById('t6-safety').value) || 0;
+  if ([D,S,C,H_pct,lead].some(isNaN) || D <= 0) { alert('Fill all required fields'); return; }
+  const H = C * H_pct; // annual holding cost per unit
+  const eoq = Math.sqrt(2 * D * S / H);
+  const dailyUsage = D / 365;
+  const rop = (dailyUsage * lead) + safety;
+  const ordersPerYear = D / eoq;
+  const totalOrderCost = ordersPerYear * S;
+  const avgInventory = eoq / 2 + safety;
+  const totalHoldCost = avgInventory * H;
+  const totalCost = totalOrderCost + totalHoldCost;
+  document.getElementById('t6-eoq').textContent = Math.ceil(eoq);
+  document.getElementById('t6-rop').textContent = Math.ceil(rop);
+  document.getElementById('t6-orders').textContent = ordersPerYear.toFixed(1) + '/yr';
+  document.getElementById('t6-total-cost').textContent = '$' + totalCost.toFixed(0);
+  document.getElementById('t6-interpret').innerHTML = `
+    Order <strong>${Math.ceil(eoq)} units</strong> whenever stock drops to <strong>${Math.ceil(rop)} units</strong> (${lead}-day lead time + ${safety} safety stock).<br><br>
+    At EOQ, total annual ordering cost ($${totalOrderCost.toFixed(0)}) equals total holding cost ($${totalHoldCost.toFixed(0)}) — the minimum total cost point. 
+    Ordering more than EOQ increases holding costs; ordering less increases ordering frequency costs.
+  `;
+  document.getElementById('t6-result').classList.add('show');
+}
+
+// ─── GLOSSARY ─────────────────────────────────────────────
+const glossTerms = [
+  {t:"5 Pillars of Reliability",d:"SMRP framework describing the five organizational enablers of world-class reliability: (1) Leadership & Culture, (2) Work Management, (3) Proactive Maintenance, (4) Skills & Training, (5) Reliability Engineering."},
+  {t:"5-Why Analysis",d:"RCA technique that iteratively asks 'why?' at each level of a failure chain until reaching the root cause. Best for simple linear failures; may miss multi-cause scenarios."},
+  {t:"Availability",d:"Fraction of total time an asset is capable of performing its function. A = Uptime/(Uptime+Downtime) = MTBF/(MTBF+MTTR). World-class ≥95%."},
+  {t:"Autonomous Maintenance",d:"TPM Pillar 1. Transfer of basic equipment care (cleaning, inspection, lubrication, tightening) to operators. Seven-step progression from initial inspection to full autonomous management."},
+  {t:"Bad Actor",d:"Asset that disproportionately consumes maintenance resources or causes production losses. Identified via Pareto analysis of failure count, maintenance cost, or downtime hours."},
+  {t:"Backlog (Ready)",d:"Work orders that are fully planned, have parts on hand, permits obtained, and equipment available — ready to schedule. Healthy size: 2–4 weeks of craft hours."},
+  {t:"Bathtub Curve",d:"Classic reliability curve showing three phases: Infant Mortality (decreasing failure rate), Useful Life (constant random failure rate), and Wear-out (increasing failure rate). Only ~4% of industrial equipment follows this pattern."},
+  {t:"Beta (β) — Weibull",d:"Weibull shape parameter. β<1: infant mortality (decreasing failure rate); β=1: random constant failure rate; β>3: wear-out (increasing failure rate). Determines appropriate maintenance strategy."},
+  {t:"BPFI",d:"Ball Pass Frequency Inner Race. Bearing fault frequency for inner race defects. Appears with ±1× RPM sidebands because the inner race rotates with the shaft. Calculated from bearing geometry and speed."},
+  {t:"BPFO",d:"Ball Pass Frequency Outer Race. Most common bearing fault frequency. Outer race is stationary so no modulation sidebands. Non-integer multiple of running speed."},
+  {t:"BSF",d:"Ball Spin Frequency. Bearing fault frequency for rolling element (ball or roller) defects. Sub-harmonic of running speed."},
+  {t:"Characteristic Life (η)",d:"Weibull scale parameter. The time at which exactly 63.2% of the population has failed, regardless of β. NOT the MTBF — they are different values. Shifts the distribution along the time axis."},
+  {t:"CMMS",d:"Computerized Maintenance Management System. Core functions: asset hierarchy, work order management, PM triggers, failure coding, parts management, cost tracking. Data quality is the fundamental challenge."},
+  {t:"Competency-Based Training",d:"Training approach focused on demonstrated ability — not attendance. The test is whether the technician can perform the task correctly in the field, not whether they attended class."},
+  {t:"COUR",d:"Cost of Unreliability. Quantifies total business cost of equipment failures: production losses + emergency maintenance premium + quality defects + safety incidents + environmental incidents + customer/market impact."},
+  {t:"Critical Path (CPM)",d:"Longest chain of dependent activities in a project — determines minimum project duration. Activities on the critical path have zero float. Any delay to a critical path activity delays the entire project."},
+  {t:"Eddy Current Testing (ET)",d:"NDT method using induced electrical currents in conductive materials. Defects disturb current flow, detected by probe impedance changes. Best application: fast heat exchanger tube inspection."},
+  {t:"Emissivity",d:"Ratio of radiation emitted by a surface vs. a perfect blackbody (ε=1.0). Polished metals have very low emissivity (0.03–0.15), causing thermography false readings. Apply matte paint/tape for accurate measurement."},
+  {t:"EOQ",d:"Economic Order Quantity. The order quantity that minimizes total inventory cost (ordering cost + holding cost). EOQ = √(2DS/H). At EOQ, ordering cost equals holding cost."},
+  {t:"Eta (η)",d:"See Characteristic Life."},
+  {t:"Failure Finding Task",d:"Maintenance task to detect hidden failures — those not self-announcing during normal operation. Example: testing a relief valve to verify it would lift at setpoint. Used for protective devices."},
+  {t:"Failure Mode",d:"The specific physical event that causes a functional failure. Example: 'Impeller erosion reduces pump flow below required 500 GPM.' Each functional failure may have multiple failure modes."},
+  {t:"FFT",d:"Fast Fourier Transform. Mathematical process converting a vibration time waveform into a frequency spectrum. Enables identification of specific fault frequencies generated by different failure modes."},
+  {t:"Fill Rate",d:"Storeroom KPI. Percentage of part requests filled from stock on first request. World-class ≥95%. Also called service level."},
+  {t:"FMEA",d:"Failure Mode and Effects Analysis. Bottom-up analysis identifying failure modes, their effects, and risk via RPN (Severity × Occurrence × Detectability). Input to RCM task selection. Always act on Severity ≥9 regardless of RPN."},
+  {t:"FRACAS",d:"Failure Reporting, Analysis & Corrective Action System. Closed-loop system ensuring failures are documented, analyzed, corrected, and verified. Without FRACAS, failures are repaired but not learned from."},
+  {t:"FTA",d:"Fault Tree Analysis. Top-down deductive analysis using AND/OR logic gates. Starts with an undesired top event and works backward to find all combination of basic events that can cause it."},
+  {t:"FTF",d:"Fundamental Train Frequency (also called Cage Frequency). Bearing fault frequency for cage defects. Very low frequency: approximately 0.35–0.48 × RPM."},
+  {t:"Functional Failure",d:"RCM term. The inability of an asset to meet a required performance standard. A pump that can only deliver 300 GPM when 500 GPM is required is in functional failure — even if running."},
+  {t:"GMF",d:"Gear Mesh Frequency. Vibration frequency generated by gear teeth engagement = Number of gear teeth × shaft RPM. Sidebands around GMF indicate gear wear or eccentricity."},
+  {t:"Hydrodynamic Film",d:"Layer of pressurized lubricant separating metal surfaces in relative motion. Requires adequate viscosity at operating temperature to maintain. Film collapse causes metal-to-metal contact and accelerated wear."},
+  {t:"Infant Mortality",d:"Initial high failure rate that decreases over time. Caused by installation errors, manufacturing defects, or design flaws — not age-related wear. 68% of industrial equipment follows this pattern (Pattern F, Nowlan & Heap)."},
+  {t:"ISO 1940",d:"International standard specifying permissible residual unbalance for rotating machinery. Balance grades (G 0.4 through G 40) — lower number = tighter tolerance. G 6.3 is most common for industrial rotating equipment."},
+  {t:"ISO 4406",d:"Lubricant/hydraulic fluid cleanliness code. Format X/Y/Z representing particle count range codes at ≥4μm, ≥6μm, ≥14μm per mL. Each increment doubles particle count (logarithmic scale)."},
+  {t:"ISO 10816",d:"Standard defining vibration severity zones for rotating machinery measured at bearing housings. Four zones: A (new/acceptable), B (long-term acceptable), C (plan maintenance), D (immediate action). Uses velocity (RMS) as measurement parameter."},
+  {t:"ISO 55000",d:"International standard for Asset Management (2014). Core objective: 'realizing value from assets.' Key outputs: Strategic Asset Management Plan (SAMP) and Asset Management Plans (AMP). Replaced British PAS 55."},
+  {t:"Kotter's 8 Steps",d:"Change management model: (1) Create urgency, (2) Build coalition, (3) Form vision, (4) Communicate vision, (5) Remove obstacles, (6) Short-term wins, (7) Sustain acceleration, (8) Anchor in culture. Most referenced change framework on the CMRP exam."},
+  {t:"Kurtosis",d:"Statistical measure of impulsiveness in a vibration signal. Rising kurtosis (above 4–6) indicates impacting associated with early bearing damage. Useful for detecting bearing faults before they appear in FFT spectrum."},
+  {t:"LCC",d:"Life Cycle Cost. Total cost of owning and operating an asset from acquisition through disposal. Most comprehensive cost basis for asset selection decisions."},
+  {t:"Leading Indicator",d:"KPI that predicts future performance. Examples: PM compliance, planned work %, wrench time, schedule compliance. Used to intervene before outcomes deteriorate."},
+  {t:"Liquid Penetrant Testing (PT)",d:"NDT method using dye drawn into surface-breaking cracks by capillary action. Developer reveals indication. Works on any non-porous material. Surface-breaking defects ONLY — cannot find subsurface defects."},
+  {t:"Magnetic Particle Testing (MT)",d:"NDT method using magnetic flux leakage at defects to attract indicating particles. Finds surface and near-surface defects. Ferromagnetic materials ONLY (carbon steel, alloy steel) — not stainless, aluminum, composites."},
+  {t:"MCSA",d:"Motor Current Signature Analysis. Analyzes frequency spectrum of AC current waveform to detect mechanical and electrical faults. Can detect broken rotor bars, air gap eccentricity, and bearing defects without physical contact."},
+  {t:"MC/RAV",d:"Maintenance Cost as percentage of Replacement Asset Value. Primary financial benchmark for maintenance spend. World-class: 2–3%. Reactive organizations: 8–15%+. Normalizes for benchmarking across different facility sizes."},
+  {t:"MTBF",d:"Mean Time Between Failures = Total Uptime ÷ Number of Failures. Average operating time between failures. Higher = better reliability. λ = 1/MTBF. WARNING: R(MTBF) = 36.8%, NOT 50%."},
+  {t:"MTTR",d:"Mean Time to Repair = Total Repair Time ÷ Number of Repairs. Average time to restore function after failure. Lower = better maintainability. Influenced by job planning, parts availability, and craft skills."},
+  {t:"NLGI Grade",d:"National Lubricating Grease Institute consistency grade (000 to 6). NLGI 2 (medium, peanut butter consistency) is used for approximately 80% of rolling element bearing applications."},
+  {t:"NPV",d:"Net Present Value. Discounted cash flow analysis accounting for the time value of money. NPV = Σ[CF_t/(1+r)^t] − C₀. Positive NPV = investment creates value."},
+  {t:"Nowlan & Heap",d:"Authors of 'Reliability-Centered Maintenance' (1978) for United Airlines. Landmark study finding 6 failure patterns and that 68% of equipment shows infant mortality (Pattern F) — the statistical basis for RCM's preference for condition-based over time-based maintenance."},
+  {t:"OEE",d:"Overall Equipment Effectiveness = Availability × Performance × Quality. World-class ≥85%. Measures how efficiently an asset uses its planned production time. The 6 Big Losses are the components of OEE degradation."},
+  {t:"On-Condition Task",d:"Maintenance task that monitors asset condition to detect potential failures before functional failure (PdM/CBM). Requires a detectable P-F interval. Preferred task type in RCM for most failure modes."},
+  {t:"P-F Interval",d:"Time from when a potential failure (P) can first be detected to when functional failure (F) occurs. Governs condition monitoring program design. Monitoring frequency must be less than the P-F interval. Response time must also fit within the remaining interval after detection."},
+  {t:"Palmer's 6 Principles",d:"Doc Palmer's planning principles: (1) Separate department, (2) Focus on future work, (3) Component-level files, (4) Estimates based on craft expertise, (5) Recognize the craft/feedback loop, (6) Measure with wrench time."},
+  {t:"Pareto Analysis",d:"80/20 rule applied to failure data. Typically 20% of assets cause 80% of failures, costs, or downtime. Used to identify bad actors deserving priority RCA and reliability investment."},
+  {t:"PAUT",d:"Phased Array Ultrasonic Testing. Multi-element UT with electronic beam steering, producing cross-sectional images. Used for complex geometry weld inspection and code-compliant pressure vessel inspection."},
+  {t:"PI (Polarization Index)",d:"Motor insulation test. PI = IR(10 min) / IR(1 min). PI > 2.0 = good insulation. PI < 1.0 = contaminated or degraded. Eliminates temperature as a variable in Megger testing."},
+  {t:"Planned Work %",d:"Planned work hours as percentage of total maintenance work hours. World-class >85%. Key indicator of the shift from reactive to proactive maintenance."},
+  {t:"PM Compliance",d:"Percentage of PMs completed on time. World-class ≥90%. Leading indicator of equipment reliability. Formula: (PMs done on time / PMs scheduled) × 100."},
+  {t:"Proactive Maintenance",d:"Maintenance performed before failure occurs to prevent the failure or detect it before functional failure. Includes time-based PM, condition-based monitoring (PdM), and failure-finding tasks."},
+  {t:"R(t)",d:"Reliability function. Probability that an asset survives to time t without failure. For constant failure rate: R(t) = e^(−λt) = e^(−t/MTBF). At t=MTBF: R = e^(−1) = 0.368 (36.8% — not 50%)."},
+  {t:"RCA",d:"Root Cause Analysis. Investigation process to identify the physical, human, and latent/systemic causes of a failure. True RCA reaches the systemic level — the organizational weakness that enabled the failure and will cause recurrence unless fixed."},
+  {t:"RCM",d:"Reliability-Centered Maintenance. Decision process using 7 questions (SAE JA1011) to determine the most appropriate maintenance strategy for each failure mode based on failure consequences and the technical feasibility of proactive tasks."},
+  {t:"Reliability",d:"The probability that an asset will perform its required function under stated conditions for a stated period of time. Quantified by R(t) = e^(−λt) for constant failure rate systems."},
+  {t:"ROP",d:"Reorder Point. Inventory level that triggers a replenishment order. ROP = (Average Daily Usage × Lead Time in Days) + Safety Stock."},
+  {t:"RPVOT",d:"Rotating Pressure Vessel Oxidation Test. Measures remaining oxidation resistance and antioxidant life in turbine and hydraulic oils. Result in minutes indicates remaining useful oil life."},
+  {t:"RPN",d:"Risk Priority Number (FMEA). RPN = Severity × Occurrence × Detectability (each 1–10, maximum 1,000). Always act on Severity ≥9 regardless of low RPN — catastrophic consequences cannot be tolerated."},
+  {t:"Run-to-Failure (RTF)",d:"Deliberate decision to allow an asset to fail before performing maintenance. Appropriate when failure consequences are acceptable AND no cost-effective proactive task exists. RTF is a strategy, not the absence of one."},
+  {t:"SAE JA1011",d:"The evaluation standard that defines the 7 questions a process must answer to be called RCM. Not a how-to guide (that is JA1012) but a standard for evaluating compliance."},
+  {t:"Schedule Compliance",d:"Percentage of scheduled maintenance hours completed as planned. World-class ≥90%. Formula: (Scheduled hours completed / Total scheduled hours) × 100."},
+  {t:"Scope Freeze",d:"Shutdown/turnaround planning milestone after which no new scope items are added without a formal MOC process. Typically 3 months before execution. Scope creep >10% post-freeze signals poor planning or inadequate controls."},
+  {t:"Series System Reliability",d:"System where any single component failure causes system failure. R_s = R₁ × R₂ × ... × Rₙ. System reliability is ALWAYS less than the least reliable component. Adding components in series degrades reliability."},
+  {t:"Soft Foot",d:"Condition where one or more machine feet do not make full flat contact with the baseplate when bolts are tightened. MUST be corrected before shaft alignment begins. Types: parallel, angular, induced (pipe strain), squishy."},
+  {t:"Spike Energy (gSE)",d:"High-frequency vibration technique (enveloped acceleration) for early bearing damage detection. Detects impacting before it appears in the FFT frequency spectrum."},
+  {t:"TAN",d:"Total Acid Number. Oil analysis test measuring acid content from oxidation. Rising TAN indicates lubricant degradation. Used for industrial oils; TBN is used for engine oils."},
+  {t:"TBN",d:"Total Base Number. Measures alkaline reserve in engine oils that neutralizes combustion acids. When TBN drops to 50% of new oil value, change is required."},
+  {t:"Thermal Growth",d:"Change in shaft alignment as equipment heats from cold to operating temperature. Precision alignment must use calculated cold offsets (target positions) so that alignment is correct at operating temperature."},
+  {t:"Total Float",d:"In CPM: the amount of time an activity can be delayed without delaying the project end date. Total Float = Late Finish − Early Start − Duration. Activities with zero float are on the critical path."},
+  {t:"TPM",d:"Total Productive Maintenance. Methodology expanding equipment ownership to operators, production, and support functions. 8 pillars. OEE is the TPM scorecard. Goal: zero breakdowns, zero defects, zero accidents."},
+  {t:"Ultrasound (Airborne/Structure-Borne)",d:"PdM technology detecting high-frequency sound (20–100 kHz). Applications: leak detection (air, gas, vacuum, steam), bearing condition monitoring, ultrasound-guided lubrication, electrical inspection (corona, arcing), steam trap testing."},
+  {t:"Viscosity Index (VI)",d:"Measure of how much a lubricant's viscosity changes with temperature. Higher VI = less viscosity change = better multi-temperature performance. Critical for equipment operating across wide temperature ranges."},
+  {t:"VFD Bearing Fluting",d:"Electrical damage pattern on bearing raceways caused by Variable Frequency Drive (VFD) common-mode voltage discharge current. Creates washboard/fluting crater pattern. Prevented by shaft grounding rings or insulated bearings."},
+  {t:"Visual Testing (VT)",d:"Most basic NDT method — direct or aided visual examination of accessible surfaces. First step in any inspection program. Requires access, proper lighting, and trained observer."},
+  {t:"Weibull Analysis",d:"Statistical method for analyzing failure time data. Two-parameter model: R(t) = e^[−(t/η)^β]. β (shape) reveals failure pattern and appropriate maintenance strategy. η (characteristic life) = time when 63.2% have failed."},
+  {t:"Wrench Time",d:"Percentage of available work time that craft technicians spend in value-added, hands-on work. Palmer Principle 6. Industry average: 25–35%. World-class: 55–65%. Primary measure of planning and scheduling effectiveness."},
+  {t:"ISO VG",d:"International Standard Viscosity Grade for industrial lubricants. The VG number is the nominal kinematic viscosity in centistokes (cSt) at 40°C, ±10%. Common grades: 32, 46, 68, 100, 150, 220, 320, 460, 680."},
+  {t:"Beta Ratio (β_x)",d:"Filter efficiency rating. β₁₀ = upstream count ÷ downstream count at 10μm. β₁₀ = 200 means 99.5% efficiency at that particle size. Filter must be matched to system cleanliness target."},
+  {t:"Lagging Indicator",d:"KPI reporting historical performance. Examples: MTBF, OEE, MC/RAV, emergency work %. Confirms past outcomes but cannot enable real-time intervention. Used alongside leading indicators in a balanced scorecard."},
+  {t:"Parallel System Reliability",d:"System where all components must fail for system failure. R_p = 1−(1−R₁)(1−R₂). System reliability is ALWAYS greater than the most reliable individual component. Redundancy always improves reliability."},
+  {t:"Radiography (RT)",d:"NDT method using X-ray or gamma ray differential absorption to detect internal defects. Produces permanent record. Requires radiation safety controls, two-sided access, and is relatively slow and expensive."},
+  {t:"Acoustic Emission (AE)",d:"Passive NDT technique detecting elastic stress waves emitted when defects grow (cracking, corrosion, leakage under stress). Unique because it's passive — listens rather than actively probing. Used for pressure vessel monitoring during pressurization."},
+];
+
+function buildGlossary() {
+  const groups = {};
+  glossTerms.forEach(term => {
+    const letter = term.t[0].toUpperCase();
+    if (!groups[letter]) groups[letter] = [];
+    groups[letter].push(term);
+  });
+  const sorted = Object.keys(groups).sort();
+  const container = document.getElementById('glossContainer');
+  sorted.forEach(letter => {
+    const div = document.createElement('div');
+    div.className = 'gloss-alpha-group';
+    div.innerHTML = `<div class="gloss-alpha-hdr">${letter}</div>`;
+    groups[letter].sort((a,b) => a.t.localeCompare(b.t)).forEach(term => {
+      const entry = document.createElement('div');
+      entry.className = 'gloss-entry';
+      entry.dataset.text = (term.t + ' ' + term.d).toLowerCase();
+      entry.innerHTML = `<div class="gloss-term"><span class="badge badge-amber">${term.t}</span></div><div class="gloss-def">${term.d}</div>`;
+      div.appendChild(entry);
+    });
+    container.appendChild(div);
+  });
+  updateGlossCount();
+}
+
+function filterGloss() {
+  const q = document.getElementById('glossSearch').value.toLowerCase().trim();
+  document.querySelectorAll('.gloss-entry').forEach(e => {
+    e.classList.toggle('hidden', q.length > 0 && !e.dataset.text.includes(q));
+  });
+  document.querySelectorAll('.gloss-alpha-group').forEach(g => {
+    const visible = g.querySelectorAll('.gloss-entry:not(.hidden)').length;
+    g.style.display = visible === 0 ? 'none' : '';
+  });
+  updateGlossCount();
+}
+
+function updateGlossCount() {
+  const visible = document.querySelectorAll('.gloss-entry:not(.hidden)').length;
+  document.getElementById('glossCount').textContent = `${visible} of ${glossTerms.length} terms`;
+}
+
+buildGlossary();
+</script>
+
+<script>
+
 // ═══════════════════════════════════════════════════════════
 // FLASHCARD DATA — 200 CARDS
 // ═══════════════════════════════════════════════════════════
@@ -1035,7 +2984,7 @@ function showResults() {
     <div class="qr-domain-grid">${domainCards}</div>
     <div style="display:flex;gap:1rem;flex-wrap:wrap;">
       <button class="qr-retry-btn" onclick="resetQuiz()">↺ Try Again</button>
-      <button class="qr-retry-btn" style="background:var(--bg4);color:var(--ink2);border:1px solid var(--bdr2);" onclick="showPage('flashcards')">→ Review Flashcards</button>
+      <button class="qr-retry-btn" style="background:var(--bg4);color:var(--ink2);border:1px solid var(--bdr2);" onclick="showPage('fc')">→ Review Flashcards</button>
     </div>`;
 
   document.querySelector('.quiz-results').scrollIntoView({behavior:'smooth'});
@@ -1072,7 +3021,7 @@ function updateNavScore() {
 // ═══════════════════════════════════════════════════════════
 document.addEventListener('keydown', e => {
   const page = document.querySelector('.page.active');
-  if (!page || page.id !== 'page-flashcards') return;
+  if (!page || page.id !== 'page-fc') return;
   if (e.key === 'ArrowRight') fcMove(1);
   if (e.key === 'ArrowLeft') fcMove(-1);
   if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flipFC(); }
@@ -1087,6 +3036,145 @@ buildDomainBars();
 buildFCCatBtns();
 filterFC();
 buildQuizSetup();
+
 </script>
 </body>
 </html>
+<div class="page active" id="page-practice">
+  <div class="hero">
+    <div class="container">
+      <div class="eyebrow">CMRPstudy · Practice Tools</div>
+      <h1 class="page-title">Flashcards &amp;<br>Practice Exam</h1>
+      <p class="page-sub">200 flashcards and 100 exam-style questions covering all 5 SMRP domains and 5 Pillars of Reliability. Track your score, identify weak domains, and study to world-class benchmarks.</p>
+      <div class="stats-row">
+        <div><div class="stat-val">200</div><div class="stat-lbl">Flashcards</div></div>
+        <div><div class="stat-val">100</div><div class="stat-lbl">Practice Questions</div></div>
+        <div><div class="stat-val">5</div><div class="stat-lbl">SMRP Domains</div></div>
+        <div><div class="stat-val">~520</div><div class="stat-lbl">Passing Score Target</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="home-grid">
+      <div class="home-card" onclick="showPage('fc')" style="--hc-glow:rgba(212,130,10,0.08);">
+        <div class="hc-icon">📇</div>
+        <div class="hc-title">Flashcard Deck</div>
+        <div class="hc-desc">200 cards spanning all 5 domains, 5 Pillars, Weibull analysis, NDT, motor failure modes, lubrication, alignment, and work management. Filter by category, mark known/unknown, track your progress.</div>
+        <div class="hc-meta">
+          <span class="badge badge-amb">200 cards</span>
+          <span class="badge badge-stl">8 categories</span>
+          <span class="badge badge-grn">Spaced repetition</span>
+        </div>
+        <div class="hc-arr">Open Flashcards →</div>
+      </div>
+      <div class="home-card" onclick="showPage('qz')" style="--hc-glow:rgba(61,122,79,0.08);">
+        <div class="hc-icon">📝</div>
+        <div class="hc-title">Practice Exam</div>
+        <div class="hc-desc">100 multiple-choice questions with full explanations. Choose all domains or focus on one. Each answer reveals a detailed rationale explaining why it's correct and why the wrong answers are wrong.</div>
+        <div class="hc-meta">
+          <span class="badge badge-grn">100 questions</span>
+          <span class="badge badge-amb">Full explanations</span>
+          <span class="badge badge-stl">Domain breakdown</span>
+        </div>
+        <div class="hc-arr">Start Practice Exam →</div>
+      </div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rl);padding:1.5rem;margin-bottom:3rem;">
+      <div style="font-family:var(--ff-m);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber2);margin-bottom:1rem;">Domain Weight Guide — Study Priority</div>
+      <div id="domain-weight-bars"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FLASHCARD PAGE -->
+<div class="page" id="page-fc">
+  <div class="fc-hero">
+    <div class="container">
+      <div class="eyebrow">200 Cards · All Domains</div>
+      <h1 class="page-title">Flashcard Deck</h1>
+      <p class="page-sub">Click any card to flip. Mark Known or Unknown to track mastery. Filter by category to focus your study session.</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="fc-controls">
+      <div id="fc-cat-btns"></div>
+      <input class="fc-search" type="text" id="fc-search" placeholder="Search cards..." oninput="filterFC()">
+      <div class="fc-count" id="fc-count-display">200 cards</div>
+    </div>
+    <div class="fc-stage">
+      <div class="fc-progress-bar"><div class="fc-progress-fill" id="fc-prog-fill" style="width:0%"></div></div>
+      <div class="fc-card-wrap">
+        <div class="fc-card" id="fc-card" onclick="flipFC()">
+          <div class="fc-face fc-front">
+            <div class="fc-domain-tag" id="fc-domain-tag"></div>
+            <div class="fc-hint">Tap to reveal definition</div>
+            <div class="fc-term" id="fc-term"></div>
+          </div>
+          <div class="fc-face fc-back">
+            <div class="fc-ans-lbl">Definition</div>
+            <div class="fc-def" id="fc-def"></div>
+          </div>
+        </div>
+      </div>
+      <div class="fc-flip-hint">Click card to flip · Use arrow keys to navigate</div>
+      <div class="fc-verdict" id="fc-verdict" style="display:none;">
+        <button class="fc-verdict-btn fc-known" onclick="markFC(true)">✓ Got it</button>
+        <button class="fc-verdict-btn fc-unknown" onclick="markFC(false)">✗ Study more</button>
+      </div>
+      <div class="fc-nav">
+        <button class="fc-nav-btn" onclick="fcMove(-1)" id="fc-prev">← Prev</button>
+        <div class="fc-ctr" id="fc-ctr">1 / 200</div>
+        <button class="fc-nav-btn" onclick="fcMove(1)" id="fc-next">Next →</button>
+      </div>
+      <div class="fc-session-stats">
+        <div class="fcs-item"><div class="fcs-val" id="fcs-known" style="color:var(--green2)">0</div><div class="fcs-lbl">Known</div></div>
+        <div class="fcs-item"><div class="fcs-val" id="fcs-unknown" style="color:var(--rust2)">0</div><div class="fcs-lbl">Study More</div></div>
+        <div class="fcs-item"><div class="fcs-val" id="fcs-remaining" style="color:var(--amber2)">200</div><div class="fcs-lbl">Remaining</div></div>
+        <div class="fcs-item"><div class="fcs-val" id="fcs-pct" style="color:var(--steel2)">0%</div><div class="fcs-lbl">Mastery</div></div>
+        <button class="fc-nav-btn" onclick="resetFC()" style="font-size:.65rem;padding:.3rem .7rem;">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ PAGE -->
+<div class="page" id="page-qz">
+  <div class="quiz-hero">
+    <div class="container">
+      <div class="eyebrow">100 Questions · Full Explanations</div>
+      <h1 class="page-title">Practice Exam</h1>
+      <p class="page-sub">Exam-style questions with detailed rationale. Select domains to focus or run all 100 for a full mock exam. Aim for 85%+ before sitting the real exam.</p>
+    </div>
+  </div>
+  <div class="container">
+    <!-- SETUP STATE -->
+    <div id="quiz-setup" class="quiz-setup">
+      <div style="font-weight:600;font-size:.92rem;color:var(--ink);margin-bottom:1rem;">Select domains to include:</div>
+      <div class="qs-grid" id="qs-domain-grid"></div>
+      <div style="display:flex;align-items:center;gap:1.5rem;margin-top:1.25rem;flex-wrap:wrap;">
+        <button class="quiz-start-btn" onclick="startQuiz()">Start Exam →</button>
+        <div style="font-family:var(--ff-m);font-size:.7rem;color:var(--ink3);" id="qs-selected-count">100 questions selected</div>
+      </div>
+    </div>
+    <!-- ACTIVE QUIZ -->
+    <div id="quiz-active" class="quiz-active" style="display:none;">
+      <div class="qa-topbar">
+        <div><div class="qa-score" id="qa-score">0 / 0</div><div class="qa-score-lbl">Correct</div></div>
+        <div class="qa-prog-wrap">
+          <div class="qa-prog-lbl" id="qa-prog-lbl">Question 1 of 100</div>
+          <div class="qa-prog-track"><div class="qa-prog-fill" id="qa-prog-fill" style="width:0%"></div></div>
+        </div>
+        <button class="qa-reset" onclick="resetQuiz()">↺ Reset</button>
+      </div>
+      <div id="qa-questions"></div>
+      <div id="qa-results-btn" style="display:none;text-align:center;padding:1.5rem 0;">
+        <button class="quiz-start-btn" onclick="showResults()">View Results →</button>
+      </div>
+    </div>
+    <!-- RESULTS -->
+    <div id="quiz-results" class="quiz-results" style="display:none;"></div>
+  </div>
+</div>
+
+
+
