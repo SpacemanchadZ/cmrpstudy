@@ -888,119 +888,6 @@ footer{padding:2.5rem;border-top:1px solid var(--bdr);display:flex;align-items:c
   .fc-search{width:100%;}
 }
 
-/* ═══════════════════════════════════
-   CONTACT / CHAT BOX
-═══════════════════════════════════ */
-.contact-wrap {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 3rem 0 5rem;
-}
-.chat-window {
-  background: var(--bg3);
-  border: 1px solid var(--bdr);
-  border-radius: var(--rl);
-  overflow: hidden;
-  margin-top: 2rem;
-}
-.chat-header {
-  display: flex; align-items: center; gap: .85rem;
-  padding: 1rem 1.25rem;
-  background: rgba(0,0,0,.2);
-  border-bottom: 1px solid var(--bdr);
-}
-.chat-avatar {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: var(--amber); display: flex; align-items: center;
-  justify-content: center; font-size: 1rem; flex-shrink: 0;
-}
-.chat-header-name { font-weight: 600; font-size: .88rem; color: var(--ink); }
-.chat-header-status { font-family: var(--ff-mono); font-size: .62rem; color: var(--green2); display: flex; align-items: center; gap: .35rem; }
-.chat-status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green2); animation: pulse-dot 2s ease-in-out infinite; }
-@keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.7)} }
-
-.chat-messages {
-  padding: 1.25rem;
-  min-height: 200px;
-  display: flex; flex-direction: column; gap: .85rem;
-}
-.chat-bubble {
-  max-width: 85%;
-  padding: .75rem 1rem;
-  border-radius: 12px;
-  font-size: .85rem; line-height: 1.6;
-}
-.chat-bubble-left {
-  background: var(--bg4);
-  border: 1px solid var(--bdr);
-  color: var(--ink2);
-  align-self: flex-start;
-  border-bottom-left-radius: 3px;
-}
-.chat-bubble-right {
-  background: var(--amber);
-  color: var(--bg);
-  align-self: flex-end;
-  border-bottom-right-radius: 3px;
-  display: none;
-}
-.chat-bubble-right.show { display: block; }
-.chat-bubble-sender {
-  font-family: var(--ff-mono); font-size: .58rem;
-  letter-spacing: .08em; text-transform: uppercase;
-  margin-bottom: .3rem; opacity: .7;
-}
-
-.chat-form { border-top: 1px solid var(--bdr); }
-.chat-field-row {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
-  border-bottom: 1px solid var(--bdr);
-}
-.chat-field {
-  padding: .75rem 1.1rem;
-  background: transparent;
-  border: none; border-right: 1px solid var(--bdr);
-  color: var(--ink); font-family: var(--ff-body); font-size: .84rem;
-  outline: none;
-}
-.chat-field:last-child { border-right: none; }
-.chat-field::placeholder { color: var(--ink3); }
-.chat-field:focus { background: rgba(255,255,255,.02); }
-.chat-select {
-  padding: .75rem 1.1rem;
-  background: var(--bg3);
-  border: none; border-bottom: 1px solid var(--bdr);
-  color: var(--ink3); font-family: var(--ff-body); font-size: .82rem;
-  outline: none; width: 100%; cursor: pointer;
-}
-.chat-select:focus { color: var(--ink); }
-.chat-textarea-wrap {
-  display: flex; align-items: flex-end;
-  padding: .75rem 1.1rem .75rem 1.1rem;
-  gap: .75rem;
-}
-.chat-textarea {
-  flex: 1;
-  background: transparent; border: none;
-  color: var(--ink); font-family: var(--ff-body); font-size: .88rem;
-  resize: none; outline: none; line-height: 1.55;
-  min-height: 44px; max-height: 140px;
-}
-.chat-textarea::placeholder { color: var(--ink3); }
-.chat-send-btn {
-  width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
-  background: var(--amber); border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all .18s; font-size: 1rem;
-}
-.chat-send-btn:hover { background: var(--amber2); transform: scale(1.05); }
-.chat-send-btn:disabled { background: var(--bg4); cursor: not-allowed; transform: none; }
-.chat-success {
-  padding: 1.5rem; text-align: center;
-  font-size: .88rem; color: var(--green2);
-  display: none;
-}
-.chat-success.show { display: block; }
 </style>
 </head>
 <body>
@@ -2081,68 +1968,7 @@ footer{padding:2.5rem;border-top:1px solid var(--bdr);display:flex;align-items:c
   <div class="gloss-body">
     <div class="container" id="glossContainer"></div>
   </div>
-  
-<!-- CONTACT PAGE -->
-<div class="page" id="page-contact">
-  <div style="padding:3.5rem 0 1.5rem;border-bottom:1px solid var(--bdr);">
-    <div class="container">
-      <div style="font-family:var(--ff-mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--amber2);margin-bottom:.5rem;">CMRPstudy</div>
-      <h1 style="font-family:var(--ff-d);font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;color:var(--ink);line-height:1.15;margin-bottom:.6rem;">Get in Touch</h1>
-      <p style="font-size:.9rem;color:var(--ink2);line-height:1.75;max-width:520px;">Found an error? Have a recommendation? Want to suggest a practice question? Every message goes directly to Chad.</p>
-    </div>
-  </div>
-  <div class="container">
-    <div style="max-width:680px;margin:0 auto;padding:3rem 0 5rem;">
-      <div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rl);overflow:hidden;margin-top:1rem;">
-        <!-- Chat header -->
-        <div style="display:flex;align-items:center;gap:.85rem;padding:1rem 1.25rem;background:rgba(0,0,0,.2);border-bottom:1px solid var(--bdr);">
-          <div style="width:36px;height:36px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">⚙️</div>
-          <div>
-            <div style="font-weight:600;font-size:.88rem;color:var(--ink);">Chad Zahner — CMRPstudy</div>
-            <div style="font-family:var(--ff-mono);font-size:.62rem;color:var(--green2);display:flex;align-items:center;gap:.35rem;">
-              <span style="width:6px;height:6px;border-radius:50%;background:var(--green2);display:inline-block;animation:pulse-dot 2s ease-in-out infinite;"></span>
-              Reads every message
-            </div>
-          </div>
-        </div>
-        <!-- Chat messages -->
-        <div id="chat-messages" style="padding:1.25rem;min-height:140px;display:flex;flex-direction:column;gap:.85rem;">
-          <div style="max-width:85%;padding:.75rem 1rem;border-radius:12px;border-bottom-left-radius:3px;background:var(--bg4);border:1px solid var(--bdr);font-size:.85rem;line-height:1.6;color:var(--ink2);align-self:flex-start;">
-            <div style="font-family:var(--ff-mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.3rem;opacity:.7;">CMRPstudy</div>
-            Hey! Thanks for using the site. Found something wrong, have a suggestion, or want to contribute a practice question? Drop a message below.
-          </div>
-        </div>
-        <!-- Form -->
-        <form id="chat-form" onsubmit="submitChat(event)" style="border-top:1px solid var(--bdr);">
-          <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--bdr);">
-            <input id="cf-name" type="text" placeholder="Your name" required autocomplete="off"
-              style="padding:.75rem 1.1rem;background:transparent;border:none;border-right:1px solid var(--bdr);color:var(--ink);font-family:var(--ff-body);font-size:.84rem;outline:none;width:100%;">
-            <input id="cf-email" type="email" placeholder="Your email" required autocomplete="off"
-              style="padding:.75rem 1.1rem;background:transparent;border:none;color:var(--ink);font-family:var(--ff-body);font-size:.84rem;outline:none;width:100%;">
-          </div>
-          <select id="cf-type" style="padding:.75rem 1.1rem;background:var(--bg3);border:none;border-bottom:1px solid var(--bdr);color:var(--ink3);font-family:var(--ff-body);font-size:.82rem;outline:none;width:100%;cursor:pointer;">
-            <option value="" disabled selected>What kind of message is this?</option>
-            <option value="Error / Correction">📋 Error or correction in study content</option>
-            <option value="Question Suggestion">✎ Suggest a practice exam question</option>
-            <option value="Flashcard Suggestion">📇 Suggest a flashcard</option>
-            <option value="General Feedback">💬 General feedback</option>
-            <option value="Other">📩 Other</option>
-          </select>
-          <div style="display:flex;align-items:flex-end;padding:.75rem 1.1rem;gap:.75rem;">
-            <textarea id="cf-message" placeholder="Type your message..." rows="2" required
-              oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,140)+'px'"
-              style="flex:1;background:transparent;border:none;color:var(--ink);font-family:var(--ff-body);font-size:.88rem;resize:none;outline:none;line-height:1.55;min-height:44px;max-height:140px;"></textarea>
-            <button type="submit" id="cf-btn"
-              style="width:40px;height:40px;border-radius:50%;flex-shrink:0;background:var(--amber);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s;font-size:1rem;">➤</button>
-          </div>
-        </form>
-      </div>
-      <p style="font-family:var(--ff-mono);font-size:.62rem;color:var(--ink3);text-align:center;margin-top:1rem;">Messages go directly to <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a7c4d7ddc6cfc9c2d5e7c0cac6cecb89c4c8ca">[email&#160;protected]</a> · Usually responded to within 48 hours</p>
-    </div>
-  </div>
-</div>
-
-<footer>
+  <footer>
     <div class="footer-note">© 2026 CMRPstudy · 100+ terms · Based on SMRP BoK and industry standards</div>
     <div class="footer-links">
       <span class="footer-link" onclick="showPage('home')">Home</span>
@@ -2151,15 +1977,207 @@ footer{padding:2.5rem;border-top:1px solid var(--bdr);display:flex;align-items:c
     </div>
   </footer>
 </div>
+<div class="page" id="page-practice">
+  <div class="hero">
+    <div class="container">
+      <div class="eyebrow">CMRPstudy · Practice Tools</div>
+      <h1 class="page-title">Flashcards &amp;<br>Practice Exam</h1>
+      <p class="page-sub">200 flashcards and 100 exam-style questions covering all 5 SMRP domains and 5 Pillars of Reliability. Track your score, identify weak domains, and study to world-class benchmarks.</p>
+      <div class="stats-row">
+        <div><div class="stat-val">200</div><div class="stat-lbl">Flashcards</div></div>
+        <div><div class="stat-val">100</div><div class="stat-lbl">Practice Questions</div></div>
+        <div><div class="stat-val">5</div><div class="stat-lbl">SMRP Domains</div></div>
+        <div><div class="stat-val">~520</div><div class="stat-lbl">Passing Score Target</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="home-grid">
+      <div class="home-card" onclick="showPage('fc')" style="--hc-glow:rgba(212,130,10,0.08);">
+        <div class="hc-icon">📇</div>
+        <div class="hc-title">Flashcard Deck</div>
+        <div class="hc-desc">200 cards spanning all 5 domains, 5 Pillars, Weibull analysis, NDT, motor failure modes, lubrication, alignment, and work management. Filter by category, mark known/unknown, track your progress.</div>
+        <div class="hc-meta">
+          <span class="badge badge-amb">200 cards</span>
+          <span class="badge badge-stl">8 categories</span>
+          <span class="badge badge-grn">Spaced repetition</span>
+        </div>
+        <div class="hc-arr">Open Flashcards →</div>
+      </div>
+      <div class="home-card" onclick="showPage('qz')" style="--hc-glow:rgba(61,122,79,0.08);">
+        <div class="hc-icon">📝</div>
+        <div class="hc-title">Practice Exam</div>
+        <div class="hc-desc">100 multiple-choice questions with full explanations. Choose all domains or focus on one. Each answer reveals a detailed rationale explaining why it's correct and why the wrong answers are wrong.</div>
+        <div class="hc-meta">
+          <span class="badge badge-grn">100 questions</span>
+          <span class="badge badge-amb">Full explanations</span>
+          <span class="badge badge-stl">Domain breakdown</span>
+        </div>
+        <div class="hc-arr">Start Practice Exam →</div>
+      </div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rl);padding:1.5rem;margin-bottom:3rem;">
+      <div style="font-family:var(--ff-m);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber2);margin-bottom:1rem;">Domain Weight Guide — Study Priority</div>
+      <div id="domain-weight-bars"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FLASHCARD PAGE -->
+<div class="page" id="page-fc">
+  <div class="fc-hero">
+    <div class="container">
+      <div class="eyebrow">200 Cards · All Domains</div>
+      <h1 class="page-title">Flashcard Deck</h1>
+      <p class="page-sub">Click any card to flip. Mark Known or Unknown to track mastery. Filter by category to focus your study session.</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="fc-controls">
+      <div id="fc-cat-btns"></div>
+      <input class="fc-search" type="text" id="fc-search" placeholder="Search cards..." oninput="filterFC()">
+      <div class="fc-count" id="fc-count-display">200 cards</div>
+    </div>
+    <div class="fc-stage">
+      <div class="fc-progress-bar"><div class="fc-progress-fill" id="fc-prog-fill" style="width:0%"></div></div>
+      <div class="fc-card-wrap">
+        <div class="fc-card" id="fc-card" onclick="flipFC()">
+          <div class="fc-face fc-front">
+            <div class="fc-domain-tag" id="fc-domain-tag"></div>
+            <div class="fc-hint">Tap to reveal definition</div>
+            <div class="fc-term" id="fc-term"></div>
+          </div>
+          <div class="fc-face fc-back">
+            <div class="fc-ans-lbl">Definition</div>
+            <div class="fc-def" id="fc-def"></div>
+          </div>
+        </div>
+      </div>
+      <div class="fc-flip-hint">Click card to flip · Use arrow keys to navigate</div>
+      <div class="fc-verdict" id="fc-verdict" style="display:none;">
+        <button class="fc-verdict-btn fc-known" onclick="markFC(true)">✓ Got it</button>
+        <button class="fc-verdict-btn fc-unknown" onclick="markFC(false)">✗ Study more</button>
+      </div>
+      <div class="fc-nav">
+        <button class="fc-nav-btn" onclick="fcMove(-1)" id="fc-prev">← Prev</button>
+        <div class="fc-ctr" id="fc-ctr">1 / 200</div>
+        <button class="fc-nav-btn" onclick="fcMove(1)" id="fc-next">Next →</button>
+      </div>
+      <div class="fc-session-stats">
+        <div class="fcs-item"><div class="fcs-val" id="fcs-known" style="color:var(--green2)">0</div><div class="fcs-lbl">Known</div></div>
+        <div class="fcs-item"><div class="fcs-val" id="fcs-unknown" style="color:var(--rust2)">0</div><div class="fcs-lbl">Study More</div></div>
+        <div class="fcs-item"><div class="fcs-val" id="fcs-remaining" style="color:var(--amber2)">200</div><div class="fcs-lbl">Remaining</div></div>
+        <div class="fcs-item"><div class="fcs-val" id="fcs-pct" style="color:var(--steel2)">0%</div><div class="fcs-lbl">Mastery</div></div>
+        <button class="fc-nav-btn" onclick="resetFC()" style="font-size:.65rem;padding:.3rem .7rem;">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ PAGE -->
+<div class="page" id="page-qz">
+  <div class="quiz-hero">
+    <div class="container">
+      <div class="eyebrow">100 Questions · Full Explanations</div>
+      <h1 class="page-title">Practice Exam</h1>
+      <p class="page-sub">Exam-style questions with detailed rationale. Select domains to focus or run all 100 for a full mock exam. Aim for 85%+ before sitting the real exam.</p>
+    </div>
+  </div>
+  <div class="container">
+    <!-- SETUP STATE -->
+    <div id="quiz-setup" class="quiz-setup">
+      <div style="font-weight:600;font-size:.92rem;color:var(--ink);margin-bottom:1rem;">Select domains to include:</div>
+      <div class="qs-grid" id="qs-domain-grid"></div>
+      <div style="display:flex;align-items:center;gap:1.5rem;margin-top:1.25rem;flex-wrap:wrap;">
+        <button class="quiz-start-btn" onclick="startQuiz()">Start Exam →</button>
+        <div style="font-family:var(--ff-m);font-size:.7rem;color:var(--ink3);" id="qs-selected-count">100 questions selected</div>
+      </div>
+    </div>
+    <!-- ACTIVE QUIZ -->
+    <div id="quiz-active" class="quiz-active" style="display:none;">
+      <div class="qa-topbar">
+        <div><div class="qa-score" id="qa-score">0 / 0</div><div class="qa-score-lbl">Correct</div></div>
+        <div class="qa-prog-wrap">
+          <div class="qa-prog-lbl" id="qa-prog-lbl">Question 1 of 100</div>
+          <div class="qa-prog-track"><div class="qa-prog-fill" id="qa-prog-fill" style="width:0%"></div></div>
+        </div>
+        <button class="qa-reset" onclick="resetQuiz()">↺ Reset</button>
+      </div>
+      <div id="qa-questions"></div>
+      <div id="qa-results-btn" style="display:none;text-align:center;padding:1.5rem 0;">
+        <button class="quiz-start-btn" onclick="showResults()">View Results →</button>
+      </div>
+    </div>
+    <!-- RESULTS -->
+    <div id="quiz-results" class="quiz-results" style="display:none;"></div>
+  </div>
+</div>
+
+<div class="page" id="page-contact">
+  <div style="padding:3.5rem 0 1.5rem;border-bottom:1px solid var(--border);">
+    <div class="container">
+      <div style="font-family:var(--ff-mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--amber2);margin-bottom:.5rem;">CMRPstudy</div>
+      <h1 style="font-family:var(--ff-display);font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;color:var(--ink);line-height:1.15;margin-bottom:.6rem;">Get in Touch</h1>
+      <p style="font-size:.9rem;color:var(--ink2);line-height:1.75;max-width:560px;">Found an error? Have a recommendation? Want to suggest a practice question, a flashcard, or a missing topic? Every message goes directly to Chad.</p>
+    </div>
+  </div>
+  <div class="container">
+    <div style="max-width:680px;margin:2rem auto 5rem;">
+      <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:12px;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:.85rem;padding:1rem 1.25rem;background:rgba(0,0,0,.25);border-bottom:1px solid var(--border);">
+          <div style="width:38px;height:38px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">⚙</div>
+          <div>
+            <div style="font-weight:600;font-size:.9rem;color:var(--ink);">Chad Zahner — CMRPstudy</div>
+            <div style="font-family:var(--ff-mono);font-size:.62rem;color:var(--green2);display:flex;align-items:center;gap:.4rem;margin-top:.2rem;">
+              <span style="width:6px;height:6px;border-radius:50%;background:var(--green2);display:inline-block;"></span>
+              Reads every message personally
+            </div>
+          </div>
+        </div>
+        <div id="chat-messages" style="padding:1.5rem;min-height:140px;display:flex;flex-direction:column;gap:1rem;">
+          <div style="max-width:88%;padding:.8rem 1.1rem;border-radius:14px;border-bottom-left-radius:3px;background:var(--bg4);border:1px solid var(--border);font-size:.86rem;line-height:1.65;color:var(--ink2);">
+            <div style="font-family:var(--ff-mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.35rem;color:var(--amber2);">CMRPstudy</div>
+            Hey — thanks for using the site. Found an error, have a recommendation, want to suggest a question or flashcard, or anything else? Drop it here.
+          </div>
+        </div>
+        <div style="border-top:1px solid var(--border);">
+          <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border);">
+            <input id="cf-name" type="text" placeholder="Your name" autocomplete="off" style="padding:.8rem 1.1rem;background:transparent;border:none;border-right:1px solid var(--border);color:var(--ink);font-size:.85rem;outline:none;width:100%;">
+            <input id="cf-email" type="email" placeholder="Your email (optional)" autocomplete="off" style="padding:.8rem 1.1rem;background:transparent;border:none;color:var(--ink);font-size:.85rem;outline:none;width:100%;">
+          </div>
+          <select id="cf-type" style="padding:.8rem 1.1rem;background:var(--bg3);border:none;border-bottom:1px solid var(--border);color:var(--ink3);font-size:.83rem;outline:none;width:100%;cursor:pointer;">
+            <option value="" disabled selected>What kind of message?</option>
+            <option>Error or correction in study content</option>
+            <option>Suggest a practice exam question</option>
+            <option>Suggest a flashcard</option>
+            <option>Missing topic I should add</option>
+            <option>General feedback or recommendation</option>
+            <option>Other</option>
+          </select>
+          <div style="display:flex;align-items:flex-end;padding:.8rem 1.1rem;gap:.75rem;">
+            <textarea id="cf-message" placeholder="Type your message..." rows="2"
+              oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,160)+'px'"
+              style="flex:1;background:transparent;border:none;color:var(--ink);font-size:.88rem;resize:none;outline:none;line-height:1.55;min-height:48px;max-height:160px;"></textarea>
+            <button onclick="submitChat()" id="cf-btn" style="width:42px;height:42px;border-radius:50%;flex-shrink:0;background:var(--amber);border:none;cursor:pointer;font-size:1.1rem;transition:all .18s;">➤</button>
+          </div>
+        </div>
+      </div>
+      <p style="font-family:var(--ff-mono);font-size:.62rem;color:var(--ink3);text-align:center;margin-top:1rem;">Messages go to cpzahner@gmail.com · Responses within 48 hours</p>
+    </div>
+  </div>
+</div>
+
 
 <!-- ══════════════════ JAVASCRIPT ════════════════ -->
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ─── PAGE NAV ─────────────────────────────────────────────
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-  document.getElementById('page-' + id).classList.add('active');
-  document.getElementById('nl-' + id)?.classList.add('active');
+  var _p = document.getElementById('page-' + id);
+  if (_p) _p.classList.add('active');
+  var _n = document.getElementById('nl-' + id);
+  if (_n) _n.classList.add('active');
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
@@ -2844,8 +2862,10 @@ const QUESTIONS = [
 {d:'D5',q:'Inventory turns for an MRO storeroom typically runs:',o:['8–12 turns per year (similar to manufacturing inventory)','20–30 turns per year (high velocity)','1–3 turns per year (intentionally low due to insurance and critical spares)','0.5 turns per year (most parts rarely used)'],a:2,e:'MRO inventory turns at 1–3× per year, compared to manufacturing raw material/WIP at 8–12×. This is intentional — MRO must carry critical and insurance spares with zero or near-zero usage. Low turns indicate that MRO inventory is stocked for availability (when needed, immediately), not throughput velocity.'},
 {d:'D5',q:'A maintenance craft technician completes a planned job 30 minutes faster than estimated and notes that two of the specified steps were unnecessary. The CORRECT action per Palmer\'s system is:',o:['Revise the estimate upward to protect schedule compliance next time','Report findings on the job feedback form so the planner can update the job plan file','No action — minor variances are expected','Inform the supervisor to adjust future staffing levels'],a:1,e:'The job feedback form (Principle 5) is how individual field experience improves the organizational job plan. The planner reviews feedback and updates: estimated hours (if consistently fast/slow), procedure steps (remove unnecessary steps, add missing steps), parts list, and lessons learned. This is the continuous improvement engine of the planning system.'},
 ];
+
 </script>
 <script>
+
 // ═══════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════
@@ -2865,19 +2885,14 @@ let qzDomainFilter = new Set(DOMAINS);
 // ═══════════════════════════════════════════════════════════
 // PAGE NAV
 // ═══════════════════════════════════════════════════════════
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('page-' + id).classList.add('active');
-  document.getElementById('nt-' + id)?.classList.add('active');
-  window.scrollTo({top:0,behavior:'smooth'});
-}
+// showPage handled by site
 
 // ═══════════════════════════════════════════════════════════
 // HOME
 // ═══════════════════════════════════════════════════════════
 function buildDomainBars() {
   const el = document.getElementById('domain-weight-bars');
+  if (!el) return;
   const domains = [
     {name:'D3 Equipment Reliability',pct:45,color:'var(--amber)'},
     {name:'D1 Business & Management',pct:15,color:'var(--steel2)'},
@@ -2932,6 +2947,7 @@ function filterFC() {
 }
 
 function renderFC() {
+  if (!document.getElementById('fc-term')) return;
   if (fcActive.length === 0) {
     document.getElementById('fc-term').textContent = 'No cards match filter';
     document.getElementById('fc-def').textContent = '';
@@ -2988,6 +3004,7 @@ function markFC(known) {
 }
 
 function updateFCStats() {
+  if (!document.getElementById('fcs-known')) return;
   const reviewed = fcKnown.size + fcUnknown.size;
   const pct = FLASHCARDS.length > 0 ? Math.round((fcKnown.size / FLASHCARDS.length) * 100) : 0;
   document.getElementById('fcs-known').textContent = fcKnown.size;
@@ -3183,6 +3200,7 @@ function resetQuiz() {
 // NAV SCORE
 // ═══════════════════════════════════════════════════════════
 function updateNavScore() {
+  if (!document.getElementById('nav-fc-count')) return;
   document.getElementById('nav-fc-count').textContent = fcKnown.size + fcUnknown.size;
   if (qzAnswered > 0) {
     const pct = Math.round((qzCorrect / qzAnswered) * 100);
@@ -3205,199 +3223,58 @@ document.addEventListener('keydown', e => {
   if (e.key === 's' || e.key === 'S') markFC(false);
 });
 
-// ═══════════════════════════════════════════════════════════
 // INIT
-// ═══════════════════════════════════════════════════════════
-buildDomainBars();
-buildFCCatBtns();
-filterFC();
-buildQuizSetup();
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof buildDomainBars === 'function') buildDomainBars();
+  if (typeof buildFCCatBtns === 'function') buildFCCatBtns();
+  if (typeof filterFC === 'function') filterFC();
+  if (typeof buildQuizSetup === 'function') buildQuizSetup();
+});
+
 
 </script>
-
 <script>
-function submitChat(e) {
-  e.preventDefault();
-  const btn = document.getElementById('cf-btn');
-  const name = document.getElementById('cf-name').value;
-  const email = document.getElementById('cf-email').value;
-  const type = document.getElementById('cf-type').value || 'General';
-  const msg = document.getElementById('cf-message').value;
 
-  // Show user bubble
-  const bubble = document.createElement('div');
-  bubble.style.cssText = 'max-width:85%;padding:.75rem 1rem;border-radius:12px;border-bottom-right-radius:3px;background:var(--amber);color:var(--bg);align-self:flex-end;font-size:.85rem;line-height:1.6;';
-  bubble.innerHTML = '<div style="font-family:var(--ff-mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.3rem;opacity:.7;">You</div>' + msg;
-  document.getElementById('chat-messages').appendChild(bubble);
-  bubble.scrollIntoView({behavior:'smooth'});
-
-  btn.disabled = true;
-  btn.textContent = '...';
-
+function submitChat() {
+  var name = document.getElementById('cf-name').value.trim() || 'Anonymous';
+  var email = document.getElementById('cf-email').value.trim() || 'not provided';
+  var type = document.getElementById('cf-type').value || 'General';
+  var msg = document.getElementById('cf-message').value.trim();
+  if (!msg) { document.getElementById('cf-message').focus(); return; }
+  var btn = document.getElementById('cf-btn');
+  var msgs = document.getElementById('chat-messages');
+  var ub = document.createElement('div');
+  ub.style.cssText = 'max-width:88%;padding:.8rem 1.1rem;border-radius:14px;border-bottom-right-radius:3px;background:var(--amber);color:var(--bg);align-self:flex-end;font-size:.86rem;line-height:1.65;margin-left:auto;';
+  ub.innerHTML = '<div style="font-family:var(--ff-mono);font-size:.58rem;text-transform:uppercase;margin-bottom:.35rem;opacity:.65;">You</div>' + msg;
+  msgs.appendChild(ub);
+  ub.scrollIntoView({behavior:'smooth'});
+  btn.disabled = true; btn.style.background = 'var(--bg4)'; btn.textContent = '...';
   fetch('https://formspree.io/f/mgonrbbd', {
     method: 'POST',
-    body: JSON.stringify({ name, email, type, message: msg }),
-    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
-  }).then(r => {
-    if (r.ok) {
-      setTimeout(() => {
-        const reply = document.createElement('div');
-        reply.style.cssText = 'max-width:85%;padding:.75rem 1rem;border-radius:12px;border-bottom-left-radius:3px;background:var(--bg4);border:1px solid var(--bdr);font-size:.85rem;line-height:1.6;color:var(--ink2);align-self:flex-start;';
-        reply.innerHTML = '<div style="font-family:var(--ff-mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.3rem;opacity:.7;">CMRPstudy</div>Got it — thanks! I'll review your message and get back to you within 48 hours.';
-        document.getElementById('chat-messages').appendChild(reply);
-        reply.scrollIntoView({behavior:'smooth'});
-        document.getElementById('cf-name').value='';
-        document.getElementById('cf-email').value='';
-        document.getElementById('cf-message').value='';
-        document.getElementById('cf-type').selectedIndex=0;
-        btn.disabled = false;
-        btn.textContent = '➤';
-      }, 600);
-    } else {
-      btn.disabled = false;
-      btn.textContent = '➤';
-      alert('Something went wrong — try emailing cpzahner@gmail.com directly.');
-    }
-  }).catch(() => {
-    btn.disabled = false;
-    btn.textContent = '➤';
-    alert('Something went wrong — try emailing cpzahner@gmail.com directly.');
+    headers: {'Accept':'application/json','Content-Type':'application/json'},
+    body: JSON.stringify({name:name, email:email, type:type, message:msg})
+  }).then(function(r) {
+    setTimeout(function() {
+      var rb = document.createElement('div');
+      rb.style.cssText = 'max-width:88%;padding:.8rem 1.1rem;border-radius:14px;border-bottom-left-radius:3px;background:var(--bg4);border:1px solid var(--border);font-size:.86rem;line-height:1.65;color:var(--ink2);';
+      rb.innerHTML = r.ok
+        ? '<div style="font-family:var(--ff-mono);font-size:.58rem;text-transform:uppercase;margin-bottom:.35rem;color:var(--amber2);">CMRPstudy</div>Got it — thanks! Will review and get back to you within 48 hours.'
+        : '<div style="font-family:var(--ff-mono);font-size:.58rem;text-transform:uppercase;margin-bottom:.35rem;color:var(--rust2);">Error</div>Something went wrong. Email cpzahner@gmail.com directly.';
+      msgs.appendChild(rb);
+      rb.scrollIntoView({behavior:'smooth'});
+      if (r.ok) {
+        document.getElementById('cf-name').value = '';
+        document.getElementById('cf-email').value = '';
+        document.getElementById('cf-message').value = '';
+        document.getElementById('cf-type').selectedIndex = 0;
+      }
+      btn.disabled = false; btn.style.background = 'var(--amber)'; btn.textContent = '➤';
+    }, 500);
+  }).catch(function() {
+    btn.disabled = false; btn.style.background = 'var(--amber)'; btn.textContent = '➤';
+    alert('Error. Email cpzahner@gmail.com directly.');
   });
-}
-
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 140) + 'px';
 }
 </script>
 </body>
 </html>
-<div class="page active" id="page-practice">
-  <div class="hero">
-    <div class="container">
-      <div class="eyebrow">CMRPstudy · Practice Tools</div>
-      <h1 class="page-title">Flashcards &amp;<br>Practice Exam</h1>
-      <p class="page-sub">200 flashcards and 100 exam-style questions covering all 5 SMRP domains and 5 Pillars of Reliability. Track your score, identify weak domains, and study to world-class benchmarks.</p>
-      <div class="stats-row">
-        <div><div class="stat-val">200</div><div class="stat-lbl">Flashcards</div></div>
-        <div><div class="stat-val">100</div><div class="stat-lbl">Practice Questions</div></div>
-        <div><div class="stat-val">5</div><div class="stat-lbl">SMRP Domains</div></div>
-        <div><div class="stat-val">~520</div><div class="stat-lbl">Passing Score Target</div></div>
-      </div>
-    </div>
-  </div>
-  <div class="container">
-    <div class="home-grid">
-      <div class="home-card" onclick="showPage('fc')" style="--hc-glow:rgba(212,130,10,0.08);">
-        <div class="hc-icon">📇</div>
-        <div class="hc-title">Flashcard Deck</div>
-        <div class="hc-desc">200 cards spanning all 5 domains, 5 Pillars, Weibull analysis, NDT, motor failure modes, lubrication, alignment, and work management. Filter by category, mark known/unknown, track your progress.</div>
-        <div class="hc-meta">
-          <span class="badge badge-amb">200 cards</span>
-          <span class="badge badge-stl">8 categories</span>
-          <span class="badge badge-grn">Spaced repetition</span>
-        </div>
-        <div class="hc-arr">Open Flashcards →</div>
-      </div>
-      <div class="home-card" onclick="showPage('qz')" style="--hc-glow:rgba(61,122,79,0.08);">
-        <div class="hc-icon">📝</div>
-        <div class="hc-title">Practice Exam</div>
-        <div class="hc-desc">100 multiple-choice questions with full explanations. Choose all domains or focus on one. Each answer reveals a detailed rationale explaining why it's correct and why the wrong answers are wrong.</div>
-        <div class="hc-meta">
-          <span class="badge badge-grn">100 questions</span>
-          <span class="badge badge-amb">Full explanations</span>
-          <span class="badge badge-stl">Domain breakdown</span>
-        </div>
-        <div class="hc-arr">Start Practice Exam →</div>
-      </div>
-    </div>
-    <div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rl);padding:1.5rem;margin-bottom:3rem;">
-      <div style="font-family:var(--ff-m);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber2);margin-bottom:1rem;">Domain Weight Guide — Study Priority</div>
-      <div id="domain-weight-bars"></div>
-    </div>
-  </div>
-</div>
-
-<!-- FLASHCARD PAGE -->
-<div class="page" id="page-fc">
-  <div class="fc-hero">
-    <div class="container">
-      <div class="eyebrow">200 Cards · All Domains</div>
-      <h1 class="page-title">Flashcard Deck</h1>
-      <p class="page-sub">Click any card to flip. Mark Known or Unknown to track mastery. Filter by category to focus your study session.</p>
-    </div>
-  </div>
-  <div class="container">
-    <div class="fc-controls">
-      <div id="fc-cat-btns"></div>
-      <input class="fc-search" type="text" id="fc-search" placeholder="Search cards..." oninput="filterFC()">
-      <div class="fc-count" id="fc-count-display">200 cards</div>
-    </div>
-    <div class="fc-stage">
-      <div class="fc-progress-bar"><div class="fc-progress-fill" id="fc-prog-fill" style="width:0%"></div></div>
-      <div class="fc-card-wrap">
-        <div class="fc-card" id="fc-card" onclick="flipFC()">
-          <div class="fc-face fc-front">
-            <div class="fc-domain-tag" id="fc-domain-tag"></div>
-            <div class="fc-hint">Tap to reveal definition</div>
-            <div class="fc-term" id="fc-term"></div>
-          </div>
-          <div class="fc-face fc-back">
-            <div class="fc-ans-lbl">Definition</div>
-            <div class="fc-def" id="fc-def"></div>
-          </div>
-        </div>
-      </div>
-      <div class="fc-flip-hint">Click card to flip · Use arrow keys to navigate</div>
-      <div class="fc-verdict" id="fc-verdict" style="display:none;">
-        <button class="fc-verdict-btn fc-known" onclick="markFC(true)">✓ Got it</button>
-        <button class="fc-verdict-btn fc-unknown" onclick="markFC(false)">✗ Study more</button>
-      </div>
-      <div class="fc-nav">
-        <button class="fc-nav-btn" onclick="fcMove(-1)" id="fc-prev">← Prev</button>
-        <div class="fc-ctr" id="fc-ctr">1 / 200</div>
-        <button class="fc-nav-btn" onclick="fcMove(1)" id="fc-next">Next →</button>
-      </div>
-      <div class="fc-session-stats">
-        <div class="fcs-item"><div class="fcs-val" id="fcs-known" style="color:var(--green2)">0</div><div class="fcs-lbl">Known</div></div>
-        <div class="fcs-item"><div class="fcs-val" id="fcs-unknown" style="color:var(--rust2)">0</div><div class="fcs-lbl">Study More</div></div>
-        <div class="fcs-item"><div class="fcs-val" id="fcs-remaining" style="color:var(--amber2)">200</div><div class="fcs-lbl">Remaining</div></div>
-        <div class="fcs-item"><div class="fcs-val" id="fcs-pct" style="color:var(--steel2)">0%</div><div class="fcs-lbl">Mastery</div></div>
-        <button class="fc-nav-btn" onclick="resetFC()" style="font-size:.65rem;padding:.3rem .7rem;">Reset</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- QUIZ PAGE -->
-<div class="page" id="page-qz">
-  <div class="quiz-hero">
-    <div class="container">
-      <div class="eyebrow">100 Questions · Full Explanations</div>
-      <h1 class="page-title">Practice Exam</h1>
-      <p class="page-sub">Exam-style questions with detailed rationale. Select domains to focus or run all 100 for a full mock exam. Aim for 85%+ before sitting the real exam.</p>
-    </div>
-  </div>
-  <div class="container">
-    <!-- SETUP STATE -->
-    <div id="quiz-setup" class="quiz-setup">
-      <div style="font-weight:600;font-size:.92rem;color:var(--ink);margin-bottom:1rem;">Select domains to include:</div>
-      <div class="qs-grid" id="qs-domain-grid"></div>
-      <div style="display:flex;align-items:center;gap:1.5rem;margin-top:1.25rem;flex-wrap:wrap;">
-        <button class="quiz-start-btn" onclick="startQuiz()">Start Exam →</button>
-        <div style="font-family:var(--ff-m);font-size:.7rem;color:var(--ink3);" id="qs-selected-count">100 questions selected</div>
-      </div>
-    </div>
-    <!-- ACTIVE QUIZ -->
-    <div id="quiz-active" class="quiz-active" style="display:none;">
-      <div class="qa-topbar">
-        <div><div class="qa-score" id="qa-score">0 / 0</div><div class="qa-score-lbl">Correct</div></div>
-        <div class="qa-prog-wrap">
-          <div class="qa-prog-lbl" id="qa-prog-lbl">Question 1 of 100</div>
-          <div class="qa-prog-track"><div class="qa-prog-fill" id="qa-prog-fill" style="width:0%"></div></div>
-        </div>
-        <button class="qa-reset" onclick="resetQuiz()">↺ Reset</button>
-      </div>
-      <div id="qa-questions"></div>
-      <div id="qa-results-btn" style="display:none;text-align:center;padding:1.5rem 0;">
- 
