@@ -182,8 +182,8 @@ footer{padding:2.5rem;border-top:1px solid var(--bdr);display:flex;align-items:c
       <p class="page-sub">Free flashcards and practice questions covering every Ramsey Multicraft domain. Built by a maintenance practitioner. No login, no cost, no fluff.</p>
       <div class="stats-row">
         <div><div class="stat-val">120</div><div class="stat-lbl">Flashcards</div></div>
-        <div><div class="stat-val">80</div><div class="stat-lbl">Practice questions</div></div>
-        <div><div class="stat-val">8</div><div class="stat-lbl">Domains</div></div>
+        <div><div class="stat-val">91</div><div class="stat-lbl">Practice questions</div></div>
+        <div><div class="stat-val">9</div><div class="stat-lbl">Domains</div></div>
         <div><div class="stat-val">70%</div><div class="stat-lbl">Pass target</div></div>
       </div>
     </div>
@@ -196,7 +196,7 @@ footer{padding:2.5rem;border-top:1px solid var(--bdr);display:flex;align-items:c
         <div class="hc-desc">120 cards spanning all 8 domains. Filter by domain, mark known vs. unknown, and track your mastery session by session.</div>
         <div class="hc-meta">
           <span class="badge badge-amb">120 cards</span>
-          <span class="badge badge-stl">8 domains</span>
+          <span class="badge badge-stl">9 domains</span>
           <span class="badge badge-grn">Track mastery</span>
         </div>
         <div class="hc-arr">Open Flashcards &rarr;</div>
@@ -206,7 +206,7 @@ footer{padding:2.5rem;border-top:1px solid var(--bdr);display:flex;align-items:c
         <div class="hc-title">Practice Exam</div>
         <div class="hc-desc">80 questions. Answer all of them, then submit to see your score, domain breakdown, and full answer review with explanations.</div>
         <div class="hc-meta">
-          <span class="badge badge-grn">80 questions</span>
+          <span class="badge badge-grn">91 questions</span>
           <span class="badge badge-amb">End-of-test reveal</span>
           <span class="badge badge-stl">Domain breakdown</span>
         </div>
@@ -241,7 +241,7 @@ footer{padding:2.5rem;border-top:1px solid var(--bdr);display:flex;align-items:c
 <div class="page" id="page-fc">
   <div class="fc-hero">
     <div class="container">
-      <div class="eyebrow">120 Cards &middot; 8 Domains</div>
+      <div class="eyebrow">135 Cards &middot; 9 Domains</div>
       <h1 class="page-title">Ramsey Flashcards</h1>
       <p class="page-sub">Click any card to flip. Mark Known or Unknown to track mastery. Keyboard: &larr;&rarr; navigate &middot; Space flip &middot; G = Got it &middot; S = Study more.</p>
     </div>
@@ -292,7 +292,7 @@ footer{padding:2.5rem;border-top:1px solid var(--bdr);display:flex;align-items:c
 <div class="page" id="page-qz">
   <div class="quiz-hero">
     <div class="container">
-      <div class="eyebrow">80 Questions &middot; End-of-Test Scoring</div>
+      <div class="eyebrow">90 Questions &middot; End-of-Test Scoring</div>
       <h1 class="page-title">Ramsey Practice Exam</h1>
       <p class="page-sub">Answer all questions, then hit Submit to see your score and full answer review. No hints during the exam &mdash; just like the real test.</p>
     </div>
@@ -338,10 +338,11 @@ function showPage(id){
 function buildDomainBars(){
   var el=document.getElementById('domain-bars');if(!el)return;
   var d=[
-    {n:'Electrical Fundamentals',p:20,c:'var(--steel2)'},{n:'Motors & Controls',p:16,c:'var(--amber2)'},
-    {n:'Mechanical & Drives',p:16,c:'var(--green2)'},{n:'Hydraulics',p:13,c:'var(--rust2)'},
-    {n:'Pneumatics',p:10,c:'#a78bfa'},{n:'Print Reading',p:10,c:'#2dd4bf'},
-    {n:'Trade Math',p:8,c:'var(--amber2)'},{n:'Safety & LOTO',p:7,c:'var(--rust2)'},
+    {n:'Electrical Fundamentals',p:18,c:'var(--steel2)'},{n:'Motors & Controls',p:14,c:'var(--amber2)'},
+    {n:'Mechanical & Drives',p:14,c:'var(--green2)'},{n:'Hydraulics',p:11,c:'var(--rust2)'},
+    {n:'Pneumatics',p:9,c:'#a78bfa'},{n:'PLC & Controls',p:13,c:'#2dd4bf'},
+    {n:'Print Reading',p:8,c:'var(--amber2)'},{n:'Trade Math',p:7,c:'var(--steel2)'},
+    {n:'Safety & LOTO',p:6,c:'var(--rust2)'},
   ];
   el.innerHTML=d.map(function(x){
     return'<div style="display:flex;align-items:center;gap:.85rem;margin-bottom:.55rem;">'
@@ -362,6 +363,7 @@ var FC_CATS={
   PRINT:{label:'Print Reading',color:'#2dd4bf',bg:'rgba(13,148,136,0.10)',bdr:'rgba(13,148,136,0.28)'},
   MATH:{label:'Trade Math',color:'var(--amber2)',bg:'rgba(212,130,10,0.10)',bdr:'rgba(212,130,10,0.28)'},
   SAFE:{label:'Safety & LOTO',color:'var(--rust2)',bg:'rgba(184,74,28,0.10)',bdr:'rgba(184,74,28,0.28)'},
+  PLC:{label:'PLC & Controls',color:'#2dd4bf',bg:'rgba(13,148,136,0.10)',bdr:'rgba(13,148,136,0.28)'},
 };
 
 var CARDS=[
@@ -470,6 +472,22 @@ var CARDS=[
 {c:'SAFE',t:'Permit-required confined space',d:'Hazardous atmosphere, engulfment, entrapment, or IDLH conditions. Requires permit, attendant, atmospheric testing, rescue plan.'},
 {c:'SAFE',t:"Heinrich's Triangle",d:"For every major injury: ~29 minor injuries and ~300 near misses \u2014 all sharing root causes. Investigate near misses."},
 {c:'SAFE',t:'Hot work permit',d:'Required for welding, cutting, grinding in areas with fire/explosion hazards.'},
+// PLC
+{c:'PLC',t:'PLC scan cycle',d:'1) Read inputs. 2) Execute program logic. 3) Update outputs. 4) Housekeeping/comms. Repeats continuously. Typical scan time: 1\u201320 ms. Faster scan = more responsive control.'},
+{c:'PLC',t:'Ladder logic',d:'Graphical programming language that mimics relay control circuits. Left rail = power. Right rail = neutral. Rungs read left to right. Contact (input) conditions on left, coil (output) on right.'},
+{c:'PLC',t:'Normally Open (NO) contact',d:'In ladder logic: open when bit = 0, closed (passes power) when bit = 1. Symbol: two vertical lines with gap. Examines bit for ON condition (XIC instruction in Allen-Bradley).'},
+{c:'PLC',t:'Normally Closed (NC) contact',d:'In ladder logic: closed (passes power) when bit = 0, opens when bit = 1. Symbol: two vertical lines with diagonal slash. Examines bit for OFF condition (XIO instruction in Allen-Bradley).'},
+{c:'PLC',t:'Output coil',d:'Energized (bit set to 1) when rung conditions are true. De-energized when rung is false. Symbol: circle with parentheses ( ). Controls physical outputs (solenoids, motors, lights) or internal bits.'},
+{c:'PLC',t:'TON \u2014 Timer On Delay',d:'Output turns ON after preset time once rung goes true. Accumulated value counts up. If rung goes false before preset, timer resets. Used to delay start or confirm sustained condition.'},
+{c:'PLC',t:'TOF \u2014 Timer Off Delay',d:'Output turns ON immediately when rung goes true. Output stays ON for preset time AFTER rung goes false. Used to keep something running briefly after a trigger condition clears.'},
+{c:'PLC',t:'CTU \u2014 Count Up',d:'Increments accumulated value each time rung transitions false\u2192true. Output (CU done bit) energizes when accumulated \u2265 preset. Reset (RES) instruction resets accumulated to 0.'},
+{c:'PLC',t:'Retentive timer (RTO)',d:'Accumulates time whenever rung is true. Retains accumulated value when rung goes false \u2014 unlike TON which resets. Requires separate RES instruction to reset. Used for tracking total run time.'},
+{c:'PLC',t:'I/O addressing (Allen-Bradley)',d:'I:0/0 = Input file 0, word 0, bit 0. O:0/1 = Output file 0, word 0, bit 1. B3:0/5 = Bit file 3, word 0, bit 5. T4:0.ACC = Timer file 4, timer 0, accumulated value.'},
+{c:'PLC',t:'Sourcing vs sinking I/O',d:'Sourcing (PNP): output supplies +24V to device. Sinking (NPN): output provides path to common (0V). Must match sensor/device type. Mixing sourcing and sinking causes wiring faults.'},
+{c:'PLC',t:'PLC vs relay control',d:'PLC: flexible, reprogrammable, handles complex logic, easy to troubleshoot with status indicators. Relay: hardwired, no programming needed, simple, immune to software bugs. PLC is standard for modern industrial control.'},
+{c:'PLC',t:'Force function (I/O forcing)',d:'Manually overrides an input or output bit to ON or OFF regardless of real-world conditions. Used for commissioning and troubleshooting ONLY. Always remove forces after use \u2014 leaving forces in place is a serious safety hazard.'},
+{c:'PLC',t:'EtherNet/IP',d:'Industrial Ethernet protocol used by Allen-Bradley (Rockwell) and many others. Uses standard TCP/IP infrastructure. Supports implicit (real-time I/O) and explicit (configuration/data) messaging.'},
+{c:'PLC',t:'Fault finding with PLC',d:'1) Check power and CPU status LEDs. 2) Check I/O status indicators on modules. 3) Go online with programming software \u2014 monitor rung continuity. 4) Force I/O to isolate field vs. program issues. 5) Check fault log/error codes.'},
 ];
 
 // ── FLASHCARD STATE ───────────────────────────────────────────────────────────
@@ -526,8 +544,8 @@ function resetFC(){fcKnown.clear();fcUnknown.clear();fcIdx=0;fcFlipped=false;fil
 
 // ── QUIZ DATA ─────────────────────────────────────────────────────────────────
 // Each question stores the correct answer TEXT (not index) so shuffling works correctly
-var DOMAINS=['ELEC','MOTOR','MECH','HYD','PNEU','PRINT','MATH','SAFE'];
-var DOMAIN_LABELS={ELEC:'Electrical Fundamentals',MOTOR:'Motors & Controls',MECH:'Mechanical & Drives',HYD:'Hydraulics',PNEU:'Pneumatics',PRINT:'Print Reading',MATH:'Trade Math',SAFE:'Safety & LOTO'};
+var DOMAINS=['ELEC','MOTOR','MECH','HYD','PNEU','PLC','PRINT','MATH','SAFE'];
+var DOMAIN_LABELS={ELEC:'Electrical Fundamentals',MOTOR:'Motors & Controls',MECH:'Mechanical & Drives',HYD:'Hydraulics',PNEU:'Pneumatics',PLC:'PLC & Controls',PRINT:'Print Reading',MATH:'Trade Math',SAFE:'Safety & LOTO'};
 
 var QUESTIONS=[
 // ELEC
@@ -618,6 +636,18 @@ var QUESTIONS=[
 {d:'SAFE',q:'A hot work permit is required when:',o:['Lifting over 50 lbs','Any outdoor work','Using any hand tools','Welding, cutting, grinding in areas with fire/explosion hazards'],a:'Welding, cutting, grinding in areas with fire/explosion hazards',e:'Required for spark/heat-producing work where flammable/combustible materials may be present.'},
 {d:'SAFE',q:'A permit-required confined space contains:',o:['Poor cell reception','Rain water','Limited lighting','Hazardous atmosphere, engulfment, entrapment, or IDLH conditions'],a:'Hazardous atmosphere, engulfment, entrapment, or IDLH conditions',e:'Requires permit, trained entrant, outside attendant, atmospheric testing, rescue plan.'},
 {d:'SAFE',q:"Heinrich's Triangle explains why near miss reporting matters because:",o:['OSHA requires near misses on 300 log','Near misses cost more than recordable injuries','Creates fault-finding paperwork','For every major injury: ~29 minor injuries and ~300 near misses \u2014 all sharing root causes'],a:"For every major injury: ~29 minor injuries and ~300 near misses \u2014 all sharing root causes",e:'Same root causes produce near misses and major injuries. Investigate near misses to prevent major incidents.'},
+// PLC
+{d:'PLC',q:'In PLC ladder logic, a Normally Open (NO) contact passes power when:',o:['The rung is false','The bit is 0 (off)','The bit is 1 (on)','The output coil is energized'],a:'The bit is 1 (on)',e:'NO contact (XIC) passes power when the referenced bit = 1. When de-energized (bit=0), it is open and blocks power flow.'},
+{d:'PLC',q:'The correct order of a PLC scan cycle is:',o:['Execute \u2192 Read inputs \u2192 Update outputs','Update outputs \u2192 Execute \u2192 Read inputs','Read inputs \u2192 Execute program \u2192 Update outputs','Execute \u2192 Update outputs \u2192 Read inputs'],a:'Read inputs \u2192 Execute program \u2192 Update outputs',e:'The PLC reads all input states first, executes the ladder logic program, then updates all outputs. This repeats continuously.'},
+{d:'PLC',q:'A TON (Timer On Delay) timer resets its accumulated value when:',o:['The preset is reached','Power is cycled to the PLC','The rung condition goes false before preset is reached','The done bit energizes'],a:'The rung condition goes false before preset is reached',e:'TON resets to zero if the rung goes false before timing out. Use RTO (retentive timer) if you need to accumulate time across multiple rung transitions.'},
+{d:'PLC',q:'What is the purpose of a holding (seal-in) contact in ladder logic?',o:['Limits the number of times an output can energize','Keeps the output coil energized after the momentary start contact opens','Prevents the output from energizing too quickly','Times how long the output stays on'],a:'Keeps the output coil energized after the momentary start contact opens',e:'Same concept as a motor control holding contact \u2014 a parallel branch keeps the rung true after a pushbutton is released.'},
+{d:'PLC',q:'In Allen-Bradley addressing, I:1/3 refers to:',o:['Output file 1, bit 3','Input file 1, word 1, bit 3','Timer file 1, preset 3','Internal bit file 1, word 3'],a:'Input file 1, word 1, bit 3',e:'I = Input file. 1 = word (slot) number. /3 = bit 3. Used in classic PLC-5 and SLC-500 addressing.'},
+{d:'PLC',q:'You are troubleshooting a PLC output that should be ON but the field device is not energized. The output indicator light on the module IS lit. The most likely cause is:',o:['Bad rung logic \u2014 output coil not energized','Blown fuse or wiring fault between output module and field device','PLC in fault mode','Wrong scan time setting'],a:'Blown fuse or wiring fault between output module and field device',e:'If the output status LED is ON, the PLC believes the output is energized. The problem is in the field wiring, fuse, or device \u2014 not the program.'},
+{d:'PLC',q:'The I/O forcing function should be used:',o:['During normal production to improve efficiency','To permanently override faulty sensors','During commissioning and troubleshooting only \u2014 forces must be removed after use','Any time an output needs to be tested'],a:'During commissioning and troubleshooting only \u2014 forces must be removed after use',e:'Leaving forces active during production bypasses the control program and is a serious safety hazard. Always verify forces are removed before returning to auto.'},
+{d:'PLC',q:'A CTU (Count Up) counter output bit energizes when:',o:['The rung goes true for the first time','The accumulated value equals or exceeds the preset','The reset rung goes true','The count reaches zero'],a:'The accumulated value equals or exceeds the preset',e:'CTU counts each false\u2192true rung transition. Done bit turns ON when accumulated \u2265 preset. Reset (RES) instruction clears accumulated back to zero.'},
+{d:'PLC',q:'EtherNet/IP is primarily associated with which PLC manufacturer?',o:['Siemens','Mitsubishi','GE Fanuc','Allen-Bradley (Rockwell Automation)'],a:'Allen-Bradley (Rockwell Automation)',e:'EtherNet/IP was developed by Rockwell and ODVA. It is the primary network protocol for Allen-Bradley PLCs (ControlLogix, CompactLogix). Also widely adopted across the industry.'},
+{d:'PLC',q:'A Normally Closed (NC) contact in ladder logic passes power when:',o:['The bit is 1 (on)','The output is energized','The bit is 0 (off)','The rung is true'],a:'The bit is 0 (off)',e:'NC contact (XIO) passes power when the referenced bit = 0. It opens (blocks power) when the bit turns ON. Used to stop a process when a condition is true.'},
+{d:'PLC',q:'When going online with a PLC for the first time to troubleshoot, the first thing you should check is:',o:['Force all outputs to verify wiring','Change the program to match expected behavior','Processor and I/O module status LEDs and the fault log','Immediately replace any faulted I/O module'],a:'Processor and I/O module status LEDs and the fault log',e:'Status LEDs and the fault log tell you whether the CPU is running, in fault, or has specific I/O issues \u2014 essential before touching the program or hardware.'},
 ];
 
 // ── QUIZ STATE ────────────────────────────────────────────────────────────────
@@ -666,7 +696,7 @@ function startQuiz(){
 
 function buildQuizQuestions(){
   var wrap=document.getElementById('qa-questions');wrap.innerHTML='';
-  var dC={ELEC:'var(--steel2)',MOTOR:'var(--amber2)',MECH:'var(--green2)',HYD:'var(--rust2)',PNEU:'#a78bfa',PRINT:'#2dd4bf',MATH:'var(--amber2)',SAFE:'var(--rust2)'};
+  var dC={ELEC:'var(--steel2)',MOTOR:'var(--amber2)',MECH:'var(--green2)',HYD:'var(--rust2)',PNEU:'#a78bfa',PLC:'#2dd4bf',PRINT:'#2dd4bf',MATH:'var(--amber2)',SAFE:'var(--rust2)'};
   qzActive.forEach(function(q,qi){
     var div=document.createElement('div');div.className='q-block';div.id='qb-'+qi;
     var opts=q.opts.map(function(o,oi){
