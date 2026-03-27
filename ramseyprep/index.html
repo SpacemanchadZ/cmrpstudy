@@ -1,12 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ramsey Multicraft Prep · Free Study Guide</title>
-<meta name="description" content="Free Ramsey Multicraft test prep — flashcards and practice exam covering Electrical, Mechanical, Hydraulics, Pneumatics, Print Reading, Trade Math, and Safety/LOTO.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>Ramsey Multicraft Prep</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#f0ece3;--ink2:#a89f8c;--ink3:#6b6356;
@@ -23,21 +23,48 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 body{font-family:var(--ff-b);background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px;overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px;}
 ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--bg5);border-radius:2px;}
+
+/* AUTH SCREEN */
+#auth-screen{position:fixed;inset:0;z-index:1000;background:var(--bg);display:flex;align-items:center;justify-content:center;}
+#auth-screen.hidden{display:none;}
+.auth-box{background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--rl);padding:2.5rem;width:100%;max-width:420px;margin:1rem;}
+.auth-logo{font-family:var(--ff-m);font-size:.9rem;font-weight:500;color:var(--ink);margin-bottom:2rem;display:flex;align-items:center;gap:.5rem;}
+.auth-logo-dot{width:10px;height:10px;border-radius:50%;background:var(--amber);}
+.auth-title{font-family:var(--ff-d);font-size:1.6rem;font-weight:700;color:var(--ink);margin-bottom:.4rem;}
+.auth-sub{font-size:.82rem;color:var(--ink2);margin-bottom:1.75rem;}
+.auth-input-lbl{display:block;font-family:var(--ff-m);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.35rem;}
+.auth-input{width:100%;padding:.65rem .9rem;background:rgba(0,0,0,0.3);border:1px solid var(--bdr2);border-radius:var(--r);color:var(--ink);font-family:var(--ff-b);font-size:.88rem;outline:none;margin-bottom:1rem;transition:border-color .15s;}
+.auth-input:focus{border-color:var(--amb-bdr);}
+.auth-btn{width:100%;padding:.75rem;background:var(--amber);color:var(--bg);border:none;border-radius:var(--r);font-family:var(--ff-m);font-size:.78rem;font-weight:500;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:all .18s;margin-top:.25rem;}
+.auth-btn:hover{background:var(--amber2);}
+.auth-btn:disabled{opacity:.5;cursor:not-allowed;}
+.auth-toggle{text-align:center;margin-top:1.25rem;font-size:.82rem;color:var(--ink2);}
+.auth-toggle span{color:var(--amber2);cursor:pointer;font-weight:600;}
+.auth-toggle span:hover{text-decoration:underline;}
+.auth-error{background:var(--rust-bg);border:1px solid var(--rust-bdr);color:var(--rust2);padding:.65rem .85rem;border-radius:var(--r);font-size:.8rem;margin-bottom:1rem;display:none;}
+.auth-error.show{display:block;}
+.auth-success{background:var(--grn-bg);border:1px solid var(--grn-bdr);color:var(--green2);padding:.65rem .85rem;border-radius:var(--r);font-size:.8rem;margin-bottom:1rem;display:none;}
+.auth-success.show{display:block;}
+
+/* NAV */
 #nav{position:fixed;top:0;left:0;right:0;z-index:500;height:56px;background:rgba(14,13,11,0.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 1.5rem;gap:1.5rem;}
-.nav-logo{font-family:var(--ff-m);font-size:0.8rem;font-weight:500;letter-spacing:0.06em;color:var(--ink);display:flex;align-items:center;gap:0.55rem;cursor:pointer;flex-shrink:0;}
+.nav-logo{font-family:var(--ff-m);font-size:.8rem;font-weight:500;letter-spacing:.06em;color:var(--ink);display:flex;align-items:center;gap:.55rem;cursor:pointer;flex-shrink:0;}
 .nav-logo-dot{width:8px;height:8px;border-radius:50%;background:var(--amber);flex-shrink:0;}
-.nav-tabs{display:flex;gap:0.2rem;flex:1;}
-.nav-tab{font-size:0.8rem;font-weight:500;color:var(--ink3);padding:0.32rem 0.85rem;border-radius:5px;cursor:pointer;transition:all .14s;border:1px solid transparent;white-space:nowrap;}
+.nav-tabs{display:flex;gap:.2rem;flex:1;}
+.nav-tab{font-size:.8rem;font-weight:500;color:var(--ink3);padding:.32rem .85rem;border-radius:5px;cursor:pointer;transition:all .14s;border:1px solid transparent;white-space:nowrap;}
 .nav-tab:hover{color:var(--ink);background:rgba(255,255,255,0.04);}
 .nav-tab.active{color:var(--amber2);border-color:var(--amb-bdr);background:var(--amb-bg);}
-.nav-back{font-family:var(--ff-m);font-size:0.72rem;padding:0.35rem 0.9rem;border-radius:5px;border:1px solid var(--bdr2);color:var(--ink2);cursor:pointer;transition:all .15s;text-decoration:none;margin-left:auto;}
-.nav-back:hover{border-color:var(--amb-bdr);color:var(--amber2);}
+.nav-user{margin-left:auto;display:flex;align-items:center;gap:.75rem;}
+.nav-user-name{font-family:var(--ff-m);font-size:.68rem;color:var(--ink3);}
+.nav-signout{font-family:var(--ff-m);font-size:.68rem;padding:.3rem .75rem;border:1px solid var(--bdr2);border-radius:4px;color:var(--ink3);cursor:pointer;transition:all .14s;background:transparent;}
+.nav-signout:hover{border-color:var(--rust-bdr);color:var(--rust2);}
+
+/* PAGES */
 .page{display:none;min-height:100vh;padding-top:56px;}
 .page.active{display:block;}
 .container{max-width:1100px;margin:0 auto;padding:0 2rem;}
-.eyebrow{font-family:var(--ff-m);font-size:0.6rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--amber2);margin-bottom:0.5rem;display:flex;align-items:center;gap:.6rem;}
+.eyebrow{font-family:var(--ff-m);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--amber2);margin-bottom:.5rem;display:flex;align-items:center;gap:.6rem;}
 .eyebrow::after{content:'';flex:1;max-width:50px;height:1px;background:var(--amb-bdr);}
 .page-title{font-family:var(--ff-d);font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;color:var(--ink);line-height:1.15;margin-bottom:.6rem;}
 .page-sub{font-size:.9rem;color:var(--ink2);line-height:1.75;max-width:560px;}
@@ -45,6 +72,8 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opa
 .badge-amb{background:var(--amb-bg);border:1px solid var(--amb-bdr);color:var(--amber2);}
 .badge-grn{background:var(--grn-bg);border:1px solid var(--grn-bdr);color:var(--green2);}
 .badge-stl{background:var(--steel-bg);border:1px solid var(--steel-bdr);color:var(--steel2);}
+
+/* HOME */
 .hero{padding:3.5rem 0 2.5rem;border-bottom:1px solid var(--bdr);}
 .stats-row{display:flex;gap:2.5rem;flex-wrap:wrap;margin-top:1.75rem;}
 .stat-val{font-family:var(--ff-d);font-size:2rem;font-weight:700;color:var(--amber2);line-height:1;}
@@ -60,6 +89,18 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opa
 .hc-meta{display:flex;gap:.5rem;flex-wrap:wrap;}
 .hc-arr{font-family:var(--ff-m);font-size:.7rem;color:var(--ink3);margin-top:1rem;transition:all .15s;}
 .home-card:hover .hc-arr{color:var(--amber2);}
+
+/* PROGRESS SUMMARY ON HOME */
+.progress-strip{background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rl);padding:1.5rem;margin-bottom:2rem;}
+.ps-title{font-family:var(--ff-m);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber2);margin-bottom:1rem;}
+.ps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.75rem;}
+.ps-item{background:var(--bg4);border-radius:var(--r);padding:.75rem;}
+.ps-domain{font-family:var(--ff-m);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.4rem;}
+.ps-bar-wrap{height:5px;background:var(--bg5);border-radius:3px;overflow:hidden;margin-bottom:.3rem;}
+.ps-bar{height:100%;border-radius:3px;background:var(--amber);transition:width .6s ease;}
+.ps-pct{font-family:var(--ff-m);font-size:.65rem;color:var(--ink2);}
+
+/* FLASHCARDS */
 .fc-hero{padding:2.5rem 0 2rem;border-bottom:1px solid var(--bdr);}
 .fc-controls{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;padding:1.25rem 0;}
 .fc-cat-btn{font-family:var(--ff-m);font-size:.65rem;padding:.28rem .7rem;border-radius:3px;border:1px solid var(--bdr2);background:transparent;color:var(--ink3);cursor:pointer;transition:all .14s;letter-spacing:.05em;}
@@ -96,6 +137,9 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opa
 .fcs-item{text-align:center;}
 .fcs-val{font-family:var(--ff-m);font-size:1.1rem;font-weight:500;}
 .fcs-lbl{font-family:var(--ff-m);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-top:.2rem;}
+.save-indicator{font-family:var(--ff-m);font-size:.62rem;color:var(--green2);text-align:center;margin-top:.5rem;height:16px;transition:opacity .3s;}
+
+/* QUIZ */
 .quiz-hero{padding:2.5rem 0 2rem;border-bottom:1px solid var(--bdr);}
 .quiz-setup{padding:2rem 0;}
 .qs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin:1.5rem 0;}
@@ -111,7 +155,6 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opa
 .qa-topbar{display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem;padding:.85rem 1.25rem;background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--r);}
 .qa-progress-label{font-family:var(--ff-m);font-size:.7rem;color:var(--ink2);}
 .qa-prog-wrap{flex:1;}
-.qa-prog-lbl{font-family:var(--ff-m);font-size:.62rem;color:var(--ink3);margin-bottom:.35rem;}
 .qa-prog-track{height:6px;background:var(--bg5);border-radius:3px;overflow:hidden;}
 .qa-prog-fill{height:100%;background:linear-gradient(90deg,var(--amber),var(--amber2));border-radius:3px;transition:width .3s;}
 .qa-reset{font-family:var(--ff-m);font-size:.72rem;padding:.4rem .9rem;border:1px solid var(--bdr2);background:transparent;color:var(--ink2);border-radius:5px;cursor:pointer;transition:all .15s;}
@@ -151,99 +194,173 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opa
 .qr-retry-btn:hover{background:var(--amber2);}
 .review-section{margin-top:2rem;}
 .review-hdr{font-family:var(--ff-m);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amber2);margin-bottom:1.25rem;padding-bottom:.6rem;border-bottom:1px solid var(--bdr);}
+
+/* MANAGER DASHBOARD */
+.mgr-hero{padding:2.5rem 0 2rem;border-bottom:1px solid var(--bdr);}
+.mgr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem;padding:2rem 0;}
+.tech-card{background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rl);padding:1.5rem;cursor:pointer;transition:all .2s;}
+.tech-card:hover{border-color:var(--bdr2);transform:translateY(-2px);}
+.tech-name{font-weight:700;font-size:1rem;color:var(--ink);margin-bottom:.2rem;}
+.tech-meta{font-family:var(--ff-m);font-size:.62rem;color:var(--ink3);margin-bottom:1rem;}
+.tech-stat-row{display:flex;gap:1rem;margin-bottom:1rem;}
+.tech-stat{text-align:center;}
+.tech-stat-val{font-family:var(--ff-d);font-size:1.4rem;font-weight:700;color:var(--amber2);line-height:1;}
+.tech-stat-lbl{font-family:var(--ff-m);font-size:.55rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);}
+.tech-domains{display:flex;flex-direction:column;gap:.35rem;}
+.td-row{display:flex;align-items:center;gap:.6rem;}
+.td-name{font-family:var(--ff-m);font-size:.58rem;color:var(--ink3);width:90px;flex-shrink:0;}
+.td-bar-wrap{flex:1;height:5px;background:var(--bg5);border-radius:3px;overflow:hidden;}
+.td-bar{height:100%;border-radius:3px;}
+.td-pct{font-family:var(--ff-m);font-size:.6rem;color:var(--ink2);width:28px;text-align:right;}
+.mgr-empty{text-align:center;padding:4rem;color:var(--ink3);font-size:.88rem;}
+.mgr-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1px;background:var(--bdr);border:1px solid var(--bdr);border-radius:var(--rl);overflow:hidden;margin:2rem 0;}
+.mgr-sum-cell{background:var(--bg3);padding:1.25rem;text-align:center;}
+.mgr-sum-val{font-family:var(--ff-d);font-size:1.8rem;font-weight:700;color:var(--amber2);line-height:1;}
+.mgr-sum-lbl{font-family:var(--ff-m);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-top:.3rem;}
+
+/* EXAM HISTORY */
+.exam-history{margin-top:2rem;}
+.exam-row{display:flex;align-items:center;gap:1rem;padding:.75rem 1rem;background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--r);margin-bottom:.5rem;}
+.exam-date{font-family:var(--ff-m);font-size:.65rem;color:var(--ink3);flex-shrink:0;width:130px;}
+.exam-score{font-family:var(--ff-d);font-size:1.2rem;font-weight:700;flex-shrink:0;width:60px;}
+.exam-pass{color:var(--green2);}
+.exam-fail{color:var(--rust2);}
+.exam-bar-wrap{flex:1;height:6px;background:var(--bg5);border-radius:3px;overflow:hidden;}
+.exam-bar{height:100%;border-radius:3px;}
+
+/* LOADING */
+.loading-overlay{position:fixed;inset:0;background:var(--bg);z-index:900;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;}
+.loading-overlay.hidden{display:none;}
+.loading-dot{width:8px;height:8px;border-radius:50%;background:var(--amber);animation:ldot 1.2s ease-in-out infinite;}
+.loading-dots{display:flex;gap:.4rem;}
+.loading-dots .loading-dot:nth-child(2){animation-delay:.2s;}
+.loading-dots .loading-dot:nth-child(3){animation-delay:.4s;}
+@keyframes ldot{0%,80%,100%{transform:scale(0.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+.loading-lbl{font-family:var(--ff-m);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);}
+
 footer{padding:2.5rem;border-top:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-top:4rem;}
 .footer-note{font-family:var(--ff-m);font-size:.63rem;color:var(--ink3);}
-.footer-link{font-family:var(--ff-m);font-size:.63rem;color:var(--ink3);cursor:pointer;transition:color .14s;text-decoration:none;}
-.footer-link:hover{color:var(--amber2);}
 @media(max-width:700px){.home-grid{grid-template-columns:1fr;}.container{padding:0 1.25rem;}.fc-search{width:100%;}}
 </style>
 </head>
 <body>
 
-<nav id="nav">
+<!-- LOADING -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
+  <div class="loading-lbl">Loading...</div>
+</div>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo"><div class="auth-logo-dot"></div>Ramsey<span style="color:var(--amber2);">prep</span></div>
+    <div id="auth-login-view">
+      <div class="auth-title">Sign in</div>
+      <div class="auth-sub">Track your flashcard progress and exam scores.</div>
+      <div class="auth-error" id="login-error"></div>
+      <label class="auth-input-lbl">Email</label>
+      <input class="auth-input" type="email" id="login-email" placeholder="you@example.com">
+      <label class="auth-input-lbl">Password</label>
+      <input class="auth-input" type="password" id="login-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="auth-btn" id="login-btn" onclick="doLogin()">Sign In</button>
+      <div class="auth-toggle">No account? <span onclick="showSignup()">Create one</span></div>
+    </div>
+    <div id="auth-signup-view" style="display:none;">
+      <div class="auth-title">Create account</div>
+      <div class="auth-sub">Your manager will assign your role after signup.</div>
+      <div class="auth-error" id="signup-error"></div>
+      <div class="auth-success" id="signup-success"></div>
+      <label class="auth-input-lbl">Full name</label>
+      <input class="auth-input" type="text" id="signup-name" placeholder="First Last">
+      <label class="auth-input-lbl">Email</label>
+      <input class="auth-input" type="email" id="signup-email" placeholder="you@example.com">
+      <label class="auth-input-lbl">Password</label>
+      <input class="auth-input" type="password" id="signup-password" placeholder="Min 6 characters" onkeydown="if(event.key==='Enter')doSignup()">
+      <button class="auth-btn" id="signup-btn" onclick="doSignup()">Create Account</button>
+      <div class="auth-toggle">Already have one? <span onclick="showLogin()">Sign in</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="nav" style="display:none;">
   <div class="nav-logo" onclick="showPage('home')">
     <div class="nav-logo-dot"></div>
     <span>Ramsey<span style="color:var(--amber2);">prep</span></span>
   </div>
-  <div class="nav-tabs">
+  <div class="nav-tabs" id="nav-tabs">
     <div class="nav-tab active" onclick="showPage('home')" id="nl-home">Home</div>
     <div class="nav-tab" onclick="showPage('fc')" id="nl-fc">Flashcards</div>
     <div class="nav-tab" onclick="showPage('qz')" id="nl-qz">Practice Exam</div>
+    <div class="nav-tab" onclick="showPage('history')" id="nl-history">My Scores</div>
+    <div class="nav-tab" onclick="showPage('mgr')" id="nl-mgr" style="display:none;">Manager View</div>
   </div>
-  <a class="nav-back" href="https://cmrpstudy.com" target="_blank">&larr; CMRPstudy</a>
+  <div class="nav-user">
+    <span class="nav-user-name" id="nav-user-name"></span>
+    <button class="nav-signout" onclick="doSignOut()">Sign out</button>
+  </div>
 </nav>
 
-<!-- HOME -->
+<!-- HOME PAGE -->
 <div class="page active" id="page-home">
   <div class="hero">
     <div class="container">
       <div class="eyebrow">Ramsey Multicraft &middot; Free Prep</div>
-      <h1 class="page-title">Ramsey Multicraft<br>Test Prep</h1>
-      <p class="page-sub">Free flashcards and practice questions covering every Ramsey Multicraft domain. Built by a maintenance practitioner. No login, no cost, no fluff.</p>
+      <h1 class="page-title" id="home-greeting">Ramsey Multicraft<br>Test Prep</h1>
+      <p class="page-sub">Your flashcard progress and exam scores save automatically. Pick up exactly where you left off.</p>
       <div class="stats-row">
         <div><div class="stat-val">120</div><div class="stat-lbl">Flashcards</div></div>
         <div><div class="stat-val">91</div><div class="stat-lbl">Practice questions</div></div>
         <div><div class="stat-val">9</div><div class="stat-lbl">Domains</div></div>
-        <div><div class="stat-val">70%</div><div class="stat-lbl">Pass target</div></div>
       </div>
     </div>
   </div>
   <div class="container">
+    <!-- Progress summary -->
+    <div class="progress-strip" id="progress-strip" style="margin-top:2rem;">
+      <div class="ps-title">Your flashcard mastery</div>
+      <div class="ps-grid" id="progress-grid">
+        <div style="font-family:var(--ff-m);font-size:.7rem;color:var(--ink3);">Loading progress...</div>
+      </div>
+    </div>
     <div class="home-grid">
       <div class="home-card" onclick="showPage('fc')" style="--hc-glow:rgba(212,130,10,0.08);">
         <div class="hc-icon">&#128198;</div>
         <div class="hc-title">Flashcard Deck</div>
-        <div class="hc-desc">120 cards spanning all 8 domains. Filter by domain, mark known vs. unknown, and track your mastery session by session.</div>
-        <div class="hc-meta">
-          <span class="badge badge-amb">120 cards</span>
-          <span class="badge badge-stl">9 domains</span>
-          <span class="badge badge-grn">Track mastery</span>
-        </div>
+        <div class="hc-desc">120 cards spanning all 9 domains. Progress saves automatically — close it and come back anytime.</div>
+        <div class="hc-meta"><span class="badge badge-amb">120 cards</span><span class="badge badge-stl">9 domains</span><span class="badge badge-grn">Auto-saves</span></div>
         <div class="hc-arr">Open Flashcards &rarr;</div>
       </div>
       <div class="home-card" onclick="showPage('qz')" style="--hc-glow:rgba(61,122,79,0.08);">
         <div class="hc-icon">&#128221;</div>
         <div class="hc-title">Practice Exam</div>
-        <div class="hc-desc">80 questions. Answer all of them, then submit to see your score, domain breakdown, and full answer review with explanations.</div>
-        <div class="hc-meta">
-          <span class="badge badge-grn">91 questions</span>
-          <span class="badge badge-amb">End-of-test reveal</span>
-          <span class="badge badge-stl">Domain breakdown</span>
-        </div>
+        <div class="hc-desc">91 questions. Submit at the end to see your score, domain breakdown, and full answer review. All attempts saved.</div>
+        <div class="hc-meta"><span class="badge badge-grn">91 questions</span><span class="badge badge-amb">Scores saved</span><span class="badge badge-stl">Domain breakdown</span></div>
         <div class="hc-arr">Start Practice Exam &rarr;</div>
       </div>
     </div>
-    <div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rl);padding:1.5rem;margin-bottom:2rem;">
-      <div style="font-family:var(--ff-m);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber2);margin-bottom:1rem;">Key Formulas &mdash; Memorize These</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:1px;background:var(--bdr);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;">
-        <div style="background:var(--bg3);padding:.85rem 1rem;"><div style="font-family:var(--ff-m);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.25rem;">Ohm&rsquo;s Law</div><div style="font-family:var(--ff-m);font-size:.85rem;color:var(--amber2);">V = I &times; R</div></div>
-        <div style="background:var(--bg3);padding:.85rem 1rem;"><div style="font-family:var(--ff-m);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.25rem;">Power</div><div style="font-family:var(--ff-m);font-size:.85rem;color:var(--amber2);">P = V &times; I = I&sup2;R</div></div>
-        <div style="background:var(--bg3);padding:.85rem 1rem;"><div style="font-family:var(--ff-m);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.25rem;">Series R</div><div style="font-family:var(--ff-m);font-size:.85rem;color:var(--amber2);">R<sub>T</sub> = R1 + R2 + R3</div></div>
-        <div style="background:var(--bg3);padding:.85rem 1rem;"><div style="font-family:var(--ff-m);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.25rem;">Parallel R</div><div style="font-family:var(--ff-m);font-size:.85rem;color:var(--amber2);">1/R<sub>T</sub> = 1/R1 + 1/R2</div></div>
-        <div style="background:var(--bg3);padding:.85rem 1rem;"><div style="font-family:var(--ff-m);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.25rem;">Sync speed</div><div style="font-family:var(--ff-m);font-size:.85rem;color:var(--amber2);">N = 120 &times; f &divide; P</div></div>
-        <div style="background:var(--bg3);padding:.85rem 1rem;"><div style="font-family:var(--ff-m);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.25rem;">Gear ratio</div><div style="font-family:var(--ff-m);font-size:.85rem;color:var(--amber2);">GR = Driven &divide; Driver teeth</div></div>
-        <div style="background:var(--bg3);padding:.85rem 1rem;"><div style="font-family:var(--ff-m);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.25rem;">Hydraulic force</div><div style="font-family:var(--ff-m);font-size:.85rem;color:var(--amber2);">F = P &times; A</div></div>
-        <div style="background:var(--bg3);padding:.85rem 1rem;"><div style="font-family:var(--ff-m);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.25rem;">HP from torque</div><div style="font-family:var(--ff-m);font-size:.85rem;color:var(--amber2);">HP = T &times; RPM &divide; 5252</div></div>
+    <!-- Recent exam scores -->
+    <div id="recent-scores-wrap" style="margin-bottom:3rem;">
+      <div class="ps-title" style="font-family:var(--ff-m);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber2);margin-bottom:.75rem;">Recent exam attempts</div>
+      <div id="recent-scores">
+        <div style="font-family:var(--ff-m);font-size:.7rem;color:var(--ink3);">No exams taken yet.</div>
       </div>
-    </div>
-    <div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rl);padding:1.5rem;margin-bottom:3rem;">
-      <div style="font-family:var(--ff-m);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber2);margin-bottom:1rem;">Domain Coverage</div>
-      <div id="domain-bars"></div>
     </div>
   </div>
   <footer>
-    <div class="footer-note">&copy; 2026 Ramseyprep &middot; Free resource for maintenance professionals &middot; Not affiliated with Ramsay Corporation</div>
-    <a class="footer-link" href="https://cmrpstudy.com" target="_blank">Also study for CMRP &rarr;</a>
+    <div class="footer-note">&copy; 2026 Ramseyprep &middot; Not affiliated with Ramsay Corporation</div>
+    <a style="font-family:var(--ff-m);font-size:.63rem;color:var(--ink3);text-decoration:none;" href="https://cmrpstudy.com" target="_blank">Also study for CMRP &rarr;</a>
   </footer>
 </div>
 
-<!-- FLASHCARDS -->
+<!-- FLASHCARD PAGE -->
 <div class="page" id="page-fc">
   <div class="fc-hero">
     <div class="container">
-      <div class="eyebrow">135 Cards &middot; 9 Domains</div>
+      <div class="eyebrow">120 Cards &middot; 9 Domains &middot; Auto-saves</div>
       <h1 class="page-title">Ramsey Flashcards</h1>
-      <p class="page-sub">Click any card to flip. Mark Known or Unknown to track mastery. Keyboard: &larr;&rarr; navigate &middot; Space flip &middot; G = Got it &middot; S = Study more.</p>
+      <p class="page-sub">Click to flip. Mark Known or Unknown &mdash; saves instantly. Keyboard: &larr;&rarr; navigate &middot; Space flip &middot; G = Got it &middot; S = Study more.</p>
     </div>
   </div>
   <div class="container">
@@ -277,6 +394,7 @@ footer{padding:2.5rem;border-top:1px solid var(--bdr);display:flex;align-items:c
         <div class="fc-ctr" id="fc-ctr">1 / 120</div>
         <button class="fc-nav-btn" onclick="fcMove(1)">Next &rarr;</button>
       </div>
+      <div class="save-indicator" id="save-indicator"></div>
       <div class="fc-session-stats">
         <div class="fcs-item"><div class="fcs-val" id="fcs-known" style="color:var(--green2);">0</div><div class="fcs-lbl">Known</div></div>
         <div class="fcs-item"><div class="fcs-val" id="fcs-unknown" style="color:var(--rust2);">0</div><div class="fcs-lbl">Study more</div></div>
@@ -288,13 +406,13 @@ footer{padding:2.5rem;border-top:1px solid var(--bdr);display:flex;align-items:c
   </div>
 </div>
 
-<!-- QUIZ -->
+<!-- QUIZ PAGE -->
 <div class="page" id="page-qz">
   <div class="quiz-hero">
     <div class="container">
-      <div class="eyebrow">90 Questions &middot; End-of-Test Scoring</div>
+      <div class="eyebrow">91 Questions &middot; End-of-Test Scoring</div>
       <h1 class="page-title">Ramsey Practice Exam</h1>
-      <p class="page-sub">Answer all questions, then hit Submit to see your score and full answer review. No hints during the exam &mdash; just like the real test.</p>
+      <p class="page-sub">Answer all questions, then submit to see your score. Results save automatically to your history.</p>
     </div>
   </div>
   <div class="container">
@@ -303,53 +421,174 @@ footer{padding:2.5rem;border-top:1px solid var(--bdr);display:flex;align-items:c
       <div class="qs-grid" id="qs-domain-grid"></div>
       <div style="display:flex;align-items:center;gap:1.5rem;margin-top:1.25rem;flex-wrap:wrap;">
         <button class="quiz-start-btn" onclick="startQuiz()">Start Exam &rarr;</button>
-        <div style="font-family:var(--ff-m);font-size:.7rem;color:var(--ink3);" id="qs-selected-count">80 questions selected</div>
+        <div style="font-family:var(--ff-m);font-size:.7rem;color:var(--ink3);" id="qs-selected-count">91 questions selected</div>
       </div>
     </div>
     <div id="quiz-active" class="quiz-active" style="display:none;">
       <div class="qa-topbar">
-        <div class="qa-progress-label" id="qa-answered-lbl">0 of 80 answered</div>
-        <div class="qa-prog-wrap">
-          <div class="qa-prog-track" style="margin-top:.2rem;"><div class="qa-prog-fill" id="qa-prog-fill" style="width:0%"></div></div>
-        </div>
+        <div class="qa-progress-label" id="qa-answered-lbl">0 of 91 answered</div>
+        <div class="qa-prog-wrap"><div class="qa-prog-track"><div class="qa-prog-fill" id="qa-prog-fill" style="width:0%"></div></div></div>
         <button class="qa-reset" onclick="resetQuiz()">&#8635; Reset</button>
       </div>
       <div id="qa-questions"></div>
       <div class="submit-bar">
         <div id="qa-unanswered-warn" style="display:none;font-family:var(--ff-m);font-size:.72rem;color:var(--rust2);margin-bottom:.75rem;"></div>
-        <button class="quiz-start-btn" onclick="submitQuiz()" id="qa-submit-btn">Submit Exam &rarr;</button>
+        <button class="quiz-start-btn" onclick="submitQuiz()">Submit Exam &rarr;</button>
       </div>
     </div>
     <div id="quiz-results" class="quiz-results" style="display:none;"></div>
   </div>
 </div>
 
+<!-- MY SCORES PAGE -->
+<div class="page" id="page-history">
+  <div class="mgr-hero">
+    <div class="container">
+      <div class="eyebrow">Your exam history</div>
+      <h1 class="page-title">My Scores</h1>
+    </div>
+  </div>
+  <div class="container" id="history-container">
+    <div style="padding:3rem 0;font-family:var(--ff-m);font-size:.75rem;color:var(--ink3);">Loading...</div>
+  </div>
+</div>
+
+<!-- MANAGER PAGE -->
+<div class="page" id="page-mgr">
+  <div class="mgr-hero">
+    <div class="container">
+      <div class="eyebrow">Manager view</div>
+      <h1 class="page-title">Team Progress</h1>
+      <p class="page-sub">Flashcard mastery and exam scores for all techs.</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="mgr-summary" id="mgr-summary"></div>
+    <div class="mgr-grid" id="mgr-grid">
+      <div class="mgr-empty">Loading team data...</div>
+    </div>
+  </div>
+</div>
+
 <script>
+// ── SUPABASE ──────────────────────────────────────────────────────────────────
+const SUPA_URL = 'https://iltyopxehorotwerunrh.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlsdHlvcHhlaG9yb3R3ZXJ1bnJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MTEwMDQsImV4cCI6MjA5MDE4NzAwNH0.G59eyXiXqn5E1oUPZCw0ZTCRe6kkryJVqj7XTxYrNyI';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+let currentUser = null;
+let currentProfile = null;
+let fcProgress = {}; // card_term -> 'known'|'unknown'
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+function showLogin(){ document.getElementById('auth-login-view').style.display=''; document.getElementById('auth-signup-view').style.display='none'; }
+function showSignup(){ document.getElementById('auth-signup-view').style.display=''; document.getElementById('auth-login-view').style.display='none'; }
+
+async function doLogin(){
+  var btn=document.getElementById('login-btn'); btn.disabled=true; btn.textContent='Signing in...';
+  var err=document.getElementById('login-error'); err.classList.remove('show');
+  var email=document.getElementById('login-email').value.trim();
+  var pass=document.getElementById('login-password').value;
+  var {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){ err.textContent=error.message; err.classList.add('show'); btn.disabled=false; btn.textContent='Sign In'; return; }
+  await onLogin(data.user);
+}
+
+async function doSignup(){
+  var btn=document.getElementById('signup-btn'); btn.disabled=true; btn.textContent='Creating...';
+  var err=document.getElementById('signup-error'); err.classList.remove('show');
+  var ok=document.getElementById('signup-success'); ok.classList.remove('show');
+  var name=document.getElementById('signup-name').value.trim();
+  var email=document.getElementById('signup-email').value.trim();
+  var pass=document.getElementById('signup-password').value;
+  if(!name){ err.textContent='Please enter your full name.'; err.classList.add('show'); btn.disabled=false; btn.textContent='Create Account'; return; }
+  var {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{full_name:name,role:'tech'}}});
+  if(error){ err.textContent=error.message; err.classList.add('show'); btn.disabled=false; btn.textContent='Create Account'; return; }
+  ok.textContent='Account created! Check your email to confirm, then sign in.';
+  ok.classList.add('show'); btn.disabled=false; btn.textContent='Create Account';
+}
+
+async function doSignOut(){
+  await sb.auth.signOut();
+  currentUser=null; currentProfile=null; fcProgress={};
+  document.getElementById('auth-screen').classList.remove('hidden');
+  document.getElementById('nav').style.display='none';
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-home').classList.add('active');
+}
+
+async function onLogin(user){
+  currentUser=user;
+  showLoading(true);
+  // Load profile
+  var {data:profile}=await sb.from('profiles').select('*').eq('id',user.id).single();
+  currentProfile=profile;
+  // Load flashcard progress
+  var {data:prog}=await sb.from('flashcard_progress').select('card_term,status').eq('user_id',user.id);
+  fcProgress={};
+  if(prog) prog.forEach(function(r){ fcProgress[r.card_term]=r.status; });
+  // Setup UI
+  document.getElementById('auth-screen').classList.add('hidden');
+  document.getElementById('nav').style.display='flex';
+  var firstName=(profile&&profile.full_name)?profile.full_name.split(' ')[0]:'there';
+  document.getElementById('nav-user-name').textContent=(profile&&profile.full_name)||user.email;
+  document.getElementById('home-greeting').innerHTML='Welcome back,<br>'+firstName;
+  if(profile&&profile.role==='manager') document.getElementById('nl-mgr').style.display='';
+  buildQuizSetup();
+  buildCatBtns();
+  filterFC();
+  await loadHomeSummary();
+  showLoading(false);
+}
+
+function showLoading(show){ document.getElementById('loading-overlay').classList.toggle('hidden',!show); }
+
 // ── PAGE NAV ──────────────────────────────────────────────────────────────────
 function showPage(id){
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
-  var p=document.getElementById('page-'+id);if(p)p.classList.add('active');
-  var t=document.getElementById('nl-'+id);if(t)t.classList.add('active');
+  var p=document.getElementById('page-'+id); if(p) p.classList.add('active');
+  var t=document.getElementById('nl-'+id); if(t) t.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
+  if(id==='history') loadHistory();
+  if(id==='mgr') loadManagerView();
+  if(id==='fc'){ filterFC(); renderFC(); }
 }
 
-// ── DOMAIN BARS ───────────────────────────────────────────────────────────────
-function buildDomainBars(){
-  var el=document.getElementById('domain-bars');if(!el)return;
-  var d=[
-    {n:'Electrical Fundamentals',p:18,c:'var(--steel2)'},{n:'Motors & Controls',p:14,c:'var(--amber2)'},
-    {n:'Mechanical & Drives',p:14,c:'var(--green2)'},{n:'Hydraulics',p:11,c:'var(--rust2)'},
-    {n:'Pneumatics',p:9,c:'#a78bfa'},{n:'PLC & Controls',p:13,c:'#2dd4bf'},
-    {n:'Print Reading',p:8,c:'var(--amber2)'},{n:'Trade Math',p:7,c:'var(--steel2)'},
-    {n:'Safety & LOTO',p:6,c:'var(--rust2)'},
-  ];
-  el.innerHTML=d.map(function(x){
-    return'<div style="display:flex;align-items:center;gap:.85rem;margin-bottom:.55rem;">'
-      +'<div style="font-family:var(--ff-m);font-size:.62rem;color:var(--ink3);width:190px;flex-shrink:0;">'+x.n+'</div>'
-      +'<div style="flex:1;height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;">'
-      +'<div style="height:100%;width:'+x.p+'%;background:'+x.c+';border-radius:4px;"></div></div>'
-      +'<div style="font-family:var(--ff-m);font-size:.68rem;color:var(--ink2);width:28px;text-align:right;">'+x.p+'%</div></div>';
+// ── HOME SUMMARY ──────────────────────────────────────────────────────────────
+async function loadHomeSummary(){
+  // Domain mastery bars
+  var grid=document.getElementById('progress-grid');
+  var domainKnown={};
+  var domainTotal={};
+  CARDS.forEach(function(c){
+    domainTotal[c.c]=(domainTotal[c.c]||0)+1;
+    if(fcProgress[c.t]==='known') domainKnown[c.c]=(domainKnown[c.c]||0)+1;
+  });
+  var keys=Object.keys(FC_CATS);
+  grid.innerHTML=keys.map(function(d){
+    var known=domainKnown[d]||0;
+    var total=domainTotal[d]||1;
+    var pct=Math.round(known/total*100);
+    var bc=pct>=80?'var(--green2)':pct>=50?'var(--amber2)':'var(--steel2)';
+    return'<div class="ps-item"><div class="ps-domain">'+FC_CATS[d].label+'</div>'
+      +'<div class="ps-bar-wrap"><div class="ps-bar" style="width:'+pct+'%;background:'+bc+';"></div></div>'
+      +'<div class="ps-pct">'+known+'/'+total+' known ('+pct+'%)</div></div>';
+  }).join('');
+  // Recent exam scores
+  var {data:exams}=await sb.from('exam_attempts').select('*').eq('user_id',currentUser.id).order('taken_at',{ascending:false}).limit(5);
+  var wrap=document.getElementById('recent-scores');
+  if(!exams||!exams.length){ wrap.innerHTML='<div style="font-family:var(--ff-m);font-size:.7rem;color:var(--ink3);">No exams taken yet.</div>'; return; }
+  wrap.innerHTML=exams.map(function(e){
+    var pass=e.pct>=70;
+    var bc=pass?'var(--green2)':'var(--rust2)';
+    var dt=new Date(e.taken_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+    return'<div class="exam-row">'
+      +'<div class="exam-date">'+dt+'</div>'
+      +'<div class="exam-score '+(pass?'exam-pass':'exam-fail')+'">'+e.pct+'%</div>'
+      +'<div class="exam-bar-wrap"><div class="exam-bar" style="width:'+e.pct+'%;background:'+bc+';"></div></div>'
+      +'<div style="font-family:var(--ff-m);font-size:.65rem;color:var(--ink3);flex-shrink:0;">'+e.score+'/'+e.total+'</div>'
+      +'</div>';
   }).join('');
 }
 
@@ -360,150 +599,145 @@ var FC_CATS={
   MECH:{label:'Mechanical',color:'var(--green2)',bg:'rgba(61,122,79,0.10)',bdr:'rgba(61,122,79,0.28)'},
   HYD:{label:'Hydraulics',color:'var(--rust2)',bg:'rgba(184,74,28,0.10)',bdr:'rgba(184,74,28,0.28)'},
   PNEU:{label:'Pneumatics',color:'#a78bfa',bg:'rgba(124,58,237,0.10)',bdr:'rgba(124,58,237,0.28)'},
+  PLC:{label:'PLC & Controls',color:'#2dd4bf',bg:'rgba(13,148,136,0.10)',bdr:'rgba(13,148,136,0.28)'},
   PRINT:{label:'Print Reading',color:'#2dd4bf',bg:'rgba(13,148,136,0.10)',bdr:'rgba(13,148,136,0.28)'},
   MATH:{label:'Trade Math',color:'var(--amber2)',bg:'rgba(212,130,10,0.10)',bdr:'rgba(212,130,10,0.28)'},
   SAFE:{label:'Safety & LOTO',color:'var(--rust2)',bg:'rgba(184,74,28,0.10)',bdr:'rgba(184,74,28,0.28)'},
-  PLC:{label:'PLC & Controls',color:'#2dd4bf',bg:'rgba(13,148,136,0.10)',bdr:'rgba(13,148,136,0.28)'},
 };
-
 var CARDS=[
-{c:'ELEC',t:"Ohm's Law",d:"V = I \u00d7 R. Voltage = Current \u00d7 Resistance. Rearranged: I = V/R and R = V/I. Foundation of all electrical calculations."},
+{c:'ELEC',t:"Ohm's Law",d:"V = I \u00d7 R. Voltage = Current \u00d7 Resistance. Rearranged: I = V/R and R = V/I."},
 {c:'ELEC',t:'Power formulas',d:"P = V \u00d7 I = I\u00b2R = V\u00b2/R. Use whichever form matches the given values."},
-{c:'ELEC',t:'Series circuit',d:'Same current everywhere. RT = R1+R2+R3. Voltage drops add to source. One open = entire circuit dead.'},
-{c:'ELEC',t:'Parallel circuit',d:'Same voltage across all branches. 1/RT = 1/R1 + 1/R2. Total R less than smallest branch. One open branch does NOT kill others.'},
-{c:'ELEC',t:'US wire colors (120V)',d:'Black = hot. White = neutral. Green/bare = ground. Red = second hot (240V). Always verify with a meter.'},
-{c:'ELEC',t:'Multimeter usage',d:'Measures V, I, R, continuity. Measure resistance with power OFF \u2014 energized circuits damage the meter.'},
+{c:'ELEC',t:'Series circuit',d:'Same current everywhere. RT = R1+R2+R3. One open = entire circuit dead.'},
+{c:'ELEC',t:'Parallel circuit',d:'Same voltage across all branches. 1/RT = 1/R1 + 1/R2. One open branch does NOT kill others.'},
+{c:'ELEC',t:'US wire colors (120V)',d:'Black = hot. White = neutral. Green/bare = ground. Red = second hot (240V).'},
+{c:'ELEC',t:'Multimeter usage',d:'Measure resistance with power OFF \u2014 energized circuits damage the meter.'},
 {c:'ELEC',t:'AC vs DC',d:'DC: one direction (batteries). AC: reverses direction \u2014 US standard 60 Hz. Motors and utility power are AC.'},
-{c:'ELEC',t:'Fuse rule',d:'NEVER replace with higher rating \u2014 defeats protection. Identify WHY it blew before replacing.'},
-{c:'ELEC',t:'Breaker vs fuse',d:'Both protect against overcurrent. Fuse melts (one-time). Breaker trips and resets. Breakers can be locked out for LOTO.'},
-{c:'ELEC',t:'Ground fault',d:'Current flows to ground through unintended path. GFCI trips at 5 mA to prevent electrocution.'},
-{c:'ELEC',t:'Grounding purpose',d:'Provides low-resistance fault path \u2192 trips overcurrent device. Without it, equipment frame becomes energized.'},
-{c:'ELEC',t:'3-phase colors (NEC)',d:'A=Black, B=Red, C=Blue. Neutral=White/Gray. Ground=Green/bare. High-leg delta B-phase must be ORANGE (208 V to neutral).'},
-{c:'ELEC',t:'Capacitor in AC circuit',d:'Start cap: phase shift for starting torque, switched out at ~75% speed. Run cap: permanent in circuit.'},
-{c:'ELEC',t:'Inductance',d:'Opposes changes in current. Motor windings are inductive. Current lags voltage in inductive AC circuits.'},
-{c:'ELEC',t:'Continuity test',d:'Tests for unbroken path. Power OFF. Beep/near-zero ohms = good. OL = open (broken path).'},
-{c:'ELEC',t:'Short circuit',d:'Low-resistance unintended path bypasses load. Very high current. Blows fuse/breaker. Fire hazard if protection fails.'},
-{c:'MOTOR',t:'3-phase induction motor',d:'Rotating magnetic field in stator induces rotor current \u2192 torque. Rotor chases field but never catches it \u2014 speed difference is slip.'},
-{c:'MOTOR',t:'Synchronous speed',d:'N = 120 \u00d7 f / P. 4-pole 60 Hz = 1800 RPM. 6-pole = 1200 RPM. 8-pole = 900 RPM.'},
-{c:'MOTOR',t:'Motor slip',d:'Slip = (Sync \u2212 Actual) / Sync \u00d7 100%. Typical 2\u20135% at full load. No slip = no torque.'},
-{c:'MOTOR',t:'Reversing 3-phase motor',d:'Swap ANY TWO of the three line leads. Reverses rotating field. Always stop fully before reversing.'},
-{c:'MOTOR',t:'Motor nameplate data',d:'HP, voltage, FLA, RPM, frame, service factor, duty cycle, efficiency, power factor. Always verify before replacing.'},
-{c:'MOTOR',t:'Overload relay',d:'Trips if current exceeds rating too long. Protects windings from thermal damage. Set at 115\u2013125% of FLA.'},
-{c:'MOTOR',t:'Contactor',d:'Heavy-duty coil-operated switch for motor loads. Has arc suppression. Relays = control circuits. Contactors = power circuits.'},
-{c:'MOTOR',t:'VFD',d:'Controls motor speed by varying AC frequency (and proportional voltage). Soft start, adjustable speed, energy savings.'},
-{c:'MOTOR',t:'Start vs run capacitor',d:'Start: high capacitance, short duty, switched out at ~75% speed. Run: lower capacitance, permanent in circuit.'},
-{c:'MOTOR',t:'Megger test',d:'High DC voltage tests winding-to-frame insulation resistance. Low reading = moisture or damaged insulation.'},
-{c:'MOTOR',t:'Wye vs Delta',d:'Wye: windings share neutral point. Delta: end-to-end triangle, no neutral. Dual-voltage motors reconnect internally.'},
-{c:'MOTOR',t:'3-wire control circuit',d:'L1 \u2192 Stop (NC) \u2192 Start (NO) parallel with holding contact \u2192 Coil \u2192 L2. Holding contact seals in coil when Start is released.'},
-{c:'MOTOR',t:'Power factor',d:'Real power (W) / Apparent power (VA). Inductive loads cause current to lag voltage. PF correction capacitors improve efficiency.'},
-{c:'MOTOR',t:'NEC motor protection',d:'Branch protection: 175\u2013250% FLA for inrush. Overload relay: 115\u2013125% FLA for running protection. Two separate devices.'},
-{c:'MECH',t:'Gear ratio',d:'GR = Driven \u00f7 Driver teeth. Output RPM = Input \u00f7 GR. 10-tooth driver, 40-tooth driven = 4:1. Speed \u00f74, torque \u00d74.'},
-{c:'MECH',t:'V-belt drive ratio',d:'Output RPM = Input \u00d7 (Driver dia \u00f7 Driven dia). Larger driven sheave = slower output.'},
-{c:'MECH',t:'Bearing types',d:'Ball: low-moderate radial + axial, high speed. Cylindrical roller: high radial. Tapered: combined. Thrust: axial only.'},
-{c:'MECH',t:'Journal bearing',d:'Shaft rides on oil film inside sleeve. No rolling elements. High load, moderate speed. Requires continuous pressurized lube.'},
-{c:'MECH',t:'Flexible coupling',d:'Accommodates minor shaft misalignment. Absorbs vibration and shock. Prevents large forces from reaching bearings.'},
-{c:'MECH',t:'Key and keyway',d:'Metal insert transmits torque between shaft and hub. Woodruff = semi-circular. Square/rectangular = most common.'},
-{c:'MECH',t:'Press fit vs slip fit',d:'Press: shaft slightly LARGER than bore \u2014 requires force or heat/chill. Slip: slides in by hand for easy disassembly.'},
-{c:'MECH',t:'Belt tension',d:'Under: slips, overheats, wears fast. Over: excessive bearing load. Use belt tension gauge to verify.'},
-{c:'MECH',t:'Chain drive',d:'Lubricate per spec. Check sprocket alignment \u2014 side wear = misalignment. Sag = 1\u20132% of center distance.'},
-{c:'MECH',t:'Lip seal',d:'Lip faces TOWARD the lubricant. Install flush, squared. Use seal driver. Always replace \u2014 never reuse.'},
-{c:'MECH',t:'Torque formula',d:'T = F \u00d7 d. HP = T \u00d7 RPM \u00f7 5252 (T in ft-lb). F = T \u00f7 wrench length.'},
-{c:'MECH',t:'Thermal expansion',d:'Materials expand when heated. Critical for alignment (shaft growth), press-fit assembly, pipe stress.'},
-{c:'MECH',t:'Shaft misalignment',d:'Parallel: centerlines offset \u2192 2\u00d7 RPM radial vibration. Angular: meet at angle \u2192 1\u00d7 and 2\u00d7 RPM axial vibration.'},
-{c:'MECH',t:'Soft foot rule',d:'Correct BEFORE aligning. Tightening bolts deflects frame and shifts shaft \u2014 invalidates the alignment.'},
-{c:'HYD',t:"Pascal's Law",d:"Pressure on confined fluid transmits equally in all directions. P = F \u00f7 A. Basis of all hydraulic power."},
-{c:'HYD',t:'Cylinder force',d:'F = P \u00d7 A. Area = \u03c0 \u00d7 (bore/2)\u00b2. Retraction force = P \u00d7 (bore area \u2212 rod area).'},
-{c:'HYD',t:'Pump types',d:'Gear: simple, fixed displacement. Vane: quieter. Piston: high pressure, variable displacement \u2014 most demanding applications.'},
-{c:'HYD',t:'Pump vs motor',d:'Pump: mechanical \u2192 hydraulic energy. Motor: hydraulic \u2192 mechanical rotation. Same device in reverse.'},
-{c:'HYD',t:'Relief valve rule',d:'Limits max system pressure. NEVER block, cap, or remove. Last line of overpressure protection.'},
-{c:'HYD',t:'Directional valve',d:'Routes fluid to extend/retract cylinder or choose motor direction. 4/2 = 2 positions. 4/3 = 3 positions.'},
-{c:'HYD',t:'Check valve',d:'Allows flow one direction only. Holds cylinder position and prevents pump back-drain.'},
-{c:'HYD',t:'Fluid viscosity',d:'Too thin: leakage and wear. Too thick: sluggish response and cavitation. ISO VG 32\u201368 typical.'},
-{c:'HYD',t:'Contamination effects',d:'Particles: valve sticking, pump wear. Water (even 100 ppm): 50% bearing life reduction.'},
-{c:'HYD',t:'Pump cavitation',d:'Whine + low erratic pressure + rapid wear. Causes: clogged inlet strainer, cold fluid, low fluid level.'},
-{c:'HYD',t:'Open vs closed center',d:'Open center: pump circulates to tank in neutral (low heat). Closed center: pump flow blocked in neutral.'},
+{c:'ELEC',t:'Fuse rule',d:'NEVER replace with higher rating. Identify WHY it blew before replacing.'},
+{c:'ELEC',t:'Breaker vs fuse',d:'Both protect against overcurrent. Fuse melts (one-time). Breaker trips and resets.'},
+{c:'ELEC',t:'Ground fault',d:'Current flows to ground through unintended path. GFCI trips at 5 mA.'},
+{c:'ELEC',t:'Grounding purpose',d:'Provides low-resistance fault path \u2192 trips overcurrent device.'},
+{c:'ELEC',t:'3-phase colors (NEC)',d:'A=Black, B=Red, C=Blue. Neutral=White/Gray. High-leg delta B-phase must be ORANGE.'},
+{c:'ELEC',t:'Capacitor in AC circuit',d:'Start cap: phase shift for starting, switched out at ~75% speed. Run cap: permanent in circuit.'},
+{c:'ELEC',t:'Inductance',d:'Opposes changes in current. Motor windings are inductive. Current lags voltage.'},
+{c:'ELEC',t:'Continuity test',d:'Power OFF. Beep/near-zero ohms = good. OL = open (broken path).'},
+{c:'ELEC',t:'Short circuit',d:'Low-resistance path bypasses load. Very high current. Blows fuse/breaker.'},
+{c:'MOTOR',t:'3-phase induction motor',d:'Rotating field in stator induces rotor current \u2192 torque. Speed difference = slip.'},
+{c:'MOTOR',t:'Synchronous speed',d:'N = 120 \u00d7 f / P. 4-pole 60 Hz = 1800 RPM. 6-pole = 1200 RPM.'},
+{c:'MOTOR',t:'Motor slip',d:'Slip = (Sync \u2212 Actual) / Sync \u00d7 100%. Typical 2\u20135%. No slip = no torque.'},
+{c:'MOTOR',t:'Reversing 3-phase motor',d:'Swap ANY TWO of the three line leads. Always stop fully before reversing.'},
+{c:'MOTOR',t:'Motor nameplate data',d:'HP, voltage, FLA, RPM, frame, service factor, duty cycle, efficiency, PF.'},
+{c:'MOTOR',t:'Overload relay',d:'Trips if current exceeds rating too long. Set at 115\u2013125% of FLA.'},
+{c:'MOTOR',t:'Contactor',d:'Heavy-duty coil-operated switch for motor loads. Has arc suppression.'},
+{c:'MOTOR',t:'VFD',d:'Controls motor speed by varying AC frequency and proportional voltage.'},
+{c:'MOTOR',t:'Start vs run capacitor',d:'Start: high capacitance, short duty, switched out at ~75% speed. Run: permanent.'},
+{c:'MOTOR',t:'Megger test',d:'High DC voltage tests winding-to-frame insulation. Low reading = moisture or damage.'},
+{c:'MOTOR',t:'Wye vs Delta',d:'Wye: windings share neutral point. Delta: end-to-end triangle, no neutral.'},
+{c:'MOTOR',t:'3-wire control circuit',d:'Holding contact seals in the coil when Start is released.'},
+{c:'MOTOR',t:'Power factor',d:'Real power (W) / Apparent power (VA). Low PF increases utility demand charges.'},
+{c:'MOTOR',t:'NEC motor protection',d:'Branch protection: 175\u2013250% FLA. Overload relay: 115\u2013125% FLA. Two separate devices.'},
+{c:'MECH',t:'Gear ratio',d:'GR = Driven \u00f7 Driver teeth. Output RPM = Input \u00f7 GR. Speed \u00f7ratio, torque \u00d7ratio.'},
+{c:'MECH',t:'V-belt drive ratio',d:'Output RPM = Input \u00d7 (Driver dia \u00f7 Driven dia). Larger driven = slower output.'},
+{c:'MECH',t:'Bearing types',d:'Ball: radial + axial, high speed. Cylindrical: high radial. Tapered: combined. Thrust: axial only.'},
+{c:'MECH',t:'Journal bearing',d:'Shaft on oil film in sleeve. Requires continuous pressurized lube.'},
+{c:'MECH',t:'Flexible coupling',d:'Accommodates minor misalignment. Absorbs vibration and shock.'},
+{c:'MECH',t:'Key and keyway',d:'Transmits torque between shaft and hub. Woodruff = semi-circular.'},
+{c:'MECH',t:'Press fit vs slip fit',d:'Press: shaft slightly LARGER \u2014 requires force or heat. Slip: slides by hand.'},
+{c:'MECH',t:'Belt tension',d:'Under: slips, overheats. Over: excessive bearing load. Use tension gauge.'},
+{c:'MECH',t:'Chain drive',d:'Lubricate per spec. Sag = 1\u20132% of center distance. Never mix old and new chain.'},
+{c:'MECH',t:'Lip seal',d:'Lip faces TOWARD the lubricant. Use seal driver. Always replace \u2014 never reuse.'},
+{c:'MECH',t:'Torque formula',d:'T = F \u00d7 d. HP = T \u00d7 RPM \u00f7 5252.'},
+{c:'MECH',t:'Thermal expansion',d:'Materials expand when heated. Use cold offsets for hot-running equipment.'},
+{c:'MECH',t:'Shaft misalignment',d:'Parallel: 2\u00d7 RPM radial vibration. Angular: 1\u00d7 and 2\u00d7 RPM axial vibration.'},
+{c:'MECH',t:'Soft foot rule',d:'Correct BEFORE aligning. Tightening bolts deflects frame and shifts shaft.'},
+{c:'HYD',t:"Pascal's Law",d:"Pressure transmits equally in all directions. P = F \u00f7 A. Basis of hydraulics."},
+{c:'HYD',t:'Cylinder force',d:'F = P \u00d7 A. Retraction: F = P \u00d7 (bore area \u2212 rod area).'},
+{c:'HYD',t:'Pump types',d:'Gear: simple, fixed. Vane: quieter. Piston: high pressure, variable displacement.'},
+{c:'HYD',t:'Pump vs motor',d:'Pump: mechanical \u2192 hydraulic. Motor: hydraulic \u2192 mechanical. Same device in reverse.'},
+{c:'HYD',t:'Relief valve rule',d:'NEVER block, cap, or remove. Last line of overpressure protection.'},
+{c:'HYD',t:'Directional valve',d:'Routes fluid to extend/retract. 4/2 = 2 positions. 4/3 = 3 positions.'},
+{c:'HYD',t:'Check valve',d:'Allows flow one direction only. Holds cylinder position, prevents back-drain.'},
+{c:'HYD',t:'Fluid viscosity',d:'Too thin: leakage and wear. Too thick: sluggish and cavitation.'},
+{c:'HYD',t:'Contamination effects',d:'Particles: valve sticking, pump wear. Water (100 ppm): 50% bearing life reduction.'},
+{c:'HYD',t:'Pump cavitation',d:'Whine + low erratic pressure + rapid wear. Causes: clogged inlet, cold fluid.'},
+{c:'HYD',t:'Open vs closed center',d:'Open: pump to tank in neutral (low heat). Closed: flow blocked in neutral.'},
 {c:'HYD',t:'Accumulator safety',d:'Stores pressurized fluid under nitrogen. MUST de-pressurize before maintenance.'},
-{c:'HYD',t:'Flow control valve',d:'Controls actuator speed by restricting flow. Meter-out preferred \u2014 smoother motion under varying loads.'},
-{c:'HYD',t:'Schematic line types',d:'Solid = working pressure. Long-dashed = pilot/control. Short-dashed = drain. Bend = flexible hose.'},
-{c:'PNEU',t:'FRL order',d:'Filter \u2192 Regulator \u2192 Lubricator (inlet to outlet). Filter first. Lubricator last so oil reaches equipment.'},
-{c:'PNEU',t:'Double vs single-acting',d:'Double: air powers both strokes (needs 4-way valve). Single: air one way, spring returns.'},
-{c:'PNEU',t:'Set minimum pressure',d:'Always minimum needed. Higher pressure = more wear, higher leaks, more energy cost.'},
-{c:'PNEU',t:'Meter-out vs meter-in',d:'Meter-out preferred \u2014 consistent backpressure regardless of load. Meter-in can stall when load pushes back.'},
-{c:'PNEU',t:'Air leak cost',d:'1/8" orifice at 100 PSI wastes ~25 CFM continuously. Plants with many leaks waste 20\u201330% of output.'},
-{c:'PNEU',t:'Quick exhaust valve',d:'Mounts at cylinder port. Exhausts directly to atmosphere \u2014 dramatically increases cylinder speed.'},
-{c:'PNEU',t:'Air dryer types',d:'Refrigerant (most common): cools to condense moisture. Desiccant: lower dew point. Membrane: low-flow.'},
-{c:'PNEU',t:'Regulator limitation',d:'Can only REDUCE pressure. Cannot boost. Supply must always exceed desired regulated pressure.'},
-{c:'PNEU',t:'Pneumatics vs hydraulics',d:'Air is compressible \u2014 cannot precisely hold position under varying loads. Hydraulics: rigid, precise force and position.'},
-{c:'PNEU',t:'Cylinder seal wear test',d:'Extend cylinder, shut off air, watch for retraction under load. Retraction = worn piston seals.'},
-{c:'PRINT',t:'Title block',d:'Drawing number, revision level, title, scale, material, tolerances, drawn by, date. Always use the LATEST revision.'},
-{c:'PRINT',t:'Hidden lines',d:'Represent edges/features not visible in that view. Become solid lines in a section view.'},
-{c:'PRINT',t:'Third-angle projection',d:'US standard. Views placed in the direction you look. Right side view goes to the RIGHT of front view.'},
+{c:'HYD',t:'Flow control valve',d:'Controls actuator speed by restricting flow. Meter-out preferred.'},
+{c:'HYD',t:'Schematic line types',d:'Solid = working. Long-dashed = pilot/control. Short-dashed = drain.'},
+{c:'PNEU',t:'FRL order',d:'Filter \u2192 Regulator \u2192 Lubricator (inlet to outlet).'},
+{c:'PNEU',t:'Double vs single-acting',d:'Double: air powers both strokes. Single: air one way, spring returns.'},
+{c:'PNEU',t:'Set minimum pressure',d:'Always minimum needed. Higher = more wear, more leaks, more energy.'},
+{c:'PNEU',t:'Meter-out vs meter-in',d:'Meter-out preferred \u2014 consistent backpressure. Meter-in can stall.'},
+{c:'PNEU',t:'Air leak cost',d:'1/8" orifice at 100 PSI wastes ~25 CFM. Plants waste 20\u201330% of output.'},
+{c:'PNEU',t:'Quick exhaust valve',d:'At cylinder port. Exhausts to atmosphere \u2014 dramatically increases speed.'},
+{c:'PNEU',t:'Air dryer types',d:'Refrigerant (most common): condenses moisture. Desiccant: lower dew point.'},
+{c:'PNEU',t:'Regulator limitation',d:'Can only REDUCE pressure. Cannot boost. Supply must exceed setpoint.'},
+{c:'PNEU',t:'Pneumatics vs hydraulics',d:'Air is compressible \u2014 cannot hold position precisely under varying loads.'},
+{c:'PNEU',t:'Cylinder seal wear test',d:'Extend, shut off air, watch for retraction. Retraction = worn seals.'},
+{c:'PLC',t:'PLC scan cycle',d:'1) Read inputs. 2) Execute logic. 3) Update outputs. 4) Housekeeping. Typical: 1\u201320 ms.'},
+{c:'PLC',t:'Ladder logic',d:'Graphical programming mimicking relay circuits. Left rail = power. Right rail = neutral.'},
+{c:'PLC',t:'NO contact',d:'Open when bit=0, closed (passes power) when bit=1. XIC instruction in Allen-Bradley.'},
+{c:'PLC',t:'NC contact',d:'Closed when bit=0, opens when bit=1. Diagonal slash symbol. XIO in Allen-Bradley.'},
+{c:'PLC',t:'Output coil',d:'Energized (bit=1) when rung conditions are true. Symbol: ( ). Controls outputs.'},
+{c:'PLC',t:'TON \u2014 Timer On Delay',d:'Output turns ON after preset time once rung goes true. Resets if rung goes false early.'},
+{c:'PLC',t:'TOF \u2014 Timer Off Delay',d:'Output ON immediately when rung true. Stays ON for preset time after rung goes false.'},
+{c:'PLC',t:'CTU \u2014 Count Up',d:'Increments on false\u2192true transition. Done bit ON when accumulated \u2265 preset.'},
+{c:'PLC',t:'Retentive timer (RTO)',d:'Accumulates time when rung true. Retains value when rung false. Needs RES to reset.'},
+{c:'PLC',t:'I/O addressing (Allen-Bradley)',d:'I:0/0 = Input file 0, word 0, bit 0. O:0/1 = Output. T4:0.ACC = Timer accumulated value.'},
+{c:'PLC',t:'Sourcing vs sinking I/O',d:'Sourcing (PNP): output supplies +24V. Sinking (NPN): output provides path to 0V.'},
+{c:'PLC',t:'PLC vs relay control',d:'PLC: flexible, reprogrammable, easy to troubleshoot. Relay: hardwired, simple, no software.'},
+{c:'PLC',t:'Force function',d:'Manually overrides I/O bit. For commissioning/troubleshooting ONLY. Always remove after use.'},
+{c:'PLC',t:'EtherNet/IP',d:'Allen-Bradley industrial Ethernet protocol. Supports real-time I/O and configuration messaging.'},
+{c:'PLC',t:'Fault finding with PLC',d:'1) Check LEDs. 2) Check I/O indicators. 3) Go online to monitor rungs. 4) Force I/O to isolate fault.'},
+{c:'PRINT',t:'Title block',d:'Drawing number, revision, title, scale, material, tolerances. Always use LATEST revision.'},
+{c:'PRINT',t:'Hidden lines',d:'Dashed = edges not visible in that view. Solid in a section view.'},
+{c:'PRINT',t:'Third-angle projection',d:'US standard. Right side view goes to the RIGHT of front view.'},
 {c:'PRINT',t:'Section view',d:'Cut-away showing internal features. Cross-hatching = solid material cut through.'},
 {c:'PRINT',t:'Bilateral tolerance',d:'2.500 \u00b10.005 = acceptable range 2.495 to 2.505.'},
-{c:'PRINT',t:'Ladder diagram',d:'Left rail = L1. Right rail = L2/neutral. NO = open gap. NC = diagonal slash. Coil on right side of rung.'},
-{c:'PRINT',t:'NO vs NC contacts',d:'NO: open when de-energized, closes when actuated. NC (diagonal slash): closed when de-energized, opens when actuated.'},
-{c:'PRINT',t:'Hydraulic pump symbol',d:'Circle with triangle pointing OUT = pump. Triangle pointing IN = motor.'},
-{c:'PRINT',t:'Welding symbol sides',d:'Symbol BELOW reference line = arrow side. ABOVE = other side. Circle = weld all around.'},
-{c:'PRINT',t:'Revision cloud',d:'Highlights area changed in most recent revision. Check revision table for what changed.'},
-{c:'PRINT',t:'Bill of Materials',d:'Item number, part number, description, quantity, material \u2014 cross-referenced to drawing balloons.'},
+{c:'PRINT',t:'Ladder diagram',d:'Left rail = L1. Right rail = L2. NO = open gap. NC = diagonal slash. Coil on right.'},
+{c:'PRINT',t:'NO vs NC contacts',d:'NO: open when de-energized. NC: closed when de-energized, opens when actuated.'},
+{c:'PRINT',t:'Hydraulic pump symbol',d:'Circle with triangle pointing OUT = pump. Triangle IN = motor.'},
+{c:'PRINT',t:'Welding symbol sides',d:'BELOW reference line = arrow side. ABOVE = other side.'},
+{c:'PRINT',t:'Revision cloud',d:'Highlights area changed in most recent revision. Check revision table.'},
+{c:'PRINT',t:'Bill of Materials',d:'Item number, part number, description, quantity, material \u2014 cross-referenced to balloons.'},
 {c:'PRINT',t:'Isometric drawing',d:'3D pictorial \u2014 three axes at 120\u00b0. All measurements along axes are true length.'},
 {c:'MATH',t:'Fractions to decimals',d:'1/8=0.125, 1/4=0.250, 3/8=0.375, 1/2=0.500, 5/8=0.625, 3/4=0.750, 7/8=0.875.'},
-{c:'MATH',t:'Area of a circle',d:'A = \u03c0 \u00d7 r\u00b2 = \u03c0 \u00d7 d\u00b2 \u00f7 4. Used for piston force, pipe cross-section, tank volume.'},
+{c:'MATH',t:'Area of a circle',d:'A = \u03c0 \u00d7 r\u00b2 = \u03c0 \u00d7 d\u00b2 \u00f7 4.'},
 {c:'MATH',t:'Cylinder volume',d:'V = \u03c0 \u00d7 r\u00b2 \u00d7 L. 1 gallon = 231 in\u00b3.'},
-{c:'MATH',t:'Percentage',d:'Part \u00f7 Whole \u00d7 100 = %. To find part: Whole \u00d7 (%/100). To find whole: Part \u00f7 (%/100).'},
-{c:'MATH',t:'Gear and belt ratios',d:'Gear: Output = Input \u00d7 (Driver \u00f7 Driven teeth). Belt: Output = Input \u00d7 (Driver dia \u00f7 Driven dia).'},
-{c:'MATH',t:'Unit conversions',d:'1 inch = 25.4 mm. 1 PSI = 6.895 kPa. 1 gal = 231 in\u00b3. 1 HP = 746 W. 1 ft-lb = 1.356 N-m. 1 PSI = 2.31 ft head.'},
-{c:'MATH',t:'Pythagorean theorem',d:'a\u00b2 + b\u00b2 = c\u00b2. Diagonal distances, pipe offsets, ramp rise/run.'},
+{c:'MATH',t:'Percentage',d:'Part \u00f7 Whole \u00d7 100 = %. To find part: Whole \u00d7 (%/100).'},
+{c:'MATH',t:'Gear and belt ratios',d:'Gear: Output = Input \u00d7 (Driver \u00f7 Driven teeth). Belt: Output = Input \u00d7 (Driver \u00f7 Driven dia).'},
+{c:'MATH',t:'Unit conversions',d:'1 in = 25.4 mm. 1 PSI = 6.895 kPa. 1 gal = 231 in\u00b3. 1 HP = 746 W. 1 PSI = 2.31 ft head.'},
+{c:'MATH',t:'Pythagorean theorem',d:'a\u00b2 + b\u00b2 = c\u00b2.'},
 {c:'MATH',t:'Torque and force',d:'T = F \u00d7 d. F = T \u00f7 d. 60 lb at 2 ft = 120 ft-lb.'},
-{c:'MATH',t:'Surface speed',d:'FPM = \u03c0 \u00d7 D (in) \u00d7 RPM \u00f7 12. For lathe cutting speed, conveyor speed, fan tip speed.'},
-{c:'MATH',t:'Electrical energy cost',d:'kWh = kW \u00d7 hours. 1 HP = 0.746 kW. 10 HP \u00d7 8 hrs = 59.7 kWh \u00d7 $0.12 = $7.16.'},
-{c:'MATH',t:'Pressure and head',d:'1 PSI = 2.31 ft water head. Head = PSI \u00d7 2.31. PSI = Head \u00f7 2.31.'},
-{c:'MATH',t:'Decimal to fraction',d:'Multiply by 8 to find numerator. 0.375 \u00d7 8 = 3 \u2192 3/8.'},
-{c:'SAFE',t:'LOTO 6 steps',d:'1) Notify. 2) Identify ALL energy sources. 3) Shut down. 4) Isolate all energy. 5) Apply LOTO devices. 6) Release stored energy. THEN verify zero energy.'},
-{c:'SAFE',t:'Verify zero energy',d:'After applying LOTO: attempt restart AND test all energy sources. NEVER assume.'},
-{c:'SAFE',t:'Who removes a lock',d:'ONLY the authorized employee who applied it. No supervisor, no manager. Your lock = your life.'},
-{c:'SAFE',t:'Stored energy forms',d:'Electrical (caps, back-feed). Mechanical (springs, suspended loads). Hydraulic (cylinders, accumulators). Pneumatic. Thermal. Gravitational.'},
-{c:'SAFE',t:'Tagout vs lockout',d:'Lockout = physical lock, always preferred. Tagout = warning tag only \u2014 does NOT physically prevent startup.'},
-{c:'SAFE',t:'SDS Section 8',d:'Exposure Controls and PPE. PELs, engineering controls, respiratory protection, gloves, eye/skin protection.'},
-{c:'SAFE',t:'Hierarchy of Controls',d:'Elimination \u2192 Substitution \u2192 Engineering controls \u2192 Administrative controls \u2192 PPE. PPE is LAST.'},
-{c:'SAFE',t:'Arc flash',d:'Explosive electrical energy release. PPE based on incident energy (cal/cm\u00b2) from hazard analysis \u2014 NOT voltage alone.'},
+{c:'MATH',t:'Surface speed',d:'FPM = \u03c0 \u00d7 D (in) \u00d7 RPM \u00f7 12.'},
+{c:'MATH',t:'Electrical energy cost',d:'kWh = kW \u00d7 hours. 1 HP = 0.746 kW.'},
+{c:'MATH',t:'Pressure and head',d:'1 PSI = 2.31 ft head. Head = PSI \u00d7 2.31.'},
+{c:'MATH',t:'Decimal to fraction',d:'Multiply by 8. 0.375 \u00d7 8 = 3 \u2192 3/8.'},
+{c:'SAFE',t:'LOTO 6 steps',d:'1) Notify. 2) Identify ALL energy. 3) Shut down. 4) Isolate. 5) Apply LOTO. 6) Release stored energy. THEN verify zero.'},
+{c:'SAFE',t:'Verify zero energy',d:'After LOTO: attempt restart AND test all energy sources. NEVER assume.'},
+{c:'SAFE',t:'Who removes a lock',d:'ONLY the authorized employee who applied it. Your lock = your life.'},
+{c:'SAFE',t:'Stored energy forms',d:'Electrical (caps). Mechanical (springs, suspended loads). Hydraulic (cylinders, accumulators). Pneumatic. Thermal. Gravitational.'},
+{c:'SAFE',t:'Tagout vs lockout',d:'Lockout = physical lock, always preferred. Tagout = warning tag only.'},
+{c:'SAFE',t:'SDS Section 8',d:'Exposure Controls and PPE. PELs, engineering controls, respiratory protection, gloves.'},
+{c:'SAFE',t:'Hierarchy of Controls',d:'Elimination \u2192 Substitution \u2192 Engineering \u2192 Administrative \u2192 PPE. PPE is LAST.'},
+{c:'SAFE',t:'Arc flash',d:'PPE based on incident energy (cal/cm\u00b2) from hazard analysis \u2014 NOT voltage alone.'},
 {c:'SAFE',t:'Fall protection heights',d:'General industry: 4 ft. Construction: 6 ft. Shipbuilding: 10 ft.'},
-{c:'SAFE',t:'Fire extinguisher classes',d:'A=ordinary combustibles. B=flammable liquids. C=electrical (CO\u2082/dry chem). D=metals. K=cooking oils.'},
-{c:'SAFE',t:'Permit-required confined space',d:'Hazardous atmosphere, engulfment, entrapment, or IDLH conditions. Requires permit, attendant, atmospheric testing, rescue plan.'},
-{c:'SAFE',t:"Heinrich's Triangle",d:"For every major injury: ~29 minor injuries and ~300 near misses \u2014 all sharing root causes. Investigate near misses."},
+{c:'SAFE',t:'Fire extinguisher classes',d:'A=ordinary combustibles. B=flammable liquids. C=electrical. D=metals. K=cooking oils.'},
+{c:'SAFE',t:'Permit-required confined space',d:'Hazardous atmosphere, engulfment, or IDLH. Requires permit, attendant, atmospheric testing.'},
+{c:'SAFE',t:"Heinrich's Triangle",d:"~29 minor injuries and ~300 near misses for every major injury \u2014 all sharing root causes."},
 {c:'SAFE',t:'Hot work permit',d:'Required for welding, cutting, grinding in areas with fire/explosion hazards.'},
-// PLC
-{c:'PLC',t:'PLC scan cycle',d:'1) Read inputs. 2) Execute program logic. 3) Update outputs. 4) Housekeeping/comms. Repeats continuously. Typical scan time: 1\u201320 ms. Faster scan = more responsive control.'},
-{c:'PLC',t:'Ladder logic',d:'Graphical programming language that mimics relay control circuits. Left rail = power. Right rail = neutral. Rungs read left to right. Contact (input) conditions on left, coil (output) on right.'},
-{c:'PLC',t:'Normally Open (NO) contact',d:'In ladder logic: open when bit = 0, closed (passes power) when bit = 1. Symbol: two vertical lines with gap. Examines bit for ON condition (XIC instruction in Allen-Bradley).'},
-{c:'PLC',t:'Normally Closed (NC) contact',d:'In ladder logic: closed (passes power) when bit = 0, opens when bit = 1. Symbol: two vertical lines with diagonal slash. Examines bit for OFF condition (XIO instruction in Allen-Bradley).'},
-{c:'PLC',t:'Output coil',d:'Energized (bit set to 1) when rung conditions are true. De-energized when rung is false. Symbol: circle with parentheses ( ). Controls physical outputs (solenoids, motors, lights) or internal bits.'},
-{c:'PLC',t:'TON \u2014 Timer On Delay',d:'Output turns ON after preset time once rung goes true. Accumulated value counts up. If rung goes false before preset, timer resets. Used to delay start or confirm sustained condition.'},
-{c:'PLC',t:'TOF \u2014 Timer Off Delay',d:'Output turns ON immediately when rung goes true. Output stays ON for preset time AFTER rung goes false. Used to keep something running briefly after a trigger condition clears.'},
-{c:'PLC',t:'CTU \u2014 Count Up',d:'Increments accumulated value each time rung transitions false\u2192true. Output (CU done bit) energizes when accumulated \u2265 preset. Reset (RES) instruction resets accumulated to 0.'},
-{c:'PLC',t:'Retentive timer (RTO)',d:'Accumulates time whenever rung is true. Retains accumulated value when rung goes false \u2014 unlike TON which resets. Requires separate RES instruction to reset. Used for tracking total run time.'},
-{c:'PLC',t:'I/O addressing (Allen-Bradley)',d:'I:0/0 = Input file 0, word 0, bit 0. O:0/1 = Output file 0, word 0, bit 1. B3:0/5 = Bit file 3, word 0, bit 5. T4:0.ACC = Timer file 4, timer 0, accumulated value.'},
-{c:'PLC',t:'Sourcing vs sinking I/O',d:'Sourcing (PNP): output supplies +24V to device. Sinking (NPN): output provides path to common (0V). Must match sensor/device type. Mixing sourcing and sinking causes wiring faults.'},
-{c:'PLC',t:'PLC vs relay control',d:'PLC: flexible, reprogrammable, handles complex logic, easy to troubleshoot with status indicators. Relay: hardwired, no programming needed, simple, immune to software bugs. PLC is standard for modern industrial control.'},
-{c:'PLC',t:'Force function (I/O forcing)',d:'Manually overrides an input or output bit to ON or OFF regardless of real-world conditions. Used for commissioning and troubleshooting ONLY. Always remove forces after use \u2014 leaving forces in place is a serious safety hazard.'},
-{c:'PLC',t:'EtherNet/IP',d:'Industrial Ethernet protocol used by Allen-Bradley (Rockwell) and many others. Uses standard TCP/IP infrastructure. Supports implicit (real-time I/O) and explicit (configuration/data) messaging.'},
-{c:'PLC',t:'Fault finding with PLC',d:'1) Check power and CPU status LEDs. 2) Check I/O status indicators on modules. 3) Go online with programming software \u2014 monitor rung continuity. 4) Force I/O to isolate field vs. program issues. 5) Check fault log/error codes.'},
 ];
 
 // ── FLASHCARD STATE ───────────────────────────────────────────────────────────
-var fcActive=CARDS.slice(),fcIdx=0,fcFlipped=false;
-var fcKnown=new Set(),fcUnknown=new Set(),fcCatFilter='ALL';
+var fcActive=CARDS.slice(),fcIdx=0,fcFlipped=false,fcCatFilter='ALL';
+var saveTimer=null;
 
 function buildCatBtns(){
-  var wrap=document.getElementById('fc-cat-btns');if(!wrap)return;
+  var wrap=document.getElementById('fc-cat-btns');if(!wrap)return;wrap.innerHTML='';
   ['ALL'].concat(Object.keys(FC_CATS)).forEach(function(c){
     var btn=document.createElement('button');
     btn.className='fc-cat-btn'+(c==='ALL'?' active':'');
     btn.textContent=c==='ALL'?('All ('+CARDS.length+')'):FC_CATS[c].label;
-    btn.onclick=function(){
-      wrap.querySelectorAll('.fc-cat-btn').forEach(function(b){b.classList.remove('active');});
-      btn.classList.add('active');fcCatFilter=c;filterFC();
-    };
+    btn.onclick=function(){wrap.querySelectorAll('.fc-cat-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');fcCatFilter=c;filterFC();};
     wrap.appendChild(btn);
   });
 }
@@ -530,168 +764,165 @@ function renderFC(){
 }
 function flipFC(){fcFlipped=!fcFlipped;document.getElementById('fc-card').classList.toggle('flipped',fcFlipped);}
 function fcMove(dir){if(!fcActive.length)return;fcIdx=(fcIdx+dir+fcActive.length)%fcActive.length;renderFC();}
-function markFC(known){
-  if(!fcActive.length)return;var t=fcActive[fcIdx].t;
-  known?(fcKnown.add(t),fcUnknown.delete(t)):(fcUnknown.add(t),fcKnown.delete(t));
-  updateFCStats();setTimeout(function(){fcMove(1);},300);
+async function markFC(known){
+  if(!fcActive.length)return;
+  var card=fcActive[fcIdx];
+  var status=known?'known':'unknown';
+  fcProgress[card.t]=status;
+  updateFCStats();
+  // Save to Supabase
+  showSaveIndicator('Saving...');
+  var {error}=await sb.from('flashcard_progress').upsert({
+    user_id:currentUser.id,card_term:card.t,domain:card.c,status:status,updated_at:new Date().toISOString()
+  },{onConflict:'user_id,card_term'});
+  showSaveIndicator(error?'Save failed':'Saved \u2713');
+  await loadHomeSummary();
+  setTimeout(function(){fcMove(1);},300);
+}
+function showSaveIndicator(msg){
+  var el=document.getElementById('save-indicator');
+  el.textContent=msg;el.style.opacity='1';
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(function(){el.style.opacity='0';},2000);
 }
 function updateFCStats(){
-  var rev=fcKnown.size+fcUnknown.size,pct=CARDS.length?Math.round(fcKnown.size/CARDS.length*100):0;
-  var m={'fcs-known':fcKnown.size,'fcs-unknown':fcUnknown.size,'fcs-remaining':CARDS.length-rev,'fcs-pct':pct+'%'};
+  var known=0,unknown=0;
+  CARDS.forEach(function(c){if(fcProgress[c.t]==='known')known++;else if(fcProgress[c.t]==='unknown')unknown++;});
+  var pct=CARDS.length?Math.round(known/CARDS.length*100):0;
+  var m={'fcs-known':known,'fcs-unknown':unknown,'fcs-remaining':CARDS.length-known-unknown,'fcs-pct':pct+'%'};
   Object.keys(m).forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=m[id];});
 }
-function resetFC(){fcKnown.clear();fcUnknown.clear();fcIdx=0;fcFlipped=false;filterFC();updateFCStats();}
+async function resetFC(){
+  if(!confirm('Reset all flashcard progress? This cannot be undone.'))return;
+  fcProgress={};
+  var {error}=await sb.from('flashcard_progress').delete().eq('user_id',currentUser.id);
+  filterFC();updateFCStats();await loadHomeSummary();
+}
 
 // ── QUIZ DATA ─────────────────────────────────────────────────────────────────
-// Each question stores the correct answer TEXT (not index) so shuffling works correctly
 var DOMAINS=['ELEC','MOTOR','MECH','HYD','PNEU','PLC','PRINT','MATH','SAFE'];
 var DOMAIN_LABELS={ELEC:'Electrical Fundamentals',MOTOR:'Motors & Controls',MECH:'Mechanical & Drives',HYD:'Hydraulics',PNEU:'Pneumatics',PLC:'PLC & Controls',PRINT:'Print Reading',MATH:'Trade Math',SAFE:'Safety & LOTO'};
-
+function shuffle(arr){var a=arr.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
 var QUESTIONS=[
-// ELEC
 {d:'ELEC',q:'A circuit has a 120V source and a 40\u03a9 resistor. Current is:',o:['0.33 A','3 A','4800 A','2 A'],a:'3 A',e:'I = V \u00f7 R = 120 \u00f7 40 = 3 A.'},
 {d:'ELEC',q:'Three resistors of 10, 20, and 30\u03a9 in SERIES. Total resistance:',o:['6\u03a9','5.5\u03a9','60\u03a9','30\u03a9'],a:'60\u03a9',e:'Series: RT = 10+20+30 = 60\u03a9.'},
-{d:'ELEC',q:'Two 100\u03a9 resistors in PARALLEL. Total resistance:',o:['200\u03a9','25\u03a9','100\u03a9','50\u03a9'],a:'50\u03a9',e:'Parallel equal: RT = 100 \u00f7 2 = 50\u03a9. Always less than smallest branch.'},
+{d:'ELEC',q:'Two 100\u03a9 resistors in PARALLEL. Total resistance:',o:['200\u03a9','25\u03a9','100\u03a9','50\u03a9'],a:'50\u03a9',e:'Parallel equal: RT = 100 \u00f7 2 = 50\u03a9.'},
 {d:'ELEC',q:'A 1,500W heater on 120V. Current draw:',o:['0.08 A','125 A','180,000 A','12.5 A'],a:'12.5 A',e:'I = P \u00f7 V = 1500 \u00f7 120 = 12.5 A.'},
-{d:'ELEC',q:'In a parallel circuit one branch opens. What happens to the other branches?',o:['Voltage drops across all','All lose power','Current in others decreases','Continue operating normally'],a:'Continue operating normally',e:'Each parallel branch is independent. One open removes only that branch.'},
-{d:'ELEC',q:'A fuse blows. Before replacing it you should:',o:['Replace with lower rating','Replace same or higher immediately','Replace quickly','Find and fix the cause first'],a:'Find and fix the cause first',e:'A blown fuse is a symptom. Find the root cause before replacing.'},
-{d:'ELEC',q:'The white wire in a US 120V circuit is the:',o:['Spare','Hot conductor','Ground','Neutral \u2014 current return at near-zero voltage'],a:'Neutral \u2014 current return at near-zero voltage',e:'White = neutral. Current-carrying \u2014 never interrupt with a switch.'},
-{d:'ELEC',q:'To measure component resistance correctly:',o:['Power applied for accuracy','Clamp meter around leads','In-circuit on AC volts setting','De-energize, disconnect, then measure'],a:'De-energize, disconnect, then measure',e:'Power off + component isolated. Parallel paths give false low readings.'},
-{d:'ELEC',q:'A ground fault is:',o:['Neutral wire open','Breaker tripping on overload','Two hot wires contacting each other','Current flowing to ground through an unintended path'],a:'Current flowing to ground through an unintended path',e:'GFCI detects 5 mA imbalance and trips in milliseconds.'},
-{d:'ELEC',q:'NEC requires high-leg delta Phase B to be colored:',o:['Black','Red','Orange','Blue'],a:'Orange',e:'208 V to neutral (not 120 V). Must be orange to prevent accidents.'},
-// MOTOR
-{d:'MOTOR',q:'A 4-pole induction motor on 60 Hz. Synchronous speed:',o:['7200 RPM','3600 RPM','900 RPM','1800 RPM'],a:'1800 RPM',e:'N = 120 \u00d7 60 \u00f7 4 = 1800 RPM.'},
-{d:'MOTOR',q:'To reverse a 3-phase motor:',o:['Reverse motor terminal leads','Swap all three line leads','Switch to single-phase','Swap any TWO line leads'],a:'Swap any TWO line leads',e:'Swapping any two reverses phase sequence and shaft rotation.'},
-{d:'MOTOR',q:'FLA = 15 A. Overload relay should be set at:',o:['7.5 A','15 A','12 A','17\u201319 A'],a:'17\u201319 A',e:'115\u2013125% of FLA: 15 \u00d7 1.15 = 17.25 A to 15 \u00d7 1.25 = 18.75 A.'},
-{d:'MOTOR',q:'Motor slip is:',o:['Gap between stator and rotor','Current bypassing windings','How far motor slides on mount','Difference between synchronous speed and actual rotor speed'],a:'Difference between synchronous speed and actual rotor speed',e:'No slip = no relative motion = no induced current = no torque. Typical 2\u20135%.'},
-{d:'MOTOR',q:'A VFD controls motor speed by:',o:['Changing gear ratio automatically','Switching wye to delta','Varying voltage only','Varying frequency (and proportional voltage)'],a:'Varying frequency (and proportional voltage)',e:'Speed is proportional to frequency. VFD varies Hz to control speed.'},
-{d:'MOTOR',q:'In 3-wire motor control, the holding contact:',o:['Connects overloads to coil','Limits starts per hour','Prevents overspeed','Keeps coil energized after Start is released'],a:'Keeps coil energized after Start is released',e:'Holding contact in parallel with Start seals in the coil when Start is released.'},
-{d:'MOTOR',q:'A start capacitor is designed to:',o:['Replace run capacitor if it fails','Stay in circuit permanently','Protect from voltage surges','Provide phase shift for starting torque, then be switched out'],a:'Provide phase shift for starting torque, then be switched out',e:'Short-duty only. Centrifugal switch disconnects at ~75% speed.'},
-{d:'MOTOR',q:'Megger test checks:',o:['Running current','Ability to start under load','Bearing condition','Insulation resistance between windings and frame'],a:'Insulation resistance between windings and frame',e:'High DC voltage tests insulation to ground. Low reading = moisture or degraded insulation.'},
-{d:'MOTOR',q:'Power factor describes:',o:['Number of phases','Motor load as % of full load','Output \u00f7 input (efficiency)','Real power (W) \u00f7 apparent power (VA)'],a:'Real power (W) \u00f7 apparent power (VA)',e:'Inductive loads cause current to lag voltage. Low PF increases utility demand charges.'},
-{d:'MOTOR',q:'NEC motor protection requires:',o:['GFCI at 100% FLA','One device at 115% FLA','Overload relay only','Branch protection (175\u2013250% FLA) AND overload relay (115\u2013125% FLA)'],a:'Branch protection (175\u2013250% FLA) AND overload relay (115\u2013125% FLA)',e:'Two separate devices: branch circuit for inrush, overload relay for thermal running protection.'},
-// MECH
-{d:'MECH',q:'Driver: 12 teeth at 1200 RPM. Driven: 48 teeth. Output speed:',o:['600 RPM','4800 RPM','1200 RPM','300 RPM'],a:'300 RPM',e:'Output = 1200 \u00d7 (12 \u00f7 48) = 300 RPM. GR = 4:1.'},
-{d:'MECH',q:'6-inch driver at 1800 RPM, 12-inch driven sheave. Driven speed:',o:['600 RPM','1800 RPM','3600 RPM','900 RPM'],a:'900 RPM',e:'Output = 1800 \u00d7 (6 \u00f7 12) = 900 RPM.'},
-{d:'MECH',q:'Most common cause of premature bearing failure:',o:['5% overload','Above 1800 RPM','Running too slowly','Lubrication problems (40\u201350% of failures)'],a:'Lubrication problems (40\u201350% of failures)',e:'Over/under-greasing, contamination, and wrong lubricant type = ~40\u201350% of failures.'},
-{d:'MECH',q:'A press fit means:',o:['Same size \u2014 zero clearance','Shaft much larger \u2014 needs machining','Shaft slightly smaller \u2014 slides by hand','Shaft slightly larger \u2014 requires force, heat, or chill'],a:'Shaft slightly larger \u2014 requires force, heat, or chill',e:'Interference fit: shaft slightly LARGER. Creates compressive stress locking bearing to shaft.'},
-{d:'MECH',q:'Purpose of a flexible coupling:',o:['Prevent electrical continuity','Increase speed','Change rotation direction','Allow minor misalignment, absorb vibration and shock'],a:'Allow minor misalignment, absorb vibration and shock',e:'Accommodates minor misalignment without transmitting large forces to bearings.'},
-{d:'MECH',q:'Soft foot must be corrected before alignment because:',o:['Laser systems malfunction','Causes bearing overheating','Causes inaccurate vibration readings','Tightening bolts deflects frame and shifts shaft \u2014 invalidates alignment'],a:'Tightening bolts deflects frame and shifts shaft \u2014 invalidates alignment',e:'Tightening bolts bends the frame and shifts the shaft. Correct soft foot FIRST, then align.'},
-{d:'MECH',q:'Most torque applied to a bolt is consumed by:',o:['Stretching the shank','Thread lead angle resistance','Creating clamp load','Friction (80\u201390%) \u2014 only 10\u201320% creates clamping force'],a:'Friction (80\u201390%) \u2014 only 10\u201320% creates clamping force',e:'A lubricated bolt generates ~30\u201340% more clamp load at the same torque as a dry bolt.'},
-{d:'MECH',q:'V-belt under-tension causes:',o:['No effect','Excessive bearing load','Sheave groove wear only','Belt slipping, overheating, premature wear'],a:'Belt slipping, overheating, premature wear',e:'Under-tension: belt slips under load, generating heat and premature wear.'},
-{d:'MECH',q:'50 lb force applied 1.5 ft from pivot. Torque produced:',o:['50 ft-lb','33.3 ft-lb','51.5 ft-lb','75 ft-lb'],a:'75 ft-lb',e:'T = F \u00d7 d = 50 \u00d7 1.5 = 75 ft-lb.'},
-{d:'MECH',q:'30 ft-lb at 1750 RPM. Using HP = T \u00d7 RPM \u00f7 5252. HP is:',o:['175','5','52,500','10'],a:'10',e:'HP = 30 \u00d7 1750 \u00f7 5252 \u2248 10 HP.'},
-// HYD
-{d:'HYD',q:'4-inch bore cylinder at 2000 PSI. Extension force:',o:['4000 lbs','500 lbs','8000 lbs','25,133 lbs'],a:'25,133 lbs',e:'A = \u03c0 \u00d7 2\u00b2 = 12.566 in\u00b2. F = 2000 \u00d7 12.566 = 25,133 lbs.'},
-{d:'HYD',q:"Pascal's Law \u2014 pressure in a confined fluid is:",o:['Proportional to velocity','Applied only in direction of force','Reduced with distance','Transmitted equally in all directions'],a:'Transmitted equally in all directions',e:'Equal, undiminished transmission in all directions. Basis of hydraulics.'},
-{d:'HYD',q:'Pump whining, pressure low and erratic. Most likely cause:',o:['Failed directional valve','Relief valve set too high','Fluid too hot','Cavitation \u2014 pump inlet starved for fluid'],a:'Cavitation \u2014 pump inlet starved for fluid',e:'Vapor bubbles form at low-pressure inlet and collapse violently under pressure.'},
-{d:'HYD',q:'A relief valve must NEVER be blocked because:',o:['Controls flow to cylinders','Pump startup bypass','Only way to adjust pressure','Last overpressure protection \u2014 blocking removes all protection'],a:'Last overpressure protection \u2014 blocking removes all protection',e:'Without it, overpressure has no limit. Hoses, cylinders, valves can burst catastrophically.'},
-{d:'HYD',q:'Cylinder retraction force is less than extension force because:',o:['More friction during retraction','Lower pressure during retraction','Rod-side seals less efficient','Rod reduces effective piston area on rod side'],a:'Rod reduces effective piston area on rod side',e:'Retraction: F = P \u00d7 (bore area \u2212 rod area).'},
-{d:'HYD',q:'Open-center valve in neutral position:',o:['Holds cylinder with high force','Blocks all flow','Flows to cylinder both ways','Routes pump flow to tank \u2014 unloads at low pressure'],a:'Routes pump flow to tank \u2014 unloads at low pressure',e:'Open-center neutral: pump circulates to tank at low pressure and heat.'},
-{d:'HYD',q:'Hydraulic fluid with water contamination should be:',o:['Pressurized to expel moisture','Diluted with fresh fluid','Ignored below 1%','Sampled, then dehydrated or changed'],a:'Sampled, then dehydrated or changed',e:'Even 100 ppm water reduces bearing life 50%. Dehydration or fluid change required.'},
-{d:'HYD',q:'A flow control valve controls:',o:['Maximum pressure','Fluid direction','Reverse flow','Speed of cylinder/motor by restricting flow rate'],a:'Speed of cylinder/motor by restricting flow rate',e:'Cylinder speed = Flow rate \u00f7 Cylinder area.'},
-{d:'HYD',q:'Hydraulic accumulator before maintenance must be:',o:['Cooled down first','Flushed first','Left alone \u2014 nitrogen is safe','De-pressurized \u2014 opening a fitting releases fluid at full system pressure'],a:'De-pressurized \u2014 opening a fitting releases fluid at full system pressure',e:'Charged accumulator is a pressurized vessel. LOTO must include de-pressurization.'},
-{d:'HYD',q:'On a hydraulic schematic, a dashed line is:',o:['Flexible hose','High-pressure working line','Drain or case drain','Pilot or control signal line'],a:'Pilot or control signal line',e:'Solid = working pressure. Long-dashed = pilot/control. Short-dashed = drain.'},
-// PNEU
-{d:'PNEU',q:'Correct FRL order (inlet to outlet):',o:['Lubricator, Regulator, Filter','Filter, Lubricator, Regulator','Regulator, Filter, Lubricator','Filter, Regulator, Lubricator'],a:'Filter, Regulator, Lubricator',e:'Filter removes water/particles first. Lubricator last so oil is not filtered out.'},
-{d:'PNEU',q:'A double-acting cylinder needs:',o:['Check valve','Simple on/off valve','Pressure reducing valve','4/2 or 4/3 four-way valve'],a:'4/2 or 4/3 four-way valve',e:'4-way valve routes supply to one end while simultaneously exhausting the other.'},
-{d:'PNEU',q:'Air system pressure should be set to:',o:['110% of highest required','Max rated compressor pressure','Highest pressure any component requires','MINIMUM needed for the application'],a:'MINIMUM needed for the application',e:'Minimum needed: higher pressure = more wear, higher leaks, more energy cost.'},
-{d:'PNEU',q:'Cylinder extends but cannot hold position under load. Most likely:',o:['Pressure too high','FRL lubricator empty','Bore too large','Worn piston seals \u2014 internal air bypasses piston'],a:'Worn piston seals \u2014 internal air bypasses piston',e:'Test: extend, shut off air, watch for retraction. Retraction = worn seals.'},
-{d:'PNEU',q:'Meter-out is preferred over meter-in because:',o:['More force','Meter-in is hydraulics only','Easier to install','Smoother motion under varying loads \u2014 meter-in can stall when load pushes back'],a:'Smoother motion under varying loads \u2014 meter-in can stall when load pushes back',e:'Meter-out creates consistent backpressure regardless of load variation.'},
-{d:'PNEU',q:'A 1/8-inch air leak at 100 PSI:',o:['Self-seals over time','Negligible','Only matters when compressor runs','Wastes ~25 CFM continuously'],a:'Wastes ~25 CFM continuously',e:'A single 1/8" leak wastes ~25 CFM. Plants with many leaks waste 20\u201330% of output.'},
-{d:'PNEU',q:'Quick exhaust valve purpose:',o:['Reduces system pressure in emergency','Prevents backflow','Emergency-stops all cylinders','Exhausts air directly to atmosphere \u2014 increases cylinder speed'],a:'Exhausts air directly to atmosphere \u2014 increases cylinder speed',e:'Eliminates slow exhaust path through long supply lines. Much faster cycling.'},
-{d:'PNEU',q:'Condensation in pneumatic systems is best controlled by:',o:['Higher pressure','Faster compressor','Daily filter draining only','Air dryers at compressor outlet'],a:'Air dryers at compressor outlet',e:'Dryers remove moisture at the source. Filters/drains are secondary.'},
-{d:'PNEU',q:'A regulator cannot maintain set pressure when:',o:['Using double-acting cylinder','Set below 30 PSI','Flow demand is zero','Supply drops BELOW setpoint'],a:'Supply drops BELOW setpoint',e:'Regulator = reducing valve only. Cannot boost pressure. Supply must always exceed setpoint.'},
-{d:'PNEU',q:'Key limitation of pneumatics vs hydraulics:',o:['Always slower','Cannot transmit over distance','Requires more maintenance','Air is compressible \u2014 cannot precisely hold position under varying loads'],a:'Air is compressible \u2014 cannot precisely hold position under varying loads',e:'Compressibility prevents rigid force/position control. Hydraulics uses near-incompressible oil.'},
-// PRINT
-{d:'PRINT',q:'A dashed line on a drawing represents:',o:['Section cut line','Reference dimension','Non-scale dimension','Edge or surface not visible in that view'],a:'Edge or surface not visible in that view',e:'Hidden lines show internal or obscured features behind the visible exterior.'},
-{d:'PRINT',q:'First thing to verify on an existing print:',o:['Scale','Number of views','Material spec','Revision level \u2014 confirm you have the latest'],a:'Revision level \u2014 confirm you have the latest',e:'Wrong revision = incorrect dimensions or obsolete design.'},
-{d:'PRINT',q:'In third-angle (US) projection, right side view is placed:',o:['Below front view','Above front view','Left of front view','Right of front view'],a:'Right of front view',e:'Third-angle: views placed where you look to see them.'},
-{d:'PRINT',q:'Tolerance 2.500 \u00b10.005. Acceptable range:',o:['2.000 to 3.000','Exactly 2.500','2.495 to 2.500','2.495 to 2.505'],a:'2.495 to 2.505',e:'\u00b10.005: min = 2.495, max = 2.505.'},
-{d:'PRINT',q:'A normally open (NO) contact on a ladder diagram:',o:['Solid horizontal line','Circle with X','Diagonal slash through gap','Two vertical lines with open gap'],a:'Two vertical lines with open gap',e:'NO = open gap. Closes when actuated. NC = diagonal slash = closed when de-energized.'},
-{d:'PRINT',q:'A section view is used to:',o:['Show isometric view','Enlarge small feature','Show exterior profile','Show internal features at a cutting plane'],a:'Show internal features at a cutting plane',e:'Cut-away reveals internal features. Cross-hatching = solid material cut through.'},
-{d:'PRINT',q:'Hydraulic pump symbol on a schematic:',o:['Filter','Pressure gauge','Motor','Pump \u2014 circle with triangle pointing outward'],a:'Pump \u2014 circle with triangle pointing outward',e:'Triangle out = pump. Triangle in = motor. Direction = energy flow.'},
-{d:'PRINT',q:'Weld symbol BELOW reference line means:',o:['No weld','Both sides','Other side from arrow','Arrow side of joint'],a:'Arrow side of joint',e:'Below = arrow side. Above = other side.'},
-{d:'PRINT',q:'Revision cloud on a drawing indicates:',o:['Special inspection required','Informational note only','Out-of-tolerance feature','Area changed in most recent revision'],a:'Area changed in most recent revision',e:'Highlights what changed. Check revision table for what changed and why.'},
-{d:'PRINT',q:'A Bill of Materials (BOM) lists:',o:['Assembly sequence only','Raw material specs only','Purchased parts only','Item number, part number, description, quantity, material \u2014 cross-referenced to drawing balloons'],a:'Item number, part number, description, quantity, material \u2014 cross-referenced to drawing balloons',e:'Complete BOM: all components cross-referenced to balloons on the drawing.'},
-// MATH
-{d:'MATH',q:'1800 RPM motor, 6-inch driver, 12-inch driven. Driven speed:',o:['3600 RPM','1800 RPM','600 RPM','900 RPM'],a:'900 RPM',e:'Output = 1800 \u00d7 (6 \u00f7 12) = 900 RPM.'},
-{d:'MATH',q:'Convert 3/8 inch to decimal:',o:['0.250','0.500','0.125','0.375'],a:'0.375',e:'3 \u00f7 8 = 0.375.'},
-{d:'MATH',q:'Cylinder bore = 3.5 inches. Piston area:',o:['12.25 in\u00b2','3.5 in\u00b2','10.99 in\u00b2','9.62 in\u00b2'],a:'9.62 in\u00b2',e:'A = \u03c0 \u00d7 (1.75)\u00b2 = 9.62 in\u00b2.'},
-{d:'MATH',q:'Express 0.625 as a fraction:',o:['7/16','3/4','1/2','5/8'],a:'5/8',e:'0.625 \u00d7 8 = 5 \u2192 5/8.'},
-{d:'MATH',q:'1 PSI = 2.31 ft water head. 65 PSI = how many feet of head?',o:['65 ft','28.1 ft','200 ft','150 ft'],a:'150 ft',e:'Head = 65 \u00d7 2.31 = 150.15 ft.'},
-{d:'MATH',q:'Tank: 4 ft diameter, 8 ft tall. Volume in cubic feet:',o:['401.9 ft\u00b3','201.1 ft\u00b3','50.3 ft\u00b3','100.5 ft\u00b3'],a:'100.5 ft\u00b3',e:'V = \u03c0 \u00d7 2\u00b2 \u00d7 8 = 100.5 ft\u00b3.'},
-{d:'MATH',q:'Torque = 80 ft-lb. Wrench = 2.5 ft long. Force required:',o:['200 lbs','80 lbs','40 lbs','32 lbs'],a:'32 lbs',e:'F = T \u00f7 d = 80 \u00f7 2.5 = 32 lbs.'},
-{d:'MATH',q:'10 HP motor, 8 hours, $0.12/kWh. (1 HP = 0.746 kW). Energy cost:',o:['$71.60','$0.07','$0.72','$7.16'],a:'$7.16',e:'10 \u00d7 0.746 \u00d7 8 = 59.7 kWh \u00d7 $0.12 = $7.16.'},
-{d:'MATH',q:'1.875 inches expressed as a fraction:',o:['1 and 3/4 inches','2 inches','1 and 11/16 inches','1 and 7/8 inches'],a:'1 and 7/8 inches',e:'0.875 = 7/8. So 1.875 = 1-7/8.'},
-{d:'MATH',q:'36-tooth gear at 600 RPM drives a 12-tooth gear. Output speed:',o:['600 RPM','200 RPM','300 RPM','1800 RPM'],a:'1800 RPM',e:'Output = 600 \u00d7 (36 \u00f7 12) = 1800 RPM. Smaller driven = faster output.'},
-// SAFE
-{d:'SAFE',q:'After applying LOTO lock, before starting work you must:',o:['Wait 5 minutes','Begin \u2014 lock provides safety','Notify supervisor','Verify zero energy \u2014 attempt restart AND test all energy sources'],a:'Verify zero energy \u2014 attempt restart AND test all energy sources',e:'OSHA 1910.147: verify isolation after applying LOTO. Attempt restart. Test energy sources.'},
-{d:'SAFE',q:'Coworker asks you to remove your lock so they can run a test. You should:',o:['Remove if coworker watches','Remove if everyone else has','Remove if supervisor asks','Refuse \u2014 only YOU may remove your lock'],a:'Refuse \u2014 only YOU may remove your lock',e:'Your lock protects your life. No exceptions.'},
-{d:'SAFE',q:'Most often overlooked LOTO energy source:',o:['Water supply','Natural gas','Electrical energy','Stored hydraulic/pneumatic pressure and mechanical spring energy'],a:'Stored hydraulic/pneumatic pressure and mechanical spring energy',e:'Electrical is identified first. Hydraulic cylinders, accumulators, pneumatic lines, springs commonly missed.'},
-{d:'SAFE',q:'SDS Section 8 covers:',o:['First aid measures','Firefighting measures','Physical and chemical properties','Exposure controls and required PPE'],a:'Exposure controls and required PPE',e:'Section 8 = Exposure Controls/PPE: PELs, engineering controls, respiratory protection, gloves, eye/skin protection.'},
-{d:'SAFE',q:'In the Hierarchy of Controls, PPE is last because:',o:['OSHA only requires it last','Too expensive for routine use','Most effective \u2014 directly protects worker','Least effective \u2014 can fail, be worn wrong, or not worn at all'],a:'Least effective \u2014 can fail, be worn wrong, or not worn at all',e:'Engineering controls protect everyone automatically. PPE requires correct selection, fit, and use every time.'},
-{d:'SAFE',q:'Arc flash PPE level is determined by:',o:['OSHA Table Z-1 current limits','Annual company policy review','Voltage level only','Incident energy (cal/cm\u00b2) from arc flash hazard analysis'],a:'Incident energy (cal/cm\u00b2) from arc flash hazard analysis',e:'Incident energy depends on fault current, clearing time, and distance \u2014 not voltage alone.'},
-{d:'SAFE',q:'OSHA requires fall protection in general industry at:',o:['10 ft','2 ft','6 ft','4 ft'],a:'4 ft',e:'General industry = 4 ft. Construction = 6 ft. Shipbuilding = 10 ft.'},
-{d:'SAFE',q:'A hot work permit is required when:',o:['Lifting over 50 lbs','Any outdoor work','Using any hand tools','Welding, cutting, grinding in areas with fire/explosion hazards'],a:'Welding, cutting, grinding in areas with fire/explosion hazards',e:'Required for spark/heat-producing work where flammable/combustible materials may be present.'},
-{d:'SAFE',q:'A permit-required confined space contains:',o:['Poor cell reception','Rain water','Limited lighting','Hazardous atmosphere, engulfment, entrapment, or IDLH conditions'],a:'Hazardous atmosphere, engulfment, entrapment, or IDLH conditions',e:'Requires permit, trained entrant, outside attendant, atmospheric testing, rescue plan.'},
-{d:'SAFE',q:"Heinrich's Triangle explains why near miss reporting matters because:",o:['OSHA requires near misses on 300 log','Near misses cost more than recordable injuries','Creates fault-finding paperwork','For every major injury: ~29 minor injuries and ~300 near misses \u2014 all sharing root causes'],a:"For every major injury: ~29 minor injuries and ~300 near misses \u2014 all sharing root causes",e:'Same root causes produce near misses and major injuries. Investigate near misses to prevent major incidents.'},
-// PLC
-{d:'PLC',q:'In PLC ladder logic, a Normally Open (NO) contact passes power when:',o:['The rung is false','The bit is 0 (off)','The bit is 1 (on)','The output coil is energized'],a:'The bit is 1 (on)',e:'NO contact (XIC) passes power when the referenced bit = 1. When de-energized (bit=0), it is open and blocks power flow.'},
-{d:'PLC',q:'The correct order of a PLC scan cycle is:',o:['Execute \u2192 Read inputs \u2192 Update outputs','Update outputs \u2192 Execute \u2192 Read inputs','Read inputs \u2192 Execute program \u2192 Update outputs','Execute \u2192 Update outputs \u2192 Read inputs'],a:'Read inputs \u2192 Execute program \u2192 Update outputs',e:'The PLC reads all input states first, executes the ladder logic program, then updates all outputs. This repeats continuously.'},
-{d:'PLC',q:'A TON (Timer On Delay) timer resets its accumulated value when:',o:['The preset is reached','Power is cycled to the PLC','The rung condition goes false before preset is reached','The done bit energizes'],a:'The rung condition goes false before preset is reached',e:'TON resets to zero if the rung goes false before timing out. Use RTO (retentive timer) if you need to accumulate time across multiple rung transitions.'},
-{d:'PLC',q:'What is the purpose of a holding (seal-in) contact in ladder logic?',o:['Limits the number of times an output can energize','Keeps the output coil energized after the momentary start contact opens','Prevents the output from energizing too quickly','Times how long the output stays on'],a:'Keeps the output coil energized after the momentary start contact opens',e:'Same concept as a motor control holding contact \u2014 a parallel branch keeps the rung true after a pushbutton is released.'},
-{d:'PLC',q:'In Allen-Bradley addressing, I:1/3 refers to:',o:['Output file 1, bit 3','Input file 1, word 1, bit 3','Timer file 1, preset 3','Internal bit file 1, word 3'],a:'Input file 1, word 1, bit 3',e:'I = Input file. 1 = word (slot) number. /3 = bit 3. Used in classic PLC-5 and SLC-500 addressing.'},
-{d:'PLC',q:'You are troubleshooting a PLC output that should be ON but the field device is not energized. The output indicator light on the module IS lit. The most likely cause is:',o:['Bad rung logic \u2014 output coil not energized','Blown fuse or wiring fault between output module and field device','PLC in fault mode','Wrong scan time setting'],a:'Blown fuse or wiring fault between output module and field device',e:'If the output status LED is ON, the PLC believes the output is energized. The problem is in the field wiring, fuse, or device \u2014 not the program.'},
-{d:'PLC',q:'The I/O forcing function should be used:',o:['During normal production to improve efficiency','To permanently override faulty sensors','During commissioning and troubleshooting only \u2014 forces must be removed after use','Any time an output needs to be tested'],a:'During commissioning and troubleshooting only \u2014 forces must be removed after use',e:'Leaving forces active during production bypasses the control program and is a serious safety hazard. Always verify forces are removed before returning to auto.'},
-{d:'PLC',q:'A CTU (Count Up) counter output bit energizes when:',o:['The rung goes true for the first time','The accumulated value equals or exceeds the preset','The reset rung goes true','The count reaches zero'],a:'The accumulated value equals or exceeds the preset',e:'CTU counts each false\u2192true rung transition. Done bit turns ON when accumulated \u2265 preset. Reset (RES) instruction clears accumulated back to zero.'},
-{d:'PLC',q:'EtherNet/IP is primarily associated with which PLC manufacturer?',o:['Siemens','Mitsubishi','GE Fanuc','Allen-Bradley (Rockwell Automation)'],a:'Allen-Bradley (Rockwell Automation)',e:'EtherNet/IP was developed by Rockwell and ODVA. It is the primary network protocol for Allen-Bradley PLCs (ControlLogix, CompactLogix). Also widely adopted across the industry.'},
-{d:'PLC',q:'A Normally Closed (NC) contact in ladder logic passes power when:',o:['The bit is 1 (on)','The output is energized','The bit is 0 (off)','The rung is true'],a:'The bit is 0 (off)',e:'NC contact (XIO) passes power when the referenced bit = 0. It opens (blocks power) when the bit turns ON. Used to stop a process when a condition is true.'},
-{d:'PLC',q:'When going online with a PLC for the first time to troubleshoot, the first thing you should check is:',o:['Force all outputs to verify wiring','Change the program to match expected behavior','Processor and I/O module status LEDs and the fault log','Immediately replace any faulted I/O module'],a:'Processor and I/O module status LEDs and the fault log',e:'Status LEDs and the fault log tell you whether the CPU is running, in fault, or has specific I/O issues \u2014 essential before touching the program or hardware.'},
+{d:'ELEC',q:'In a parallel circuit one branch opens. Other branches:',o:['Voltage drops','All lose power','Current decreases','Continue normally'],a:'Continue normally',e:'Each branch is independent.'},
+{d:'ELEC',q:'A fuse blows. Before replacing:',o:['Replace same immediately','Replace quickly','Find and fix cause','Replace lower rating'],a:'Find and fix cause',e:'A blown fuse is a symptom, not the problem.'},
+{d:'ELEC',q:'The white wire in US 120V is the:',o:['Hot','Ground','Neutral','Spare'],a:'Neutral',e:'White = neutral. Current-carrying \u2014 never interrupt with a switch.'},
+{d:'ELEC',q:'To measure resistance correctly:',o:['Power on','De-energize and disconnect first','In-circuit on AC','Clamp meter around leads'],a:'De-energize and disconnect first',e:'Power off + component isolated. Parallel paths give false readings.'},
+{d:'ELEC',q:'A ground fault is:',o:['Two hot wires contacting','Current to ground through unintended path','Neutral wire open','Breaker overload trip'],a:'Current to ground through unintended path',e:'GFCI detects 5 mA imbalance and trips in milliseconds.'},
+{d:'ELEC',q:'NEC requires high-leg delta Phase B to be:',o:['Red','Blue','Orange','Black'],a:'Orange',e:'208 V to neutral (not 120 V). Must be orange to prevent accidents.'},
+{d:'MOTOR',q:'4-pole motor on 60 Hz. Synchronous speed:',o:['7200 RPM','3600 RPM','900 RPM','1800 RPM'],a:'1800 RPM',e:'N = 120 \u00d7 60 \u00f7 4 = 1800 RPM.'},
+{d:'MOTOR',q:'To reverse a 3-phase motor:',o:['Swap all three','Swap any TWO leads','Reverse terminal leads','Switch to single-phase'],a:'Swap any TWO leads',e:'Swapping any two reverses phase sequence and rotation.'},
+{d:'MOTOR',q:'FLA = 15 A. Overload relay set at:',o:['7.5 A','15 A','12 A','17\u201319 A'],a:'17\u201319 A',e:'115\u2013125% of FLA = 17.25\u201318.75 A.'},
+{d:'MOTOR',q:'Motor slip is:',o:['Slide on mount','Sync speed minus actual speed','Stator-rotor gap','Current bypass'],a:'Sync speed minus actual speed',e:'No slip = no induced current = no torque. Typical 2\u20135%.'},
+{d:'MOTOR',q:'A VFD controls motor speed by:',o:['Varying voltage only','Changing gear ratio','Varying frequency and voltage','Switching wye to delta'],a:'Varying frequency and voltage',e:'Speed is proportional to frequency.'},
+{d:'MOTOR',q:'In 3-wire control, the holding contact:',o:['Limits starts','Keeps coil energized after Start releases','Prevents overspeed','Connects overloads'],a:'Keeps coil energized after Start releases',e:'Seals in the coil when Start is released.'},
+{d:'MOTOR',q:'A start capacitor is designed to:',o:['Stay in permanently','Provide start torque then be switched out','Replace run cap','Protect from surges'],a:'Provide start torque then be switched out',e:'Short-duty only. Centrifugal switch disconnects at ~75% speed.'},
+{d:'MOTOR',q:'Megger test checks:',o:['Running current','Bearing condition','Insulation resistance winding to frame','Ability to start'],a:'Insulation resistance winding to frame',e:'High DC voltage tests insulation. Low reading = moisture or damage.'},
+{d:'MOTOR',q:'Power factor describes:',o:['Output \u00f7 input','Real power \u00f7 apparent power','Number of phases','% of full load'],a:'Real power \u00f7 apparent power',e:'Low PF increases utility demand charges.'},
+{d:'MOTOR',q:'NEC motor protection requires:',o:['One device at 115%','Branch protection AND overload relay','Overload only','GFCI at 100%'],a:'Branch protection AND overload relay',e:'Two separate devices: inrush protection and thermal running protection.'},
+{d:'MECH',q:'Driver: 12 teeth at 1200 RPM. Driven: 48 teeth. Output:',o:['4800 RPM','300 RPM','1200 RPM','600 RPM'],a:'300 RPM',e:'Output = 1200 \u00d7 (12 \u00f7 48) = 300 RPM.'},
+{d:'MECH',q:'6-inch driver at 1800 RPM, 12-inch driven. Driven speed:',o:['3600 RPM','900 RPM','1800 RPM','600 RPM'],a:'900 RPM',e:'Output = 1800 \u00d7 (6 \u00f7 12) = 900 RPM.'},
+{d:'MECH',q:'Most common cause of premature bearing failure:',o:['Running too slowly','Lubrication problems (40\u201350%)','5% overload','Above 1800 RPM'],a:'Lubrication problems (40\u201350%)',e:'Over/under-greasing, contamination, wrong lubricant.'},
+{d:'MECH',q:'A press fit means:',o:['Shaft smaller \u2014 slides by hand','Shaft larger \u2014 requires force or heat','Same size','Much larger'],a:'Shaft larger \u2014 requires force or heat',e:'Interference fit: shaft slightly LARGER. Locks bearing to shaft.'},
+{d:'MECH',q:'Purpose of a flexible coupling:',o:['Increase speed','Allow minor misalignment and absorb shock','Prevent electrical continuity','Change direction'],a:'Allow minor misalignment and absorb shock',e:'Prevents large forces from reaching bearings.'},
+{d:'MECH',q:'Soft foot must be corrected before alignment because:',o:['Vibration readings wrong','Tightening bolts deflects frame and shifts shaft','Bearing overheating','Laser malfunction'],a:'Tightening bolts deflects frame and shifts shaft',e:'Correct soft foot FIRST, then align.'},
+{d:'MECH',q:'Most torque applied to a bolt is consumed by:',o:['Creating clamp load','Friction (80\u201390%)','Stretching shank','Thread lead angle'],a:'Friction (80\u201390%)',e:'Only 10\u201320% creates clamping force.'},
+{d:'MECH',q:'V-belt under-tension causes:',o:['Excessive bearing load','Slipping, overheating, premature wear','Sheave groove wear only','No effect'],a:'Slipping, overheating, premature wear',e:'Under-tension: belt slips generating heat and premature wear.'},
+{d:'MECH',q:'50 lb at 1.5 ft from pivot. Torque:',o:['33.3 ft-lb','75 ft-lb','51.5 ft-lb','50 ft-lb'],a:'75 ft-lb',e:'T = F \u00d7 d = 50 \u00d7 1.5 = 75 ft-lb.'},
+{d:'MECH',q:'30 ft-lb at 1750 RPM. HP = T \u00d7 RPM \u00f7 5252:',o:['52,500','10','175','5'],a:'10',e:'HP = 30 \u00d7 1750 \u00f7 5252 \u2248 10 HP.'},
+{d:'HYD',q:'4-inch bore cylinder at 2000 PSI. Extension force:',o:['8000 lbs','25,133 lbs','500 lbs','4000 lbs'],a:'25,133 lbs',e:'A = \u03c0 \u00d7 2\u00b2 = 12.566 in\u00b2. F = 2000 \u00d7 12.566 = 25,133 lbs.'},
+{d:'HYD',q:"Pascal's Law \u2014 pressure in confined fluid:",o:['Reduces with distance','Transmitted equally all directions','Only in direction of force','Proportional to velocity'],a:'Transmitted equally all directions',e:'Equal, undiminished transmission. Basis of hydraulics.'},
+{d:'HYD',q:'Pump whining, pressure low and erratic. Most likely:',o:['Relief valve too high','Fluid too hot','Cavitation \u2014 inlet starved','Failed directional valve'],a:'Cavitation \u2014 inlet starved',e:'Vapor bubbles form and collapse violently.'},
+{d:'HYD',q:'A relief valve must NEVER be blocked because:',o:['Pump startup bypass','Only way to adjust pressure','Last overpressure protection','Controls flow to cylinders'],a:'Last overpressure protection',e:'Without it, hoses, cylinders, valves can burst.'},
+{d:'HYD',q:'Retraction force less than extension because:',o:['Lower pressure','Rod reduces piston area on rod side','More friction','Rod-side seals less efficient'],a:'Rod reduces piston area on rod side',e:'F = P \u00d7 (bore area \u2212 rod area).'},
+{d:'HYD',q:'Open-center valve in neutral:',o:['Blocks all flow','Routes pump to tank at low pressure','Holds cylinder high force','Flows both ways'],a:'Routes pump to tank at low pressure',e:'Pump circulates to tank at low pressure and heat.'},
+{d:'HYD',q:'Hydraulic fluid with water contamination:',o:['Dilute with fresh','Ignore below 1%','Dehydrate or change','Pressurize to expel'],a:'Dehydrate or change',e:'Even 100 ppm water reduces bearing life 50%.'},
+{d:'HYD',q:'A flow control valve controls:',o:['Maximum pressure','Fluid direction','Speed by restricting flow','Reverse flow'],a:'Speed by restricting flow',e:'Cylinder speed = Flow rate \u00f7 Cylinder area.'},
+{d:'HYD',q:'Accumulator before maintenance must be:',o:['Left alone','De-pressurized first','Cooled down','Flushed'],a:'De-pressurized first',e:'Charged accumulator is a pressurized vessel. LOTO must include de-pressurization.'},
+{d:'HYD',q:'On a hydraulic schematic, a dashed line is:',o:['High-pressure working line','Pilot or control signal','Drain or case drain','Flexible hose'],a:'Pilot or control signal',e:'Solid = working pressure. Long-dashed = pilot. Short-dashed = drain.'},
+{d:'PNEU',q:'Correct FRL order:',o:['Lubricator, Regulator, Filter','Regulator, Filter, Lubricator','Filter, Regulator, Lubricator','Filter, Lubricator, Regulator'],a:'Filter, Regulator, Lubricator',e:'Filter first. Lubricator last so oil is not filtered out.'},
+{d:'PNEU',q:'A double-acting cylinder needs:',o:['Simple on/off valve','4-way valve','Check valve','Pressure reducing valve'],a:'4-way valve',e:'Routes supply to one end while exhausting the other.'},
+{d:'PNEU',q:'Air pressure should be set to:',o:['Max compressor rating','Highest component requires','MINIMUM needed','110% of highest'],a:'MINIMUM needed',e:'Minimum needed: higher = more wear, leaks, energy cost.'},
+{d:'PNEU',q:'Cylinder cannot hold position under load. Most likely:',o:['Bore too large','Worn piston seals','Pressure too high','Lubricator empty'],a:'Worn piston seals',e:'Test: extend, shut off air, watch for retraction. Retraction = worn seals.'},
+{d:'PNEU',q:'Meter-out preferred over meter-in because:',o:['More force','Smoother under varying loads \u2014 meter-in can stall','Easier to install','Meter-in is hydraulics only'],a:'Smoother under varying loads \u2014 meter-in can stall',e:'Meter-out creates consistent backpressure.'},
+{d:'PNEU',q:'1/8-inch air leak at 100 PSI:',o:['Negligible','Wastes ~25 CFM continuously','Only matters when running','Self-seals'],a:'Wastes ~25 CFM continuously',e:'Plants with many leaks waste 20\u201330% of compressor output.'},
+{d:'PNEU',q:'Quick exhaust valve purpose:',o:['Reduces pressure','Exhausts direct to atmosphere \u2014 increases speed','Prevents backflow','Emergency stop'],a:'Exhausts direct to atmosphere \u2014 increases speed',e:'Eliminates slow exhaust path through supply lines.'},
+{d:'PNEU',q:'Condensation best controlled by:',o:['Faster compressor','Higher pressure','Air dryers at compressor outlet','Daily filter draining'],a:'Air dryers at compressor outlet',e:'Dryers remove moisture at the source.'},
+{d:'PNEU',q:'Regulator cannot maintain pressure when:',o:['Flow demand zero','Supply drops below setpoint','Set below 30 PSI','Using double-acting cylinder'],a:'Supply drops below setpoint',e:'Regulator can only reduce, not boost pressure.'},
+{d:'PNEU',q:'Key limitation of pneumatics vs hydraulics:',o:['Cannot transmit over distance','Air compressible \u2014 cannot hold position precisely','Requires more maintenance','Always slower'],a:'Air compressible \u2014 cannot hold position precisely',e:'Hydraulics uses near-incompressible oil.'},
+{d:'PLC',q:'NO contact passes power when:',o:['Rung is false','Bit is 0','Bit is 1','Output coil energized'],a:'Bit is 1',e:'NO contact (XIC) passes power when the referenced bit = 1.'},
+{d:'PLC',q:'Correct PLC scan cycle order:',o:['Execute \u2192 Read \u2192 Update','Update \u2192 Execute \u2192 Read','Read inputs \u2192 Execute program \u2192 Update outputs','Execute \u2192 Update \u2192 Read'],a:'Read inputs \u2192 Execute program \u2192 Update outputs',e:'Reads all inputs first, executes logic, then updates all outputs.'},
+{d:'PLC',q:'TON timer resets when:',o:['Preset is reached','Power is cycled','Rung goes false before preset','Done bit energizes'],a:'Rung goes false before preset',e:'TON resets to zero if rung goes false before timing out. Use RTO for retentive timing.'},
+{d:'PLC',q:'Purpose of a holding (seal-in) contact:',o:['Limits energize count','Keeps output energized after momentary start opens','Prevents energizing too fast','Times how long output stays on'],a:'Keeps output energized after momentary start opens',e:'Parallel branch keeps rung true after pushbutton is released.'},
+{d:'PLC',q:'Allen-Bradley I:1/3 refers to:',o:['Output file 1, bit 3','Input file 1, word 1, bit 3','Timer file 1, preset 3','Internal bit file'],a:'Input file 1, word 1, bit 3',e:'I = Input file. 1 = word. /3 = bit 3.'},
+{d:'PLC',q:'Output indicator lit but field device not energized. Most likely:',o:['Bad rung logic','Blown fuse or wiring fault between module and device','PLC in fault','Wrong scan time'],a:'Blown fuse or wiring fault between module and device',e:'If LED is ON, PLC believes output is energized. Problem is in field wiring or device.'},
+{d:'PLC',q:'I/O forcing should be used:',o:['During normal production','To permanently override faulty sensors','During commissioning and troubleshooting ONLY','Any time to test output'],a:'During commissioning and troubleshooting ONLY',e:'Leaving forces active during production is a serious safety hazard.'},
+{d:'PLC',q:'CTU counter done bit energizes when:',o:['Rung goes true first time','Accumulated \u2265 preset','Reset rung goes true','Count reaches zero'],a:'Accumulated \u2265 preset',e:'CTU counts each false\u2192true transition. Done bit ON when accumulated \u2265 preset.'},
+{d:'PLC',q:'EtherNet/IP is primarily associated with:',o:['Siemens','Mitsubishi','GE Fanuc','Allen-Bradley (Rockwell)'],a:'Allen-Bradley (Rockwell)',e:'EtherNet/IP was developed by Rockwell and ODVA.'},
+{d:'PLC',q:'NC contact passes power when:',o:['Bit is 1','Output is energized','Bit is 0','Rung is true'],a:'Bit is 0',e:'NC contact (XIO) passes power when bit = 0. Opens when bit turns ON.'},
+{d:'PLC',q:'First thing to check going online to troubleshoot:',o:['Force all outputs','Change program','Processor/I/O status LEDs and fault log','Replace faulted module'],a:'Processor/I/O status LEDs and fault log',e:'Status LEDs and fault log tell you if CPU is running, faulted, or has I/O issues.'},
+{d:'PRINT',q:'Dashed line on a drawing:',o:['Non-scale dimension','Edge not visible in that view','Reference dimension','Section cut line'],a:'Edge not visible in that view',e:'Hidden lines show internal or obscured features.'},
+{d:'PRINT',q:'First thing to verify on an existing print:',o:['Scale','Revision level \u2014 confirm latest','Material spec','Number of views'],a:'Revision level \u2014 confirm latest',e:'Wrong revision = incorrect dimensions or obsolete design.'},
+{d:'PRINT',q:'In third-angle (US) projection, right side view is placed:',o:['Left of front','Right of front','Above front','Below front'],a:'Right of front',e:'Third-angle: views placed where you look to see them.'},
+{d:'PRINT',q:'Tolerance 2.500 \u00b10.005. Acceptable range:',o:['Exactly 2.500','2.495 to 2.505','2.000 to 3.000','2.495 to 2.500'],a:'2.495 to 2.505',e:'\u00b10.005: min = 2.495, max = 2.505.'},
+{d:'PRINT',q:'Normally open (NO) contact on ladder diagram:',o:['Diagonal slash','Two vertical lines with open gap','Circle with X','Solid horizontal line'],a:'Two vertical lines with open gap',e:'NO = open gap. Closes when actuated.'},
+{d:'PRINT',q:'Section view used to:',o:['Show exterior profile','Show internal features at cutting plane','Enlarge detail','Show isometric view'],a:'Show internal features at cutting plane',e:'Cross-hatching = solid material cut through.'},
+{d:'PRINT',q:'Hydraulic pump symbol:',o:['Motor','Pump \u2014 circle with triangle pointing outward','Pressure gauge','Filter'],a:'Pump \u2014 circle with triangle pointing outward',e:'Triangle out = pump. Triangle in = motor.'},
+{d:'PRINT',q:'Weld symbol BELOW reference line:',o:['Both sides','Other side','Arrow side','No weld'],a:'Arrow side',e:'Below = arrow side. Above = other side.'},
+{d:'PRINT',q:'Revision cloud indicates:',o:['Out-of-tolerance','Area changed in latest revision','Informational note','Special inspection'],a:'Area changed in latest revision',e:'Check revision table for what changed and why.'},
+{d:'PRINT',q:'Bill of Materials lists:',o:['Raw material specs','Item number, part number, description, quantity, material','Purchased parts only','Assembly sequence'],a:'Item number, part number, description, quantity, material',e:'Cross-referenced to drawing balloons.'},
+{d:'MATH',q:'1800 RPM motor, 6-inch driver, 12-inch driven. Driven speed:',o:['3600 RPM','900 RPM','1800 RPM','600 RPM'],a:'900 RPM',e:'Output = 1800 \u00d7 (6 \u00f7 12) = 900 RPM.'},
+{d:'MATH',q:'Convert 3/8 inch to decimal:',o:['0.125','0.250','0.375','0.500'],a:'0.375',e:'3 \u00f7 8 = 0.375.'},
+{d:'MATH',q:'Cylinder bore = 3.5 inches. Piston area:',o:['10.99 in\u00b2','9.62 in\u00b2','12.25 in\u00b2','3.5 in\u00b2'],a:'9.62 in\u00b2',e:'A = \u03c0 \u00d7 (1.75)\u00b2 = 9.62 in\u00b2.'},
+{d:'MATH',q:'0.625 as a fraction:',o:['3/4','5/8','1/2','7/16'],a:'5/8',e:'0.625 \u00d7 8 = 5 \u2192 5/8.'},
+{d:'MATH',q:'65 PSI = how many feet of head? (1 PSI = 2.31 ft)',o:['28.1 ft','150 ft','65 ft','200 ft'],a:'150 ft',e:'Head = 65 \u00d7 2.31 = 150.15 ft.'},
+{d:'MATH',q:'Tank: 4 ft diameter, 8 ft tall. Volume:',o:['401.9 ft\u00b3','201.1 ft\u00b3','50.3 ft\u00b3','100.5 ft\u00b3'],a:'100.5 ft\u00b3',e:'V = \u03c0 \u00d7 2\u00b2 \u00d7 8 = 100.5 ft\u00b3.'},
+{d:'MATH',q:'Torque = 80 ft-lb. Wrench = 2.5 ft. Force required:',o:['200 lbs','32 lbs','40 lbs','80 lbs'],a:'32 lbs',e:'F = T \u00f7 d = 80 \u00f7 2.5 = 32 lbs.'},
+{d:'MATH',q:'10 HP motor, 8 hrs, $0.12/kWh. Energy cost:',o:['$0.72','$7.16','$71.60','$0.07'],a:'$7.16',e:'10 \u00d7 0.746 \u00d7 8 = 59.7 kWh \u00d7 $0.12 = $7.16.'},
+{d:'MATH',q:'1.875 inches as a fraction:',o:['1 and 3/4','1 and 7/8','2 inches','1 and 11/16'],a:'1 and 7/8',e:'0.875 = 7/8. So 1.875 = 1-7/8.'},
+{d:'MATH',q:'36-tooth gear at 600 RPM drives 12-tooth gear. Output:',o:['200 RPM','1800 RPM','600 RPM','300 RPM'],a:'1800 RPM',e:'Output = 600 \u00d7 (36 \u00f7 12) = 1800 RPM.'},
+{d:'SAFE',q:'After LOTO lock applied, before starting work:',o:['Notify supervisor','Verify zero energy \u2014 attempt restart AND test all sources','Begin \u2014 lock provides safety','Wait 5 minutes'],a:'Verify zero energy \u2014 attempt restart AND test all sources',e:'OSHA 1910.147: verify isolation. Attempt restart. Test energy sources.'},
+{d:'SAFE',q:'Coworker asks you to remove your lock:',o:['Remove if supervisor','Remove if everyone else has','Refuse \u2014 only YOU remove your lock','Remove if coworker watches'],a:'Refuse \u2014 only YOU remove your lock',e:'Your lock protects your life. No exceptions.'},
+{d:'SAFE',q:'Most overlooked LOTO energy source:',o:['Water supply','Natural gas','Electrical','Stored hydraulic/pneumatic and mechanical spring energy'],a:'Stored hydraulic/pneumatic and mechanical spring energy',e:'Electrical is identified first. Hydraulic cylinders, accumulators, springs commonly missed.'},
+{d:'SAFE',q:'SDS Section 8 covers:',o:['Firefighting','Physical/chemical properties','Exposure controls and required PPE','First aid'],a:'Exposure controls and required PPE',e:'PELs, engineering controls, respiratory protection, gloves, eye/skin protection.'},
+{d:'SAFE',q:'PPE is last in Hierarchy of Controls because:',o:['Most effective','Least effective \u2014 can fail, worn wrong, or not worn','Too expensive','OSHA only requires it last'],a:'Least effective \u2014 can fail, worn wrong, or not worn',e:'Engineering controls protect everyone automatically.'},
+{d:'SAFE',q:'Arc flash PPE level determined by:',o:['Voltage only','Incident energy (cal/cm\u00b2) from hazard analysis','Annual review','OSHA Table Z-1'],a:'Incident energy (cal/cm\u00b2) from hazard analysis',e:'Depends on fault current, clearing time, distance \u2014 not voltage alone.'},
+{d:'SAFE',q:'OSHA fall protection in general industry at:',o:['2 ft','4 ft','6 ft','10 ft'],a:'4 ft',e:'General industry = 4 ft. Construction = 6 ft. Shipbuilding = 10 ft.'},
+{d:'SAFE',q:'Hot work permit required when:',o:['Any hand tools','Welding, cutting, grinding near fire/explosion hazards','Any outdoor work','Lifting over 50 lbs'],a:'Welding, cutting, grinding near fire/explosion hazards',e:'Required where flammable/combustible materials may be present.'},
+{d:'SAFE',q:'Permit-required confined space contains:',o:['Limited lighting','Hazardous atmosphere, engulfment, entrapment, or IDLH','Rain water','Poor cell reception'],a:'Hazardous atmosphere, engulfment, entrapment, or IDLH',e:'Requires permit, attendant, atmospheric testing, rescue plan.'},
+{d:'SAFE',q:"Heinrich's Triangle explains near miss reporting:",o:['OSHA requires it','Near misses cost more','Creates paperwork','~29 minor injuries and ~300 near misses per major injury \u2014 all sharing root causes'],a:'~29 minor injuries and ~300 near misses per major injury \u2014 all sharing root causes',e:'Investigate near misses to prevent major incidents.'},
 ];
 
 // ── QUIZ STATE ────────────────────────────────────────────────────────────────
-var qzActive=[];          // shuffled question objects (with shuffled options + correctText)
-var qzUserAnswers=[];     // user's selected option text per question (null = unanswered)
-var qzDomainFilter=new Set(DOMAINS);
-
-// Fisher-Yates shuffle
-function shuffle(arr){
-  var a=arr.slice();
-  for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
-  return a;
-}
+var qzActive=[],qzUserAnswers=[],qzDomainFilter=new Set(DOMAINS);
 
 function buildQuizSetup(){
-  var grid=document.getElementById('qs-domain-grid');if(!grid)return;
+  var grid=document.getElementById('qs-domain-grid');if(!grid)return;grid.innerHTML='';
   var counts={};DOMAINS.forEach(function(d){counts[d]=0;});QUESTIONS.forEach(function(q){counts[q.d]++;});
   DOMAINS.forEach(function(d){
     var card=document.createElement('div');card.className='qs-card selected';card.id='qsd-'+d;
-    card.innerHTML='<div style="display:flex;justify-content:space-between;align-items:flex-start;"><div class="qs-title">'+DOMAIN_LABELS[d]+'</div><div class="qs-check">\u2713</div></div><div class="qs-count">'+counts[d]+' questions</div>';
+    card.innerHTML='<div style="display:flex;justify-content:space-between;"><div class="qs-title">'+DOMAIN_LABELS[d]+'</div><div class="qs-check">\u2713</div></div><div class="qs-count">'+counts[d]+' questions</div>';
     card.onclick=function(){
       if(qzDomainFilter.has(d)){if(qzDomainFilter.size===1)return;qzDomainFilter.delete(d);card.classList.remove('selected');}
       else{qzDomainFilter.add(d);card.classList.add('selected');}
       var ct=QUESTIONS.filter(function(q){return qzDomainFilter.has(q.d);}).length;
-      var el=document.getElementById('qs-selected-count');if(el)el.textContent=ct+' question'+(ct!==1?'s':'')+' selected';
+      var el=document.getElementById('qs-selected-count');if(el)el.textContent=ct+' questions selected';
     };
     grid.appendChild(card);
   });
 }
 
 function startQuiz(){
-  // Build active question list with shuffled options
-  var base=QUESTIONS.filter(function(q){return qzDomainFilter.has(q.d);});
-  qzActive=base.map(function(q){
-    var shuffled=shuffle(q.o);
-    return {d:q.d,q:q.q,opts:shuffled,correct:q.a,e:q.e};
-  });
+  qzActive=QUESTIONS.filter(function(q){return qzDomainFilter.has(q.d);}).map(function(q){return{d:q.d,q:q.q,opts:shuffle(q.o),correct:q.a,e:q.e};});
   qzUserAnswers=qzActive.map(function(){return null;});
-
   document.getElementById('quiz-setup').style.display='none';
   document.getElementById('quiz-active').style.display='block';
   document.getElementById('quiz-results').style.display='none';
-  buildQuizQuestions();
-  updateProgress();
+  buildQuizQuestions();updateQuizProgress();
 }
 
 function buildQuizQuestions(){
@@ -699,124 +930,73 @@ function buildQuizQuestions(){
   var dC={ELEC:'var(--steel2)',MOTOR:'var(--amber2)',MECH:'var(--green2)',HYD:'var(--rust2)',PNEU:'#a78bfa',PLC:'#2dd4bf',PRINT:'#2dd4bf',MATH:'var(--amber2)',SAFE:'var(--rust2)'};
   qzActive.forEach(function(q,qi){
     var div=document.createElement('div');div.className='q-block';div.id='qb-'+qi;
-    var opts=q.opts.map(function(o,oi){
-      return'<div class="q-opt" onclick="selectAnswer('+qi+',this,\''+o.replace(/'/g,"\\'")+'\')" data-opt="'+oi+'"><span class="q-let">'+'ABCD'[oi]+'</span>'+o+'</div>';
-    }).join('');
-    div.innerHTML='<div class="q-meta"><div class="q-num">Question '+(qi+1)+' of '+qzActive.length+'</div><span style="font-family:var(--ff-m);font-size:.58rem;padding:.12rem .45rem;border-radius:3px;background:rgba(255,255,255,.06);color:'+(dC[q.d]||'var(--ink3)')+';">'+DOMAIN_LABELS[q.d]+'</span></div><div class="q-text">'+q.q+'</div><div class="q-opts" id="qopts-'+qi+'">'+opts+'</div>';
+    var opts=q.opts.map(function(o,oi){return'<div class="q-opt" onclick="selectQAnswer('+qi+',this,\''+o.replace(/'/g,"\\'")+'\')" data-opt="'+oi+'"><span class="q-let">'+'ABCD'[oi]+'</span>'+o+'</div>';}).join('');
+    div.innerHTML='<div class="q-meta"><div class="q-num">Q'+(qi+1)+'</div><span style="font-family:var(--ff-m);font-size:.58rem;padding:.12rem .45rem;border-radius:3px;background:rgba(255,255,255,.06);color:'+(dC[q.d]||'var(--ink3)')+';">'+DOMAIN_LABELS[q.d]+'</span></div><div class="q-text">'+q.q+'</div><div class="q-opts" id="qopts-'+qi+'">'+opts+'</div>';
     wrap.appendChild(div);
   });
 }
 
-function selectAnswer(qi, el, optText){
-  // Save user's answer
+function selectQAnswer(qi,el,optText){
   qzUserAnswers[qi]=optText;
-  // Highlight selected, clear others in this question
-  var opts=document.querySelectorAll('#qopts-'+qi+' .q-opt');
-  opts.forEach(function(o){o.classList.remove('selected');});
+  document.querySelectorAll('#qopts-'+qi+' .q-opt').forEach(function(o){o.classList.remove('selected');});
   el.classList.add('selected');
-  // Remove unanswered highlight if present
   document.getElementById('qb-'+qi).classList.remove('q-unanswered');
-  updateProgress();
+  updateQuizProgress();
 }
 
-function updateProgress(){
+function updateQuizProgress(){
   var answered=qzUserAnswers.filter(function(a){return a!==null;}).length;
-  var total=qzActive.length;
-  document.getElementById('qa-answered-lbl').textContent=answered+' of '+total+' answered';
-  document.getElementById('qa-prog-fill').style.width=(answered/total*100)+'%';
+  document.getElementById('qa-answered-lbl').textContent=answered+' of '+qzActive.length+' answered';
+  document.getElementById('qa-prog-fill').style.width=(answered/qzActive.length*100)+'%';
 }
 
-function submitQuiz(){
-  // Check for unanswered questions
+async function submitQuiz(){
   var unanswered=[];
   qzUserAnswers.forEach(function(a,i){if(a===null)unanswered.push(i);});
-
   if(unanswered.length>0){
-    // Highlight unanswered questions
-    unanswered.forEach(function(i){
-      document.getElementById('qb-'+i).classList.add('q-unanswered');
-    });
+    unanswered.forEach(function(i){document.getElementById('qb-'+i).classList.add('q-unanswered');});
     var warn=document.getElementById('qa-unanswered-warn');
-    warn.style.display='block';
-    warn.textContent=unanswered.length+' question'+(unanswered.length!==1?'s are':' is')+' unanswered. Please answer all questions before submitting.';
-    // Scroll to first unanswered
+    warn.style.display='block';warn.textContent=unanswered.length+' question'+(unanswered.length!==1?'s are':' is')+' unanswered.';
     document.getElementById('qb-'+unanswered[0]).scrollIntoView({behavior:'smooth',block:'center'});
     return;
   }
-
-  showResults();
-}
-
-function showResults(){
-  document.getElementById('quiz-active').style.display='none';
-  document.getElementById('quiz-results').style.display='block';
-
   // Score
   var correct=0;
-  qzActive.forEach(function(q,i){if(qzUserAnswers[i]===q.correct)correct++;});
-  var total=qzActive.length;
-  var pct=Math.round(correct/total*100);
-  var pass=pct>=70;
-
-  // Domain breakdown
   var ds={};DOMAINS.forEach(function(d){ds[d]={correct:0,total:0};});
   qzActive.forEach(function(q,i){
     ds[q.d].total++;
-    if(qzUserAnswers[i]===q.correct)ds[q.d].correct++;
+    if(qzUserAnswers[i]===q.correct){correct++;ds[q.d].correct++;}
   });
+  var total=qzActive.length,pct=Math.round(correct/total*100);
+  // Save to Supabase
+  var domainScores={};
+  DOMAINS.forEach(function(d){if(ds[d].total>0)domainScores[d]={correct:ds[d].correct,total:ds[d].total};});
+  await sb.from('exam_attempts').insert({user_id:currentUser.id,score:correct,total:total,pct:pct,domain_scores:domainScores});
+  showExamResults(correct,total,pct,ds);
+  await loadHomeSummary();
+}
 
+function showExamResults(correct,total,pct,ds){
+  document.getElementById('quiz-active').style.display='none';
+  document.getElementById('quiz-results').style.display='block';
+  var pass=pct>=70;
   var domCards=DOMAINS.filter(function(d){return ds[d].total>0;}).map(function(d){
-    var s=ds[d],dp=s.total?Math.round(s.correct/s.total*100):0;
+    var dp=ds[d].total?Math.round(ds[d].correct/ds[d].total*100):0;
     var bc=dp>=80?'var(--green2)':dp>=60?'var(--amber2)':'var(--rust2)';
-    return'<div class="qr-domain-card"><div class="qrd-name">'+DOMAIN_LABELS[d]+'</div>'
-      +'<div class="qrd-bar-wrap"><div class="qrd-bar" style="width:'+dp+'%;background:'+bc+';"></div></div>'
-      +'<div class="qrd-stat">'+s.correct+'/'+s.total+' correct ('+dp+'%)</div></div>';
+    return'<div class="qr-domain-card"><div class="qrd-name">'+DOMAIN_LABELS[d]+'</div><div class="qrd-bar-wrap"><div class="qrd-bar" style="width:'+dp+'%;background:'+bc+';"></div></div><div class="qrd-stat">'+ds[d].correct+'/'+ds[d].total+' ('+dp+'%)</div></div>';
   }).join('');
-
   var weak=DOMAINS.filter(function(d){return ds[d].total>0&&ds[d].correct/ds[d].total<0.70;}).map(function(d){return DOMAIN_LABELS[d];});
-  var note=weak.length
-    ?'<p style="font-size:.85rem;color:var(--ink2);margin-top:1rem;">Focus study on: <strong style="color:var(--rust2);">'+weak.join(', ')+'</strong></p>'
-    :'<p style="font-size:.85rem;color:var(--green2);margin-top:1rem;">Strong across all domains \u2014 keep reviewing.</p>';
-
-  // Build answer review
-  var reviewItems=qzActive.map(function(q,i){
-    var userAns=qzUserAnswers[i];
-    var isCorrect=userAns===q.correct;
-    var optsHtml=q.opts.map(function(o){
-      var cls='';
-      if(o===q.correct)cls=' correct';
-      else if(o===userAns&&!isCorrect)cls=' incorrect';
-      return'<div class="q-opt disabled'+cls+'"><span class="q-let">'+'ABCD'[q.opts.indexOf(o)]+'</span>'+o+'</div>';
-    }).join('');
-    return'<div class="q-block" style="border-color:'+(isCorrect?'var(--green)':'var(--rust)')+';margin-bottom:.85rem;">'
-      +'<div class="q-meta">'
-      +'<div class="q-num">Q'+(i+1)+'</div>'
-      +'<span style="font-family:var(--ff-m);font-size:.6rem;padding:.1rem .45rem;border-radius:3px;background:'+(isCorrect?'var(--grn-bg)':'var(--rust-bg)')+';color:'+(isCorrect?'var(--green2)':'var(--rust2)')+';">'+(isCorrect?'\u2713 Correct':'\u2717 Incorrect')+'</span>'
-      +'</div>'
-      +'<div class="q-text" style="font-size:.88rem;">'+q.q+'</div>'
-      +'<div class="q-opts" style="margin-bottom:.65rem;">'+optsHtml+'</div>'
-      +'<div class="q-fb '+(isCorrect?'correct':'incorrect')+'"><strong>Explanation: </strong>'+q.e+'</div>'
-      +'</div>';
+  var note=weak.length?'<p style="font-size:.85rem;color:var(--ink2);margin-top:1rem;">Focus on: <strong style="color:var(--rust2);">'+weak.join(', ')+'</strong></p>':'<p style="font-size:.85rem;color:var(--green2);margin-top:1rem;">Strong across all domains.</p>';
+  var review=qzActive.map(function(q,i){
+    var ua=qzUserAnswers[i],ok=ua===q.correct;
+    var opts=q.opts.map(function(o){var cls='';if(o===q.correct)cls=' correct';else if(o===ua&&!ok)cls=' incorrect';return'<div class="q-opt disabled'+cls+'"><span class="q-let">'+'ABCD'[q.opts.indexOf(o)]+'</span>'+o+'</div>';}).join('');
+    return'<div class="q-block" style="border-color:'+(ok?'var(--green)':'var(--rust)')+';margin-bottom:.85rem;"><div class="q-meta"><div class="q-num">Q'+(i+1)+'</div><span style="font-family:var(--ff-m);font-size:.6rem;padding:.1rem .45rem;border-radius:3px;background:'+(ok?'var(--grn-bg)':'var(--rust-bg)')+';color:'+(ok?'var(--green2)':'var(--rust2)')+';">'+(ok?'\u2713 Correct':'\u2717 Incorrect')+'</span></div><div class="q-text" style="font-size:.88rem;">'+q.q+'</div><div class="q-opts" style="margin-bottom:.65rem;">'+opts+'</div><div class="q-fb '+(ok?'correct':'incorrect')+'"><strong>Explanation: </strong>'+q.e+'</div></div>';
   }).join('');
-
   document.getElementById('quiz-results').innerHTML=
-    '<div class="qr-hero">'
-      +'<div class="qr-score">'+correct+'/'+total+'</div>'
-      +'<div class="qr-pct">'+pct+'% Correct</div>'
-      +'<div class="qr-verdict '+(pass?'qr-pass':'qr-fail')+'">'+(pass?'\u2713 Passing Range \u2014 solid work':'\u2717 Below target \u2014 keep reviewing')+'</div>'
-      +'<p style="font-size:.82rem;color:var(--ink3);margin-top:.6rem;">Ramsey target: 70%+. Aim for 80%+ for confidence.</p>'
-      +note
-    +'</div>'
+    '<div class="qr-hero"><div class="qr-score">'+correct+'/'+total+'</div><div class="qr-pct">'+pct+'% Correct</div><div class="qr-verdict '+(pass?'qr-pass':'qr-fail')+'">'+(pass?'\u2713 Passing range':'\u2717 Below target')+'</div><p style="font-size:.82rem;color:var(--ink3);margin-top:.6rem;">Target: 70%+. Aim for 80%+ for confidence.</p>'+note+'</div>'
     +'<div class="qr-domain-grid">'+domCards+'</div>'
-    +'<div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem;">'
-      +'<button class="qr-retry-btn" onclick="resetQuiz()">\u21ba Try Again</button>'
-      +'<button class="qr-retry-btn" style="background:var(--bg4);color:var(--ink2);border:1px solid var(--bdr2);" onclick="showPage(\'fc\')">\u2192 Review Flashcards</button>'
-    +'</div>'
-    +'<div class="review-section">'
-      +'<div class="review-hdr">Full Answer Review</div>'
-      +reviewItems
-    +'</div>';
-
+    +'<div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem;"><button class="qr-retry-btn" onclick="resetQuiz()">\u21ba Try Again</button><button class="qr-retry-btn" style="background:var(--bg4);color:var(--ink2);border:1px solid var(--bdr2);" onclick="showPage(\'fc\')">\u2192 Review Flashcards</button></div>'
+    +'<div class="review-section"><div class="review-hdr">Full Answer Review</div>'+review+'</div>';
   document.getElementById('quiz-results').scrollIntoView({behavior:'smooth'});
 }
 
@@ -830,21 +1010,161 @@ function resetQuiz(){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ── KEYBOARD NAV ──────────────────────────────────────────────────────────────
+// ── MY HISTORY ────────────────────────────────────────────────────────────────
+async function loadHistory(){
+  var con=document.getElementById('history-container');
+  con.innerHTML='<div style="padding:3rem 0;font-family:var(--ff-m);font-size:.75rem;color:var(--ink3);">Loading...</div>';
+  var {data:exams}=await sb.from('exam_attempts').select('*').eq('user_id',currentUser.id).order('taken_at',{ascending:false});
+  if(!exams||!exams.length){con.innerHTML='<div style="padding:3rem 0;font-family:var(--ff-m);font-size:.75rem;color:var(--ink3);">No exam attempts yet. Take a practice exam to see your history here.</div>';return;}
+  con.innerHTML='<div class="exam-history" style="padding-top:2rem;">'+exams.map(function(e){
+    var pass=e.pct>=70;var bc=pass?'var(--green2)':'var(--rust2)';
+    var dt=new Date(e.taken_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+    var domHtml='';
+    if(e.domain_scores){Object.keys(e.domain_scores).forEach(function(d){var s=e.domain_scores[d];var dp=s.total?Math.round(s.correct/s.total*100):0;var db=dp>=80?'var(--green2)':dp>=60?'var(--amber2)':'var(--rust2)';domHtml+='<div class="td-row"><div class="td-name">'+(DOMAIN_LABELS[d]||d)+'</div><div class="td-bar-wrap"><div class="td-bar" style="width:'+dp+'%;background:'+db+';"></div></div><div class="td-pct">'+dp+'%</div></div>';});}
+    return'<div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rl);padding:1.5rem;margin-bottom:1rem;">'
+      +'<div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">'
+      +'<div style="font-family:var(--ff-d);font-size:2rem;font-weight:700;color:'+bc+';">'+e.pct+'%</div>'
+      +'<div><div style="font-weight:600;color:var(--ink);">'+(pass?'\u2713 Passing':'\u2717 Below target')+'</div>'
+      +'<div style="font-family:var(--ff-m);font-size:.62rem;color:var(--ink3);">'+dt+' &middot; '+e.score+'/'+e.total+' correct</div></div></div>'
+      +'<div class="tech-domains">'+domHtml+'</div></div>';
+  }).join('')+'</div>';
+}
+
+// ── MANAGER VIEW ──────────────────────────────────────────────────────────────
+async function loadManagerView(){
+  document.getElementById('mgr-grid').innerHTML='<div class="mgr-empty">Loading team data...</div>';
+  document.getElementById('mgr-summary').innerHTML='';
+  var [{data:profiles},{data:progress},{data:exams}]=await Promise.all([
+    sb.from('profiles').select('*').order('full_name'),
+    sb.from('flashcard_progress').select('*'),
+    sb.from('exam_attempts').select('*').order('taken_at',{ascending:false})
+  ]);
+  var techs=(profiles||[]).filter(function(p){return p.role==='tech';});
+  if(!techs.length){document.getElementById('mgr-grid').innerHTML='<div class="mgr-empty">No techs have signed up yet.</div>';return;}
+  // Team summary
+  var totalExams=(exams||[]).length;
+  var passing=(exams||[]).filter(function(e){return e.pct>=70;}).length;
+  var avgPct=totalExams?Math.round((exams||[]).reduce(function(s,e){return s+e.pct;},0)/totalExams):0;
+  var totalKnown=(progress||[]).filter(function(p){return p.status==='known';}).length;
+  var techsWithExams=techs.filter(function(t){return (exams||[]).some(function(e){return e.user_id===t.id;});}).length;
+  document.getElementById('mgr-summary').innerHTML=
+    '<div class="mgr-sum-cell"><div class="mgr-sum-val">'+techs.length+'</div><div class="mgr-sum-lbl">Techs enrolled</div></div>'
+    +'<div class="mgr-sum-cell"><div class="mgr-sum-val">'+techsWithExams+'</div><div class="mgr-sum-lbl">Techs tested</div></div>'
+    +'<div class="mgr-sum-cell"><div class="mgr-sum-val">'+totalExams+'</div><div class="mgr-sum-lbl">Total exams taken</div></div>'
+    +'<div class="mgr-sum-cell"><div class="mgr-sum-val">'+avgPct+'%</div><div class="mgr-sum-lbl">Team avg score</div></div>'
+    +'<div class="mgr-sum-cell"><div class="mgr-sum-val">'+passing+'/'+totalExams+'</div><div class="mgr-sum-lbl">Passing (70%+)</div></div>'
+    +'<div class="mgr-sum-cell"><div class="mgr-sum-val">'+totalKnown+'</div><div class="mgr-sum-lbl">Cards marked known</div></div>';
+  // Per-tech expanded cards
+  var grid=document.getElementById('mgr-grid');
+  grid.style.gridTemplateColumns='1fr';
+  grid.innerHTML=techs.map(function(tech){
+    var techProg=(progress||[]).filter(function(p){return p.user_id===tech.id;});
+    var known=techProg.filter(function(p){return p.status==='known';}).length;
+    var mastPct=CARDS.length?Math.round(known/CARDS.length*100):0;
+    // Domain flashcard mastery
+    var domKnown={};var domTotal={};
+    CARDS.forEach(function(c){domTotal[c.c]=(domTotal[c.c]||0)+1;});
+    techProg.forEach(function(p){if(p.status==='known'){domKnown[p.domain]=(domKnown[p.domain]||0)+1;}});
+    var domHtml=Object.keys(FC_CATS).map(function(d){
+      var k=domKnown[d]||0;var t=domTotal[d]||1;var dp=Math.round(k/t*100);
+      var bc=dp>=80?'var(--green2)':dp>=50?'var(--amber2)':'var(--steel2)';
+      return'<div class="td-row"><div class="td-name" style="width:110px;">'+FC_CATS[d].label+'</div><div class="td-bar-wrap"><div class="td-bar" style="width:'+dp+'%;background:'+bc+';"></div></div><div class="td-pct">'+k+'/'+t+' ('+dp+'%)</div></div>';
+    }).join('');
+    // Exam history
+    var techExams=(exams||[]).filter(function(e){return e.user_id===tech.id;});
+    var bestPct=techExams.length?Math.max.apply(null,techExams.map(function(e){return e.pct;})):null;
+    var avgTechPct=techExams.length?Math.round(techExams.reduce(function(s,e){return s+e.pct;},0)/techExams.length):null;
+    var examHistHtml=techExams.length===0
+      ?'<div style="font-family:var(--ff-m);font-size:.68rem;color:var(--ink3);padding:.75rem 0;">No exams taken yet.</div>'
+      :techExams.map(function(e){
+          var pass=e.pct>=70;
+          var bc=pass?'var(--green2)':'var(--rust2)';
+          var dt=new Date(e.taken_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+          // Domain breakdown for this attempt
+          var dBars='';
+          if(e.domain_scores){
+            dBars=Object.keys(e.domain_scores).map(function(d){
+              var s=e.domain_scores[d];
+              var dp=s.total?Math.round(s.correct/s.total*100):0;
+              var db=dp>=80?'var(--green2)':dp>=60?'var(--amber2)':'var(--rust2)';
+              return'<div class="td-row" style="margin-bottom:.2rem;">'
+                +'<div class="td-name" style="width:110px;font-size:.56rem;">'+(DOMAIN_LABELS[d]||d)+'</div>'
+                +'<div class="td-bar-wrap" style="height:4px;"><div class="td-bar" style="width:'+dp+'%;background:'+db+';height:4px;"></div></div>'
+                +'<div class="td-pct" style="font-size:.6rem;">'+s.correct+'/'+s.total+'</div>'
+                +'</div>';
+            }).join('');
+          }
+          return'<div style="background:var(--bg4);border:1px solid '+(pass?'rgba(61,122,79,0.3)':'rgba(184,74,28,0.25)')+';border-left:3px solid '+bc+';border-radius:var(--r);padding:1rem;margin-bottom:.6rem;">'
+            +'<div style="display:flex;align-items:center;gap:1rem;margin-bottom:'+(dBars?'.75rem':'0')+'">'
+            +'<div style="font-family:var(--ff-d);font-size:1.8rem;font-weight:700;color:'+bc+';line-height:1;flex-shrink:0;">'+e.pct+'%</div>'
+            +'<div style="flex:1;">'
+            +'<div style="font-weight:600;font-size:.85rem;color:var(--ink);">'+(pass?'\u2713 Passing':'\u2717 Below target')+' &mdash; '+e.score+'/'+e.total+' correct</div>'
+            +'<div style="font-family:var(--ff-m);font-size:.62rem;color:var(--ink3);">'+dt+'</div>'
+            +'</div>'
+            +'<div style="text-align:center;flex-shrink:0;padding:.3rem .6rem;border-radius:var(--r);background:'+(pass?'var(--grn-bg)':'var(--rust-bg)')+';font-family:var(--ff-m);font-size:.6rem;color:'+bc+';">'+(pass?'PASS':'FAIL')+'</div>'
+            +'</div>'
+            +(dBars?'<div style="padding-top:.6rem;border-top:1px solid var(--bdr);">'+dBars+'</div>':'')
+            +'</div>';
+        }).join('');
+    return'<div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rl);padding:1.75rem;margin-bottom:1.5rem;">'
+      // Header row
+      +'<div style="display:flex;align-items:flex-start;gap:2rem;margin-bottom:1.5rem;flex-wrap:wrap;">'
+      +'<div style="flex:1;min-width:200px;">'
+      +'<div class="tech-name" style="font-size:1.15rem;">'+tech.full_name+'</div>'
+      +'<div class="tech-meta">'+techExams.length+' exam'+(techExams.length!==1?'s':'')+' taken</div>'
+      +'</div>'
+      // Stat pills
+      +'<div style="display:flex;gap:.75rem;flex-wrap:wrap;">'
+      +'<div style="text-align:center;background:var(--bg4);border:1px solid var(--bdr);border-radius:var(--r);padding:.6rem 1rem;">'
+      +'<div style="font-family:var(--ff-d);font-size:1.4rem;font-weight:700;color:var(--amber2);line-height:1;">'+mastPct+'%</div>'
+      +'<div style="font-family:var(--ff-m);font-size:.55rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-top:.2rem;">Card mastery</div></div>'
+      +(bestPct!==null?'<div style="text-align:center;background:var(--bg4);border:1px solid var(--bdr);border-radius:var(--r);padding:.6rem 1rem;">'
+      +'<div style="font-family:var(--ff-d);font-size:1.4rem;font-weight:700;color:'+(bestPct>=70?'var(--green2)':'var(--rust2)')+';line-height:1;">'+bestPct+'%</div>'
+      +'<div style="font-family:var(--ff-m);font-size:.55rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-top:.2rem;">Best exam</div></div>':'')
+      +(avgTechPct!==null?'<div style="text-align:center;background:var(--bg4);border:1px solid var(--bdr);border-radius:var(--r);padding:.6rem 1rem;">'
+      +'<div style="font-family:var(--ff-d);font-size:1.4rem;font-weight:700;color:'+(avgTechPct>=70?'var(--green2)':'var(--rust2)')+';line-height:1;">'+avgTechPct+'%</div>'
+      +'<div style="font-family:var(--ff-m);font-size:.55rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-top:.2rem;">Avg exam</div></div>':'')
+      +'</div>'
+      +'</div>'
+      // Two-column layout: flashcard mastery | exam history
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;">'
+      // Flashcard mastery
+      +'<div>'
+      +'<div style="font-family:var(--ff-m);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber2);margin-bottom:.75rem;">Flashcard mastery by domain</div>'
+      +'<div class="tech-domains">'+domHtml+'</div>'
+      +'</div>'
+      // Exam history
+      +'<div>'
+      +'<div style="font-family:var(--ff-m);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber2);margin-bottom:.75rem;">Exam history ('+(techExams.length||0)+' attempts)</div>'
+      +examHistHtml
+      +'</div>'
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+// ── KEYBOARD ──────────────────────────────────────────────────────────────────
 document.addEventListener('keydown',function(e){
   var page=document.querySelector('.page.active');if(!page||page.id!=='page-fc')return;
-  if(e.key==='ArrowRight')fcMove(1);
-  else if(e.key==='ArrowLeft')fcMove(-1);
+  if(e.key==='ArrowRight')fcMove(1);else if(e.key==='ArrowLeft')fcMove(-1);
   else if(e.key===' '||e.key==='Enter'){e.preventDefault();flipFC();}
-  else if(e.key==='g'||e.key==='G')markFC(true);
-  else if(e.key==='s'||e.key==='S')markFC(false);
+  else if(e.key==='g'||e.key==='G')markFC(true);else if(e.key==='s'||e.key==='S')markFC(false);
 });
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
-buildDomainBars();
-buildCatBtns();
-filterFC();
-buildQuizSetup();
+(async function(){
+  var {data:{session}}=await sb.auth.getSession();
+  if(session&&session.user){
+    await onLogin(session.user);
+  } else {
+    showLoading(false);
+    document.getElementById('auth-screen').classList.remove('hidden');
+  }
+  // Listen for auth state changes
+  sb.auth.onAuthStateChange(async function(event,session){
+    if(event==='SIGNED_IN'&&session)await onLogin(session.user);
+  });
+})();
 </script>
 </body>
 </html>
